@@ -1,16 +1,34 @@
 using UnityEngine;
+using GameFramework;
 
 public class GameSystem : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    [SerializeField] private bool autoInit = true;
+
+    private void Awake()
     {
-        
+        if (autoInit)
+            InitializeGame();
     }
 
-    // Update is called once per frame
-    void Update()
+    public void InitializeGame()
     {
-        
+        GameEntry entry = GameEntry.Instance;
+
+        RegisterCoreSystems(entry);
+        RegisterGameSystems(entry);
+
+        entry.InitAllSystems();
+    }
+
+    private void RegisterCoreSystems(GameEntry entry)
+    {
+        entry.RegisterSystem(new EventSystem());
+        entry.RegisterSystem(new ProcedureSystem());
+    }
+
+    private void RegisterGameSystems(GameEntry entry)
+    {
+        // TODO: 注册游戏特定系统
     }
 }
