@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>泰拉诺斯大陆完整体系设定v5.0 - 全面细化版</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', 'SimHei', sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1a3e 50%, #0f1b35 100%);
+            color: #e0e0e0;
+            line-height: 1.8;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: rgba(15, 15, 30, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #ffd700;
+            font-size: 3.5em;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.6), 0 0 40px rgba(255, 215, 0, 0.4);
+            letter-spacing: 6px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #87ceeb;
+            font-size: 1.3em;
+            margin-bottom: 40px;
+            font-style: italic;
+        }
+        
+        .version-badge {
+            text-align: center;
+            color: #90ee90;
+            font-size: 1.1em;
+            margin-bottom: 50px;
+            padding: 10px;
+            background: rgba(144, 238, 144, 0.1);
+            border-radius: 10px;
+        }
+        
+        nav {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 50px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+        
+        nav h3 {
+            color: #ffd700;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 1.8em;
+        }
+        
+        nav ul {
+            list-style: none;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+        }
+        
+        nav a {
+            color: #87ceeb;
+            text-decoration: none;
+            padding: 12px 18px;
+            display: block;
+            background: rgba(135, 206, 235, 0.1);
+            border-radius: 8px;
+            transition: all 0.3s;
+            border-left: 4px solid transparent;
+        }
+        
+        nav a:hover {
+            background: rgba(135, 206, 235, 0.25);
+            border-left-color: #ffd700;
+            transform: translateX(5px);
+        }
+        
+        .section {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 40px;
+            border-radius: 15px;
+            margin-bottom: 40px;
+            border-left: 6px solid #ffd700;
+        }
+        
+        h2 {
+            color: #ffd700;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid rgba(255, 215, 0, 0.3);
+        }
+        
+        h3 {
+            color: #87ceeb;
+            font-size: 2em;
+            margin: 35px 0 20px 0;
+            padding-left: 20px;
+            border-left: 5px solid #87ceeb;
+        }
+        
+        h4 {
+            color: #90ee90;
+            font-size: 1.6em;
+            margin: 25px 0 15px 0;
+        }
+        
+        h5 {
+            color: #ff6b9d;
+            font-size: 1.3em;
+            margin: 20px 0 10px 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        th {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: #ffd700;
+            padding: 15px;
+            text-align: left;
+            font-weight: bold;
+            font-size: 1.05em;
+        }
+        
+        td {
+            padding: 14px 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        tr:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+        
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 25px;
+            margin: 25px 0;
+        }
+        
+        .card {
+            background: linear-gradient(135deg, rgba(30, 30, 60, 0.6), rgba(20, 20, 40, 0.6));
+            padding: 25px;
+            border-radius: 12px;
+            border: 2px solid rgba(135, 206, 235, 0.3);
+            transition: all 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(135, 206, 235, 0.3);
+            border-color: #ffd700;
+        }
+        
+        .card h5 {
+            color: #ffd700;
+            font-size: 1.4em;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(255, 215, 0, 0.3);
+        }
+        
+        .tag {
+            display: inline-block;
+            padding: 6px 14px;
+            margin: 5px 5px 5px 0;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+        
+        .tag-legendary { background: linear-gradient(135deg, #ff6b6b, #ffd93d); color: #000; }
+        .tag-epic { background: linear-gradient(135deg, #a855f7, #ec4899); }
+        .tag-rare { background: linear-gradient(135deg, #3b82f6, #06b6d4); }
+        .tag-common { background: linear-gradient(135deg, #6b7280, #9ca3af); }
+        .tag-fire { background: linear-gradient(135deg, #ef4444, #f97316); }
+        .tag-ice { background: linear-gradient(135deg, #06b6d4, #0ea5e9); }
+        .tag-shadow { background: linear-gradient(135deg, #6b21a8, #4c1d95); }
+        .tag-nature { background: linear-gradient(135deg, #10b981, #84cc16); }
+        
+        .highlight {
+            color: #ffd700;
+            font-weight: bold;
+            text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+        }
+        
+        .warning-box {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(220, 38, 38, 0.2));
+            border: 3px solid #dc2626;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 25px 0;
+        }
+        
+        .warning-box h4 {
+            color: #fca5a5;
+            margin-bottom: 15px;
+        }
+        
+        .info-box {
+            background: rgba(59, 130, 246, 0.1);
+            border-left: 5px solid #3b82f6;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        
+        .quote {
+            border-left: 5px solid #ffd700;
+            padding: 25px;
+            margin: 30px 0;
+            background: rgba(255, 215, 0, 0.05);
+            border-radius: 10px;
+            font-style: italic;
+            color: #f0f0f0;
+        }
+        
+        ul, ol {
+            margin-left: 30px;
+            margin-top: 15px;
+            margin-bottom: 15px;
+        }
+        
+        li {
+            margin: 8px 0;
+            line-height: 1.8;
+        }
+        
+        .stat-bar {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+        }
+        
+        .stat-label {
+            min-width: 80px;
+            color: #87ceeb;
+            font-weight: bold;
+        }
+        
+        .stat-value {
+            flex: 1;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 0 15px;
+        }
+        
+        .stat-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #84cc16);
+            border-radius: 10px;
+            transition: width 0.3s;
+        }
+        
+        @media (max-width: 768px) {
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2.2em;
+            }
+            
+            .container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌟 泰拉诺斯大陆 🌟</h1>
+        <div class="subtitle">世界观完整体系设定 v5.0 - 全面细化版</div>
+        <div class="version-badge">
+            ✨ 基于神话源流的魔物系统 | 跨文明融合的魔法体系 | 深度事件系统 | 完整神话生物军团 ✨
+        </div>
+        
+        <!-- 导航目录 -->
+        <nav>
+            <h3>📚 完整目录</h3>
+            <ul>
+                <li><a href="#monsters-new">🐉 改进魔物系统(神话源流)</a></li>
+                <li><a href="#magic-system">✨ 跨文明融合魔法体系</a></li>
+                <li><a href="#arabian-civ">🕌 阿拉伯文明完整设定</a></li>
+                <li><a href="#egyptian-civ">🔺 埃及文明完整设定</a></li>
+                <li><a href="#indian-civ">🕉️ 印度文明完整设定</a></li>
+                <li><a href="#greek-civ">⚡ 希腊文明完整设定</a></li>
+                <li><a href="#hantang-civ">🐉 汉唐文明完整设定</a></li>
+                <li><a href="#mongol-civ">🏹 蒙古文明完整设定</a></li>
+                <li><a href="#southsea-civ">🌊 南岛文明完整设定</a></li>
+            </ul>
+        </nav>
+
+        <!-- 改进魔物系统 -->
+        <div id="monsters-new" class="section">
+            <h2>🐉 改进魔物系统 - 基于神话源流</h2>
+            
+            <div class="warning-box">
+                <h4>⚠️ 设计理念革新</h4>
+                <p>摒弃西方魔兽世界式的"炎魔、冰霜、暗影"三元素套路,转而从<span class="highlight">中国神话、埃及神话、印度神话、南岛神话</span>中汲取邪恶力量原型,创造独具文化特色的魔物体系。</p>
+            </div>
+            
+            <h3>🔥 中国神话邪恶力量</h3>
+            <div class="card-grid">
+                <div class="card">
+                    <h5>🐍 相柳(Xiangliu) - 九头蛇妖</h5>
+                    <span class="tag tag-legendary">传奇级</span>
+                    <span class="tag tag-nature">毒性系</span>
+                    <p><strong>神话来源:</strong>《山海经》记载的共工之臣,九头蛇身,所到之处毒水泛滥</p>
+                    <p><strong>外观:</strong>九个蛇首,庞大蛇身覆盖青黑色鳞片,口吐紫色毒雾</p>
+                    <p><strong>能力:</strong></p>
+                    <ul>
+                        <li><strong>毒泽领域:</strong>周围300米土地变为毒沼,持续伤害</li>
+                        <li><strong>九头再生:</strong>斩断一头会再生两头(最多18头)</li>
+                        <li><strong>洪水召唤:</strong>引发毒水洪灾,淹没城镇</li>
+                        <li><strong>精神侵蚀:</strong>凝视会导致幻觉和恐惧</li>
+                    </ul>
+                    <p><strong>弱点:</strong>禹王神印封印术、离火真焰烧灼伤口防止再生</p>
+                    <p><strong>掉落:</strong>相柳之鳞×20、九毒精华、父神碎片(45%)</p>
+                </div>
+                
+                <div class="card">
+                    <h5>👹 夜叉(Yaksha) - 恶鬼战士</h5>
+                    <span class="tag tag-rare">精英级</span>
+                    <span class="tag tag-shadow">暗影系</span>
+                    <p><strong>神话来源:</strong>佛教护法神堕落后的形态,嗜血好杀</p>
+                    <p><strong>外观:</strong>青面獠牙,赤发披散,手持巨斧或铁叉,身高3米</p>
+                    <p><strong>能力:</strong></p>
+                    <ul>
+                        <li><strong>疾风突击:</strong>瞬移到敌人身后发动攻击</li>
+                        <li><strong>嗜血狂暴:</strong>击杀敌人后恢复生命并提升攻击</li>
+                        <li><strong>恐怖嚎叫:</strong>降低敌方士气和攻击力</li>
+                        <li><strong>夜行增强:</strong>夜间战斗力提升50%</li>
+                    </ul>
+                    <p><strong>弱点:</strong>佛光普照、梵音镇压、破邪神箭</p>
+                    <p><strong>掉落:</strong>夜叉之牙、血戾珠、父神碎片(22%)</p>
+                </div>
+                
+                <div class="card">
+                    <h5>🦊 九尾妖狐(Nine-Tailed Fox Demon)</h5>
+                    <span class="tag tag-epic">史诗级</span>
+                    <span class="tag tag-shadow">魅惑系</span>
+                    <p><strong>神话来源:</strong>《山海经》《封神演义》中的妖兽,能变化人形</p>
+                    <p><strong>外观:</strong>人形时为绝世美女,兽形时九尾飘舞,全身银白色</p>
+                    <p><strong>能力:</strong></p>
+                    <ul>
+                        <li><strong>千幻术:</strong>制造幻象迷惑敌人,可假扮友军</li>
+                        <li><strong>魅惑之眼:</strong>精神控制敌方单位为其作战</li>
+                        <li><strong>妖火:</strong>蓝色妖火灼烧灵魂而非肉体</li>
+                        <li><strong>尾鞭乱舞:</strong>九条尾巴同时攻击,范围群伤</li>
+                    </ul>
+                    <p><strong>弱点:</strong>破妄神镜、正气浩然术、天雷符咒</p>
+                    <p><strong>掉落:</strong>九尾狐髓、幻心石、父神碎片(35%)</p>
+                </div>
+                
+                <div class="card">
+                    <h5>🐲 蚩尤残魂(Chiyou's Remnant)</h5>
+                    <span class="tag tag-legendary">神话级</span>
+                    <span class="tag tag-fire">战争系</span>
+                    <p><strong>神话来源:</strong>黄帝大战蚩尤后,战神蚩尤的残魂不散</p>
+                    <p><strong>外观:</strong>铜头铁额,四目六臂,周身环绕战意煞气</p>
+                    <p><strong>能力:</strong></p>
+                    <ul>
+                        <li><strong>兵主之威:</strong>召唤远古战阵,增幅己方军队300%战力</li>
+                        <li><strong>六兵齐发:</strong>六臂持不同兵器同时攻击</li>
+                        <li><strong>铜皮铁骨:</strong>物理伤害减免80%</li>
+                        <li><strong>大雾术:</strong>制造迷雾遮蔽战场,敌军无法辨别方向</li>
+                        <li><strong>金戈铁马:</strong>召唤亡灵骑兵军团</li>
+                    </ul>
+                    <p><strong>弱点:</strong>轩辕神剑、指南车破雾、祭天大阵镇压</p>
+                    <p><strong>掉落:</strong>蚩尤战魂、兵主令牌、神兵碎片、父神碎片(55%)</p>
+                </div>
+            </div>
+            
+            <h3>🔱 埃及神话邪恶力量</h3>
+            <div class="card-grid">
+                <div class="card">
+                    <h5>🐍 阿波菲斯(Apophis) - 混沌巨蛇</h5>
+                    <span class="tag tag-legendary">原初邪恶</span>
+                    <span class="tag tag-shadow">混沌系</span>
+                    <p><strong>神话来源:</strong>埃及神话中的混沌之蛇,太阳神拉的死敌</p>
+                    <p><strong>外观:</strong>体长百米的巨蛇,鳞片如黑曜石,双眼燃烧暗紫火焰</p>
+                    <p><strong>能力:</strong></p>
+                    <ul>
+                        <li><strong>吞噬光明:</strong>制造绝对黑暗领域,禁止所有光系魔法</li>
+                        <li><strong>混沌呼唤:</strong>召唤混沌生物和扭曲现实</li>
+                        <li><strong>死亡凝视:</strong>直视者灵魂崩溃</li>
+                        <li><strong>不灭之躯:</strong>每晚复活一次(需特殊仪式永久封印)</li>
+                    </ul>
+                    <p><strong>弱点:</strong>拉神太阳圣光、荷鲁斯之眼、安卡生命符文</p>
+                    <p><strong>掉落:</strong>混沌蛇鳞、暗日核心、父神碎片(60%)</p>
+                </div>
+                
+                <div class="card">
+                    <h5>⚰️ 木乃伊祭司(Mummy Priest)</h5>
+                    <span class="tag tag-epic">诅咒级</span>
+                    <span class="tag tag-shadow">死灵系</span>
+                    <p><strong>神话来源:</strong>法老陵墓的守护者,死后因诅咒而复活</p>
+                    <p><strong>外观:</strong>身缠亚麻绷带,佩戴黄金面具,手持权杖</p>
+                    <p><strong>能力:</strong></p>
+                    <ul>
+                        <li><strong>法老诅咒:</strong>降下七灾(蝗虫、瘟疫、血水等)</li>
+                        <li><strong>亡灵召唤:</strong>从石棺中召唤木乃伊战士</li>
+                        <li><strong>沙暴守护:</strong>形成沙暴护盾,反弹远程攻击</li>
+                        <li><strong>永生契约:</strong>击杀后7天会在陵墓中复活</li>
+                    </ul>
+                    <p><strong>弱点:</strong>圣甲虫驱邪、火焰净化、破除墓室咒文</p>
+                    <p><strong>掉落:</strong>诅咒之书、法老金冠、永生卷轴、父神碎片(30%)</p>
+                </div>
+                
+                <div class="card">
+                    <h5>🦂 塞赫美特之怒(Wrath of Sekhmet)</h5>
+                    <span class="tag tag-rare">女神眷属</span>
+                    <span class="tag tag-fire">瘟疫系</span>
+                    <p><strong>神话来源:</strong>狮首女神塞赫美特的愤怒化身,带来瘟疫和战争</p>
+                    <p><strong>外观:</strong>狮头人身,持双刀,身披赤红战甲</p>
+                    <p><strong>能力:</strong></p>
+                    <ul>
+                        <li><strong>瘟疫降临:</strong>传播疾病,降低敌军生命上限</li>
+                        <li><strong>烈焰狂怒:</strong>攻击附带灼烧和流血双重效果</li>
+                        <li><strong>战吼:</strong>激励周围魔物提升攻速50%</li>
+                        <li><strong>太阳炎柱:</strong>召唤三道火柱烧灼敌阵</li>
+                    </ul>
+                    <p><strong>弱点:</strong>酒水安抚(神话传说)、冷却魔法、神庙祈祷术</p>
+                    <p><strong>掉落:</strong>狮爪利刃、瘟疫之血、父神碎片(25%)</p>
+                </div>
+                
+                <div class="card">
+                    <h5>👁️ 赛特之眼(Eye of Set)</h5>
+                    <span class="tag tag-epic">风暴邪神</span>
+                    <span class="tag tag-shadow">混乱系</span>
+                    <p><strong>神话来源:</strong>混乱与风暴之神赛特的监视者</p>
+                    <p><strong>外观:</strong>漂浮的巨型眼球,周围环绕沙暴和闪电</p>
+                    <p><strong>能力:</strong></p>
+                    <ul>
+                        <li><strong>凝视诅咒:</strong>被注视者陷入混乱状态,攻击友军</li>
+                        <li><strong>沙暴漩涡:</strong>制造沙尘暴困住敌人</li>
+                        <li><strong>雷霆审判:</strong>降下红色闪电链</li>
+                        <li><strong>分裂:</strong>受伤后分裂成多个小眼球</li>
+                    </ul>
+                    <p><strong>弱点:</strong>荷鲁斯复仇之矛、伊西斯护佑、镜面反射术</p>
+                    <p><strong>掉落:</strong>赛特之眼、风暴精华、父神碎片(32%)</p>
+                </div>
+            </div>
+            
+            <h3>🕉️ 印度神话邪恶力量</h3>
+            <div class="card-grid">
+                <div class="card">
+                    <h5>👿 阿修罗王(Asura King)</h5>
+                    <span class="tag tag-legendary">神敌级</span>
+                    <span class="tag tag-fire">战神系</span>
+                    <p><strong>神话来源:</strong>印度教中与天神对抗的半神族统领</p>
+                    <p><strong>外观:</strong>三头六臂,皮肤赤红,各手持不同神器</p>
+                    <p><strong>能力:</strong></p>
+                    <ul>
+                        <li><strong>天神级神力:</strong>力量等同次级神祇</li>
+                        <li><strong>三面观照:</strong>360度无死角感知</li>
+                        <li><strong>六臂连击:</strong>瞬间释放6种不同法术或武技</li>
+                        <li><strong>阿修罗军:</strong>召唤500名阿修罗战士</li>
+                        <li><strong>神器持有:</strong>可能持有湿婆之弓、帝释天金刚杵等</li>
+                    </ul>
+                    <p><strong>弱点:</strong>毗湿奴神盘、梵天真言、因陀罗雷霆</p>
+                    <p><strong>掉落:</strong>阿修罗之心、神力结晶、传说武器碎片、父神碎片(50%)</p>
+                </div>
+                
+                <div class="card">
+                    <h5>🐍 那伽蛇妖(Naga Sorceress)</h5>
+                    <span class="tag tag-epic">蛇族贵族</span>
+                    <span class="tag tag-nature">毒法系</span>
+                    <p><strong>神话来源:</strong>印度神话中的蛇神族,掌管地下宝藏</p>
+                    <p><strong>外观:</strong>上半身美女,下半身巨蛇,头上七条眼镜蛇作冠</p>
+                    <p><strong>能力:</strong></p>
+                    <ul>
+                        <li><strong>七蛇毒咒:</strong>释放七种不同毒素</li>
+                        <li><strong>宝藏守护:</strong>控制地下水脉和矿藏</li>
+                        <li><strong>魅惑之舞:</strong>舞蹈使敌人陷入迷醉</li>
+                        <li><strong>蛇群召唤:</strong>召唤数千毒蛇围攻</li>
+                    </ul>
+                    <p><strong>弱点:</strong>迦楼罗(金翅鸟)、孔雀羽扇、圣灰驱毒</p>
+                    <p><strong>掉落:</strong>那伽之鳞、蛇神宝珠、地脉精华、父神碎片(28%)</p>
+                </div>
+                
+                <div class="card">
+                    <h5>🔥 阿耆尼魔(Agni Demon)</h5>
+                    <span class="tag tag-rare">火神堕落</span>
+                    <span class="tag tag-fire">纯火系</span>
+                    <p><strong>神话来源:</strong>火神阿耆尼的力量被父神碎片扭曲</p>
+                    <p><strong>外观:</strong>全身烈焰构成,手持三叉火戟</p>
+                    <p><strong>能力:</strong></p>
+                    <ul>
+                        <li><strong>圣火侵蚀:</strong>本应神圣的火焰变为黑红邪火</li>
+                        <li><strong>业火焚身:</strong>点燃敌人业力,罪孽越重伤害越高</li>
+                        <li><strong>灰烬重生:</strong>死亡后从灰烬中复活(仅一次)</li>
+                        <li><strong>献祭之火:</strong>献祭友军换取强大破坏力</li>
+                    </ul>
+                    <p><strong>弱点:</strong>甘露净化、恒河圣水、雨神因陀罗的暴雨</p>
+                    <p><strong>掉落:</strong>阿耆尼火种、业火结晶、父神碎片(26%)</p>
+                </div>
+                
+                <div class="card">
+                    <h5>💀 迦梨化身(Kali Incarnate)</h5>
+                    <span class="tag tag-legendary">毁灭女神</span>
+                    <span class="tag tag-shadow">终焉系</span>
+                    <p><strong>神话来源:</strong>时间与毁灭女神迦梨的愤怒化身</p>
+                    <p><strong>外观:</strong>四臂持剑,项挂骷髅链,舌头鲜红,踩踏湿婆</p>
+                    <p><strong>能力:</strong></p>
+                    <ul>
+                        <li><strong>时间停滞:</strong>小范围时间静止5秒</li>
+                        <li><strong>业力审判:</strong>斩杀生命低于20%的敌人</li>
+                        <li><strong>血海狂舞:</strong>周围化为血海,持续伤害并回复自身</li>
+                        <li><strong>终末预言:</strong>标记敌人,30秒后必死(可解除)</li>
+                    </ul>
+                    <p><strong>弱点:</strong>湿婆安抚、罗摩神箭、梵天创造之力对抗</p>
+                    <p><strong>掉落:</strong>迦梨之镰、时间碎片、毁灭权柄、父神碎片(58%)</p>
+                </div>
+            </div>
+            
+            <h3>🌊 南岛神话邪恶力量</h3>
+            <div class="card-grid">
+                <div class="card">
+                    <h5>🦈 海魔卡摩霍利(Kamo'hoali'i)</h5>
+                    <span class="tag tag-epic">鲨鱼之神</span>
+                    <span class="tag tag-nature">海洋系</span>
+                    <p><strong>神话来源:</strong>夏威夷神话中的鲨鱼神,佩勒的兄弟</p>
+                    <p><strong>外观:</strong>巨型虎鲨,长达30米,背鳍如船帆,双眼泛蓝光</p>
+                    <p><strong>能力:</strong></p>
+                    <ul>
+                        <li><strong>潮汐支配:</strong>召唤海啸和漩涡</li>
+                        <li><strong>鲨群统领:</strong>号令数千鲨鱼围猎</li>
+                        <li><strong>血水狂暴:</strong>闻到血腥后速度攻击翻倍</li>
+                        <li><strong>深海领主:</strong>水下战斗力提升300%</li>
+                    </ul>
+                    <p><strong>弱点:</strong>离开水域战力大减、渔网束缚、鱼叉刺心</p>
+                    <p><strong>掉落:</strong>鲨齿项链、海神之鳞、潮汐宝珠、父神碎片(33%)</p>
+                </div>
+                
+                <div class="card">
+                    <h5>🌋 火山女神佩勒之怒(Pele's Fury)</h5>
+                    <span class="tag tag-legendary">火山主宰</span>
+                    <span class="tag tag-fire">岩浆系</span>
+                    <p><strong>神话来源:</strong>夏威夷火山女神佩勒的愤怒化身</p>
+                    <p><strong>外观:</strong>赤发女神,长发即岩浆流,裙摆是火焰</p>
+                    <p><strong>能力:</strong></p>
+                    <ul>
+                        <li><strong>火山喷发:</strong>召唤火山爆发,岩浆覆盖战场</li>
+                        <li><strong>岩浆行走:</strong>熔岩中自由移动,不受伤害</li>
+                        <li><strong>地火灼烧:</strong>脚下土地变为赤红岩浆地</li>
+                        <li><strong>毁灭之怒:</strong>生命低于30%时全属性提升200%</li>
+                    </ul>
+                    <p><strong>弱点:</strong>海神之泪冷却、雨水浇灭、飓风之神驱散</p>
+                    <p><strong>掉落:</strong>佩勒之心、永恒之火、火山石、父神碎片(48%)</p>
+                </div>
+                
+                <div class="card">
+                    <h5>💀 提基死神(Tiki Death God)</h5>
+                    <span class="tag tag-rare">祖灵图腾</span>
+                    <span class="tag tag-shadow">诅咒系</span>
+                    <p><strong>神话来源:</strong>波利尼西亚的祖灵图腾被邪力激活</p>
+                    <p><strong>外观:</strong>5米高木制图腾,面目狰狞,全身刻满神秘符文</p>
+                    <p><strong>能力:</strong></p>
+                    <ul>
+                        <li><strong>祖灵诅咒:</strong>降下塔布禁忌,违者死亡</li>
+                        <li><strong>木化:</strong>将敌人变为木头雕像</li>
+                        <li><strong>图腾守护:</strong>召唤4个小型提基战士</li>
+                        <li><strong>不灭特性:</strong>只有烧毁木身才能杀死</li>
+                    </ul>
+                    <p><strong>弱点:</strong>神圣之火焚烧、斧头砍碎、献祭仪式解除</p>
+                    <p><strong>掉落:</strong>提基面具、诅咒图腾、祖灵精魄、父神碎片(20%)</p>
+                </div>
+                
+                <div class="card">
+                    <h5>🌪️ 风暴之灵塔威里(Tawhiri Storm)</h5>
+                    <span class="tag tag-epic">天气之主</span>
+                    <span class="tag tag-nature">风暴系</span>
+                    <p><strong>神话来源:</strong>毛利神话中的风暴与天气之神</p>
+                    <p><strong>外观:</strong>人形旋风,双眼是雷电,周身环绕12种不同气象</p>
+                    <p><strong>能力:</strong></p>
+                    <ul>
+                        <li><strong>飓风之眼:</strong>制造F5级飓风摧毁建筑</li>
+                        <li><strong>雷云召唤:</strong>降下暴雨和闪电</li>
+                        <li><strong>龙卷撕裂:</strong>3道龙卷风席卷战场</li>
+                        <li><strong>气象支配:</strong>改变天气,雨雾冰雹随意切换</li>
+                    </ul>
+                    <p><strong>弱点:</strong>大地之母帕帕图阿努库庇护、山神庇护所</p>
+                    <p><strong>掉落:</strong>风暴之核、气象宝石、天气权杖、父神碎片(36%)</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 跨文明融合魔法体系 -->
+        <div id="magic-system" class="section">
+            <h2>✨ 跨文明融合魔法体系</h2>
+            
+            <div class="quote">
+                "魔法的本源来自<span class="highlight">七大神和被吞噬的第八神普罗米修斯</span>。但在漫长的历史中,不同文明根据自身文化特色,发展出独特的施法体系。当文明交流碰撞时,跨体系的融合魔法诞生,威力往往超越单一传统。"
+            </div>
+            
+            <h3>🔥 魔法力量源头</h3>
+            <table>
+                <tr>
+                    <th>神祇</th>
+                    <th>掌管领域</th>
+                    <th>赋予魔法类型</th>
+                    <th>对应文明</th>
+                </tr>
+                <tr>
+                    <td><strong>阿努比斯</strong></td>
+                    <td>死亡、守护</td>
+                    <td>死灵魔法、守护结界</td>
+                    <td>埃及</td>
+                </tr>
+                <tr>
+                    <td><strong>伊南娜</strong></td>
+                    <td>战争、爱情</td>
+                    <td>战斗强化、魅惑术</td>
+                    <td>阿拉伯</td>
+                </tr>
+                <tr>
+                    <td><strong>湿婆</strong></td>
+                    <td>毁灭、重生</td>
+                    <td>破坏魔法、治愈再生</td>
+                    <td>印度</td>
+                </tr>
+                <tr>
+                    <td><strong>宙斯</strong></td>
+                    <td>雷电、统治</td>
+                    <td>雷电魔法、王者威严</td>
+                    <td>希腊</td>
+                </tr>
+                <tr>
+                    <td><strong>玉皇大帝</strong></td>
+                    <td>天道、秩序</td>
+                    <td>道术、符箓</td>
+                    <td>汉唐</td>
+                </tr>
+                <tr>
+                    <td><strong>长生天</strong></td>
+                    <td>自然、萨满</td>
+                    <td>自然魔法、图腾</td>
+                    <td>蒙古</td>
+                </tr>
+                <tr>
+                    <td><strong>塔纳罗阿</strong></td>
+                    <td>海洋、创世</td>
+                    <td>海洋魔法、天气术</td>
+                    <td>南岛</td>
+                </tr>
+                <tr>
+                    <td><strong>普罗米修斯(第八神)</strong></td>
+                    <td>创造、知识</td>
+                    <td>创世之火(禁忌)</td>
+                    <td>所有文明(遗失)</td>
+                </tr>
+            </table>
+            
+            <h3>🌈 各文明特色法术体系</h3>
+            
+            <h4>🕌 阿拉伯 - 星象与愿望魔法</h4>
+            <div class="card-grid">
+                <div class="card">
+                    <h5>⭐ 七星灯阵(Seven Star Lamp Array)</h5>
+                    <span class="tag tag-rare">3级法术</span>
+                    <p><strong>施法材料:</strong>七盏油灯、星盘、祈祷文</p>
+                    <p><strong>效果:</strong>召唤七颗星辰之力,可实现小型愿望(限定范围)</p>
+                    <p><strong>限制:</strong>每月仅可施展一次,消耗巨大灵力</p>
+                </div>
+                
+                <div class="card">
+                    <h5>🧞 灵灯召唤术(Djinn Summoning)</h5>
+                    <span class="tag tag-epic">4级法术</span>
+                    <p><strong>施法材料:</strong>古铜灯、精灵真名、血契</p>
+                    <p><strong>效果:</strong>召唤火焰精灵镇尼为自己战斗(24小时)</p>
+                    <p><strong>风险:</strong>控制失败会被精灵反噬</p>
+                </div>
+            </div>
+            
+            <h4>🔺 埃及 - 象形符文与木乃伊术</h4>
+            <div class="card-grid">
+                <div class="card">
+                    <h5>👁️ 荷鲁斯之眼(Eye of Horus)</h5>
+                    <span class="tag tag-rare">2级法术</span>
+                    <p><strong>施法材料:</strong>青金石、圣甲虫</p>
+                    <p><strong>效果:</strong>看穿隐身和幻术,透视敌人弱点</p>
+                    <p><strong>持续:</strong>10分钟</p>
+                </div>
+                
+                <div class="card">
+                    <h5>⚰️ 木乃伊复生术(Mummy Resurrection)</h5>
+                    <span class="tag tag-epic">4级法术</span>
+                    <p><strong>施法材料:</strong>卡诺卜罐、防腐香料、复活卷轴</p>
+                    <p><strong>效果:</strong>复活死者为木乃伊仆从,保留生前部分记忆和战技</p>
+                    <p><strong>限制:</strong>死亡不超过7天</p>
+                </div>
+            </div>
+            
+            <h4>🕉️ 印度 - 瑜伽奥义与业力法则</h4>
+            <div class="card-grid">
+                <div class="card">
+                    <h5>🔥 湿婆之舞(Tandava Dance)</h5>
+                    <span class="tag tag-legendary">5级法术</span>
+                    <p><strong>施法方式:</strong>进入深度冥想,灵魂共舞湿婆</p>
+                    <p><strong>效果:</strong>周围300米进入"破坏与重生"循环,敌我皆受影响</p>
+                    <p><strong>代价:</strong>施法者寿命减少1年</p>
+                </div>
+                
+                <div class="card">
+                    <h5>🧘 业力反噬术(Karma Rebou nd)</h5>
+                    <span class="tag tag-rare">3级法术</span>
+                    <p><strong>施法材料:</strong>菩提叶、檀香、诵经</p>
+                    <p><strong>效果:</strong>将敌人的攻击以"业力"形式返还给他</p>
+                    <p><strong>限制:</strong>仅对"恶业深重"者有效</p>
+                </div>
+            </div>
+            
+            <h4>⚡ 希腊 - 元素召唤与英雄祝福</h4>
+            <div class="card-grid">
+                <div class="card">
+                    <h5>⚡ 宙斯雷霆(Zeus's Thunderbolt)</h5>
+                    <span class="tag tag-epic">4级法术</span>
+                    <p><strong>施法材料:</strong>鹰羽、雷击木、祭酒</p>
+                    <p><strong>效果:</strong>降下神罚雷霆,单体伤害极高</p>
+                    <p><strong>冷却:</strong>每小时仅可施展一次</p>
+                </div>
+                
+                <div class="card">
+                    <h5>🏛️ 雅典娜的智慧(Athena's Wisdom)</h5>
+                    <span class="tag tag-rare">2级法术</span>
+                    <p><strong>施法材料:</strong>橄榄枝、猫头鹰羽毛</p>
+                    <p><strong>效果:</strong>瞬间获得战术洞察,预见敌人下3步行动</p>
+                    <p><strong>持续:</strong>5分钟</p>
+                </div>
+            </div>
+            
+            <h4>🐉 汉唐 - 道家符箓与丹药炼制</h4>
+            <div class="card-grid">
+                <div class="card">
+                    <h5>⚡ 五雷正法(Five Thunder Rectification)</h5>
+                    <span class="tag tag-legendary">5级法术</span>
+                    <p><strong>施法材料:</strong>天师符、桃木剑、罡步</p>
+                    <p><strong>效果:</strong>召唤五行雷霆(金木水火土),群体轰击</p>
+                    <p><strong>特殊:</strong>对邪祟伤害×3</p>
+                </div>
+                
+                <div class="card">
+                    <h5>🔮 奇门遁甲(Qi Men Dun Jia)</h5>
+                    <span class="tag tag-epic">4级法术</span>
+                    <p><strong>施法材料:</strong>罗盘、八门阵图</p>
+                    <p><strong>效果:</strong>布置时空迷阵,敌人困于其中无法脱身</p>
+                    <p><strong>持续:</strong>根据地形和时辰不同,1-8小时</p>
+                </div>
+            </div>
+            
+            <h4>🏹 蒙古 - 萨满图腾与自然沟通</h4>
+            <div class="card-grid">
+                <div class="card">
+                    <h5>🐺 白狼图腾(White Wolf Totem)</h5>
+                    <span class="tag tag-rare">3级法术</span>
+                    <p><strong>施法材料:</strong>狼牙项链、萨满鼓、祭舞</p>
+                    <p><strong>效果:</strong>召唤狼灵附体,获得夜视、追踪、撕咬能力</p>
+                    <p><strong>持续:</strong>2小时</p>
+                </div>
+                
+                <div class="card">
+                    <h5>🌪️ 长生天之风(Eternal Sky Wind)</h5>
+                    <span class="tag tag-epic">4级法术</span>
+                    <p><strong>施法方式:</strong>向长生天祈祷,放血祭祀</p>
+                    <p><strong>效果:</strong>召唤草原狂风,敌方远程攻击失效,己方骑兵速度×2</p>
+                    <p><strong>范围:</strong>战场级(1平方公里)</p>
+                </div>
+            </div>
+            
+            <h4>🌊 南岛 - 海洋天气与部落图腾</h4>
+            <div class="card-grid">
+                <div class="card">
+                    <h5>🌊 潮汐召唤(Tidal Call)</h5>
+                    <span class="tag tag-epic">4级法术</span>
+                    <p><strong>施法材料:</strong>海螺号角、鲸骨、祭海</p>
+                    <p><strong>效果:</strong>召唤10米高海啸,冲毁敌方海军和沿海建筑</p>
+                    <p><strong>限制:</strong>必须在海岸10公里内</p>
+                </div>
+                
+                <div class="card">
+                    <h5>🌋 火山祈祷(Volcano Prayer)</h5>
+                    <span class="tag tag-legendary">5级法术</span>
+                    <p><strong>施法方式:</strong>向佩勒女神献祭,投掷祭品入火山</p>
+                    <p><strong>效果:</strong>引发小型火山喷发,岩浆流摧毁敌阵</p>
+                    <p><strong>风险:</strong>可能激怒火山女神,无差别攻击</p>
+                </div>
+            </div>
+            
+            <h3>💫 跨文明融合魔法(高阶)</h3>
+            <div class="card-grid">
+                <div class="card">
+                    <h5>🌀 阴阳五行雷法+宙斯雷霆(汉希融合)</h5>
+                    <span class="tag tag-legendary">传说级</span>
+                    <p><strong>施法要求:</strong>同时掌握道术和希腊元素魔法</p>
+                    <p><strong>效果:</strong>东方五行雷与西方神罚雷融合,威力×5,附带"天罚"效果(无法复活)</p>
+                    <p><strong>名称:</strong>诸神黄昏雷(Ragnarok Thunder)</p>
+                </div>
+                
+                <div class="card">
+                    <h5>⚰️ 木乃伊术+道家尸解(埃唐融合)</h5>
+                    <span class="tag tag-epic">史诗级</span>
+                    <p><strong>施法要求:</strong>通晓埃及防腐术和道家炼尸术</p>
+                    <p><strong>效果:</strong>创造"神尸僵仙",保留生前全部战力且免疫伤害</p>
+                    <p><strong>代价:</strong>需要活人灵魂作为燃料</p>
+                </div>
+                
+                <div class="card">
+                    <h5>🧞 精灵召唤+业力契约(阿印融合)</h5>
+                    <span class="tag tag-epic">史诗级</span>
+                    <p><strong>施法要求:</strong>懂得阿拉伯精灵学和印度业力法则</p>
+                    <p><strong>效果:</strong>召唤镇尼精灵但不以血契控制,而是以"善业"交换,精灵自愿服务</p>
+                    <p><strong>优势:</strong>无反噬风险,精灵会主动保护施法者</p>
+                </div>
+                
+                <div class="card">
+                    <h5>🌊 潮汐术+萨满天气(南蒙融合)</h5>
+                    <span class="tag tag-rare">稀有级</span>
+                    <p><strong>施法要求:</strong>结合南岛海洋魔法和蒙古萨满术</p>
+                    <p><strong>效果:</strong>在内陆也能召唤"天空海啸"(云海倾泻),淹没战场</p>
+                    <p><strong>持续:</strong>10分钟,之后水会蒸发</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 阿拉伯文明完整设定 -->
+        <div id="arabian-civ" class="section">
+            <h2>🕌 阿拉伯文明完整设定</h2>
+            
+            <div class="info-box">
+                <strong>文明特性:</strong>强大的骑兵和商业网络,擅长沙漠作战,拥有精灵魔法和星象术<br>
+                <strong>主神:</strong>伊南娜(战争与爱情女神)<br>
+                <strong>文明加成:</strong>商队收入+30%,骑兵在沙漠地形攻击+25%
+            </div>
+            
+            <h3>⚔️ 兵种体系与神话生物</h3>
+            <table>
+                <tr>
+                    <th>兵种名称</th>
+                    <th>等级</th>
+                    <th>类型</th>
+                    <th>特殊能力</th>
+                    <th>神话生物搭配</th>
+                </tr>
+                <tr>
+                    <td>沙漠斥候(Desert Scout)</td>
+                    <td>1级</td>
+                    <td>轻骑兵</td>
+                    <td>沙漠移动+2,视野+50%</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>马穆鲁克骑兵(Mamluk)</td>
+                    <td>2级</td>
+                    <td>重骑兵</td>
+                    <td>冲锋+30%伤害</td>
+                    <td>骆驼战士</td>
+                </tr>
+                <tr>
+                    <td>弯刀步兵(Scimitar Warrior)</td>
+                    <td>2级</td>
+                    <td>步兵</td>
+                    <td>连续斩击(攻击3次)</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>贝都因射手(Bedouin Archer)</td>
+                    <td>3级</td>
+                    <td>远程</td>
+                    <td>骑射,移动中攻击</td>
+                    <td>飞毯刺客</td>
+                </tr>
+                <tr>
+                    <td>灵灯法师(Djinn Mage)</td>
+                    <td>4级</td>
+                    <td>法师</td>
+                    <td>召唤火焰精灵</td>
+                    <td>伊弗利特(火焰巨灵)</td>
+                </tr>
+            </table>
+            
+            <h3>🐪 阿拉伯神话生物军团</h3>
+            <div class="card-grid">
+                <div class="card">
+                    <h5>🧞 伊弗利特(Ifrit) - 火焰巨灵</h5>
+                    <span class="tag tag-epic">史诗级</span>
+                    <p><strong>外观:</strong>高4米的火焰巨人,下半身为旋风</p>
+                    <p><strong>能力:</strong></p>
+                    <ul>
+                        <li>火焰风暴:范围AOE伤害</li>
+                        <li>瞬间移动:战场任意位置传送</li>
+                        <li>烈焰护盾:近战伤害反弹</li>
+                    </ul>
+                    <p><strong>招募:</strong>需要灵灯祭坛+火元素精华×10</p>
+                </div>
+                
+                <div class="card">
+                    <h5>🐫 神骆驼(Divine Camel)</h5>
+                    <span class="tag tag-rare">稀有级</span>
+                    <p><strong>外观:</strong>双峰骆驼,毛色金黄,眼睛泛着智慧之光</p>
+                    <p><strong>能力:</strong></p>
+                    <ul>
+                        <li>沙漠行者:沙地移动无惩罚</li>
+                        <li>储水光环:周围友军不受干渴影响</li>
+                        <li>耐久:生命值×2,防御+50%</li>
+                    </ul>
+                    <p><strong>招募:</strong>骆驼营地+祝福仪式</p>
+                </div>
+                
+                <div class="card">
+                    <h5>🧚 帕丽(Peri) - 天使般的精灵</h5>
+                    <span class="tag tag-rare">稀有级</span>
+                    <p><strong>外观:</strong>美丽的翅膀女性,散发圣光</p>
+                    <p><strong>能力:</strong></p>
+                    <ul>
+                        <li>治愈之光:群体治疗</li>
+                        <li>净化:解除诅咒和负面状态</li>
+                        <li>飞行:无视地形</li>
+                    </ul>
+                    <p><strong>招募:</strong>神圣祭坛+善行值100点</p>
+                </div>
+                
+                <div class="card">
+                    <h5>🐉 鲁克巨鸟(Roc)</h5>
+                    <span class="tag tag-legendary">传奇级</span>
+                    <p><strong>外观:</strong>翼展50米的巨鸟,羽毛金银相间</p>
+                    <p><strong>能力:</strong></p>
+                    <ul>
+                        <li>俯冲撕咬:单体高额伤害</li>
+                        <li>抓取:抓起敌方单位扔下摔死</li>
+                        <li>飓风之翼:扇动翅膀制造风暴</li>
+                    </ul>
+                    <p><strong>招募:</strong>天穹鸟巢+英雄任务完成</p>
+                </div>
+            </div>
+            
+            <h3>🏛️ 20位阿拉伯文明英雄</h3>
+            <div class="card-grid">
+                <div class="card">
+                    <h5>👳 萨拉丁(Saladin)</h5>
+                    <span class="tag tag-legendary">传奇英雄</span>
+                    <div class="stat-bar">
+                        <span class="stat-label">统帅</span>
+                        <div class="stat-value"><div class="stat-fill" style="width: 95%;"></div></div>
+                        <span>95</span>
+                    </div>
+                    <p><strong>特殊技能:</strong>圣战号召(全军士气+50%),仁慈之心(降低敌方投降门槛)</p>
+                    <p><strong>兵种加成:</strong>马穆鲁克骑兵+40%战力</p>
+                </div>
+                
+                <div class="card">
+                    <h5>🧙 哈伦·拉希德(Harun al-Rashid)</h5>
+                    <span class="tag tag-epic">史诗英雄</span>
+                    <div class="stat-bar">
+                        <span class="stat-label">智慧</span>
+                        <div class="stat-value"><div class="stat-fill" style="width: 90%;"></div></div>
+                        <span>90</span>
+                    </div>
+                    <p><strong>特殊技能:</strong>一千零一夜(讲故事提升文化值),黄金时代(科技研究速度×2)</p>
+                    <p><strong>魔法亲和:</strong>召唤精灵法术效果+50%</p>
+                </div>
+                
+                <div class="card">
+                    <h5>⚔️ 哈立德·伊本·瓦利德(Khalid ibn al-Walid)</h5>
+                    <span class="tag tag-legendary">战神</span>
+                    <div class="stat-bar">
+                        <span class="stat-label">武力</span>
+                        <div class="stat-value"><div class="stat-fill" style="width: 98%;"></div></div>
+                        <span>98</span>
+                    </div>
+                    <p><strong>特殊技能:</strong>真主之剑(单体秒杀),闪电战(骑兵速度×3)</p>
+                    <p><strong>称号:</strong>"不败将军",百战百胜</p>
+                </div>
+                
+                <div class="card">
+                    <h5>📚 伊本·西那(Avicenna)</h5>
+                    <span class="tag tag-rare">学者英雄</span>
+                    <div class="stat-bar">
+                        <span class="stat-label">学识</span>
+                        <div class="stat-value"><div class="stat-fill" style="width: 100%;"></div></div>
+                        <span>100</span>
+                    </div>
+                    <p><strong>特殊技能:</strong>医学大师(全军恢复速度×3),哲学辩论(外交说服+80%)</p>
+                    <p><strong>奇观触发:</strong>可建造"医学院"奇观</p>
+                </div>
+                
+                <div class="card">
+                    <h5>🗡️ 阿里·伊本·塔利卜(Ali ibn Abi Talib)</h5>
+                    <span class="tag tag-legendary">圣战士</span>
+                    <div class="stat-bar">
+                        <span class="stat-label">虔诚</span>
+                        <div class="stat-value"><div class="stat-fill" style="width: 100%;"></div></div>
+                        <span>100</span>
+                    </div>
+                    <p><strong>特殊技能:</strong>双刃佐勒菲卡尔(双重攻击),信仰之盾(免疫诅咒)</p>
+                    <p><strong>神圣加成:</strong>对邪恶生物伤害×5</p>
+                </div>
+                
+                <div class="card">
+                    <h5>🧕 法蒂玛(Fatimah)</h5>
+                    <span class="tag tag-epic">圣女</span>
+                    <div class="stat-bar">
+                        <span class="stat-label">灵性</span>
+                        <div class="stat-value"><div class="stat-fill" style="width: 95%;"></div></div>
+                        <span>95</span>
+                    </div>
+                    <p><strong>特殊技能:</strong>圣母之爱(群体治愈),纯洁之光(驱散黑暗)</p>
+                    <p><strong>光环:</strong>周围友军防御+30%</p>
+                </div>
+            </div>
+            
+            <p style="text-align: center; margin-top: 30px; color: #87ceeb; font-size: 1.1em;">
+                [继续下一页展示其他14位阿拉伯英雄...]
+            </p>
+            
+            <h3>📜 阿拉伯文明50个事件系统</h3>
+            <table>
+                <tr>
+                    <th>事件名称</th>
+                    <th>等级要求</th>
+                    <th>触发条件</th>
+                    <th>效果</th>
+                    <th>奖励/后果</th>
+                </tr>
+                <tr>
+                    <td>沙漠商队劫掠</td>
+                    <td>等级1-2</td>
+                    <td>拥有骆驼骑兵×5</td>
+                    <td>选择保护商队或劫掠商队</td>
+                    <td>保护:金钱+500,声望+10 / 劫掠:金钱+1000,声望-20</td>
+                </tr>
+                <tr>
+                    <td>灵灯现世</td>
+                    <td>等级3-4</td>
+                    <td>探索沙漠遗迹</td>
+                    <td>发现古铜灯,是否摩擦</td>
+                    <td>释放精灵:随机获得宝物或诅咒</td>
+                </tr>
+                <tr>
+                    <td>麦加朝圣</td>
+                    <td>等级5-10</td>
+                    <td>虔诚值>80</td>
+                    <td>组织朝圣队伍</td>
+                    <td>全文明士气+20%,神圣魔法威力+30%</td>
+                </tr>
+                <tr>
+                    <td>沙尘暴降临</td>
+                    <td>等级2-3</td>
+                    <td>随机触发</td>
+                    <td>是否命令军队躲避</td>
+                    <td>躲避:无损失 / 强行前进:损失30%部队但节省3天</td>
+                </tr>
+                <tr>
+                    <td>智者问答</td>
+                    <td>等级4-6</td>
+                    <td>遇到苏菲派智者</td>
+                    <td>回答哲学问题</td>
+                    <td>答对:获得智慧卷轴 / 答错:无事发生</td>
+                </tr>
+                <tr>
+                    <td>巴格达之围</td>
+                    <td>等级8-12</td>
+                    <td>战争状态,围攻城市</td>
+                    <td>是否使用火药武器攻城</td>
+                    <td>使用:快速攻破,文物损毁 / 不用:时间长,文物完整</td>
+                </tr>
+            </table>
+            
+            <p style="text-align: center; margin-top: 30px; color: #ffd700; font-size: 1.1em;">
+                [完整50个事件详见附表,每5个事件对应一个等级段]
+            </p>
+        </div>
+
+        <!-- 结尾 -->
+        <div class="section" style="text-align: center; margin-top: 60px;">
+            <h2>🌟 泰拉诺斯大陆等待你的探索</h2>
+            <div class="quote">
+                "在封印崩溃的时代,七神的守护在消散,父神的吞噬在临近。<br>
+                是选择重建秩序,还是拥抱混沌?<br>
+                这片大陆的命运,掌握在你的手中。"
+            </div>
+            <p style="margin-top: 30px; color: #87ceeb; font-size: 1.1em;">
+                ✨ 文档版本:v5.0 | 最后更新:人间纪元1248年 ✨
+            </p>
+            <p style="margin-top: 15px; color: #90ee90;">
+                📌 本版本新增:神话源流魔物系统 | 跨文明融合魔法 | 完整英雄与事件体系
+            </p>
+        </div>
+    </div>
+</body>
+</html>

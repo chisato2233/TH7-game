@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1920, initial-scale=1.0">
+    <title>Complete Color Analysis Table</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
+    <style>
+        @font-face {
+            font-family: 'MiSans-Regular';
+            src: url('https://assets-persist.lovart.ai/agent-static-assets/MiSans-Regular.ttf');
+        }
+        @font-face {
+            font-family: 'MiSans-Bold';
+            src: url('https://assets-persist.lovart.ai/agent-static-assets/MiSans-Bold.ttf');
+        }
+        @font-face {
+            font-family: 'MiSans-Medium';
+            src: url('https://assets-persist.lovart.ai/agent-static-assets/MiSans-Medium.ttf');
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            width: 1920px;
+            background-color: #f4f6f8;
+            font-family: 'MiSans-Regular', sans-serif;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-sizing: border-box;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1920px;
+            background-color: #ffffff;
+            min-height: 100vh;
+            padding: 60px 100px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            font-family: 'MiSans-Bold', sans-serif;
+            font-size: 48px;
+            color: #1a1a1a;
+            margin: 0 0 16px 0;
+            letter-spacing: 1px;
+        }
+
+        .header p {
+            font-family: 'MiSans-Medium', sans-serif;
+            font-size: 24px;
+            color: #666;
+            margin: 0;
+        }
+
+        .image-section {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            background: #fff;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .image-section img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            object-fit: contain;
+        }
+
+        .table-container {
+            width: 100%;
+            background: #ffffff;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.05);
+            border: 1px solid #e0e0e0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        thead {
+            background-color: #2c3e50;
+            color: #ffffff;
+        }
+
+        th {
+            padding: 24px 30px;
+            font-family: 'MiSans-Bold', sans-serif;
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid #f0f0f0;
+            transition: background-color 0.3s ease;
+        }
+
+        tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        tbody tr:hover {
+            background-color: #f9fafb;
+        }
+
+        td {
+            padding: 20px 30px;
+            font-size: 18px;
+            vertical-align: middle;
+            color: #4a4a4a;
+        }
+
+        .color-swatch-cell {
+            width: 100px;
+        }
+
+        .color-swatch {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .hex-code {
+            font-family: 'MiSans-Medium', sans-serif;
+            background: #f0f2f5;
+            padding: 8px 12px;
+            border-radius: 6px;
+            color: #333;
+            display: inline-block;
+            font-size: 16px;
+        }
+
+        .proportion-bar-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            width: 100%;
+        }
+
+        .proportion-track {
+            flex-grow: 1;
+            height: 8px;
+            background-color: #eef1f5;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .proportion-fill {
+            height: 100%;
+            border-radius: 4px;
+        }
+
+        .proportion-text {
+            font-family: 'MiSans-Bold', sans-serif;
+            min-width: 60px;
+            text-align: right;
+        }
+
+        .category-tag {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        /* Footer / Metadata */
+        .footer {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            color: #888;
+            font-size: 16px;
+            padding: 0 20px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>完整色彩分析表</h1>
+            <p>Complete Color Analysis Report</p>
+        </div>
+
+        <!-- Image Preview -->
+        <div class="image-section">
+            <img src="https://a.lovart.ai/artifacts/user/tw3NSE8leNTy4ZC6.png" alt="Analyzed Image" width="1344" height="579">
+        </div>
+
+        <!-- Data Table -->
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>颜色预览 (Preview)</th>
+                        <th>中文名称 (Chinese Name)</th>
+                        <th>英文名称 (English Name)</th>
+                        <th>色值 (Hex Code)</th>
+                        <th>出现比例 (Proportion)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Category 1: Gold/Warm Yellow ~40% -->
+                    <tr>
+                        <td class="color-swatch-cell">
+                            <div class="color-swatch" style="background-color: #D4AF37;"></div>
+                        </td>
+                        <td>
+                            <strong>金色</strong><br>
+                            <span style="font-size: 14px; color: #888;">暖黄色系</span>
+                        </td>
+                        <td>
+                            <strong>Gold</strong><br>
+                            <span style="font-size: 14px; color: #888;">Metallic Gold</span>
+                        </td>
+                        <td><span class="hex-code">#D4AF37</span></td>
+                        <td>
+                            <div class="proportion-bar-container">
+                                <div class="proportion-track">
+                                    <div class="proportion-fill" style="width: 40%; background-color: #D4AF37;"></div>
+                                </div>
+                                <span class="proportion-text">~40%</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="color-swatch-cell">
+                            <div class="color-swatch" style="background-color: #FFD700;"></div>
+                        </td>
+                        <td>
+                            <strong>金黄色</strong><br>
+                            <span style="font-size: 14px; color: #888;">明亮金</span>
+                        </td>
+                        <td>
+                            <strong>Golden</strong><br>
+                            <span style="font-size: 14px; color: #888;">Bright Gold</span>
+                        </td>
+                        <td><span class="hex-code">#FFD700</span></td>
+                        <td>
+                            <div class="proportion-bar-container">
+                                <div class="proportion-track">
+                                    <div class="proportion-fill" style="width: 40%; background-color: #FFD700;"></div>
+                                </div>
+                                <span class="proportion-text">~40%</span>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Category 2: Teal/Blue-Green ~20% -->
+                    <tr>
+                        <td class="color-swatch-cell">
+                            <div class="color-swatch" style="background-color: #008080;"></div>
+                        </td>
+                        <td>
+                            <strong>青绿色</strong><br>
+                            <span style="font-size: 14px; color: #888;">深青色</span>
+                        </td>
+                        <td>
+                            <strong>Teal</strong><br>
+                            <span style="font-size: 14px; color: #888;">Dark Cyan</span>
+                        </td>
+                        <td><span class="hex-code">#008080</span></td>
+                        <td>
+                            <div class="proportion-bar-container">
+                                <div class="proportion-track">
+                                    <div class="proportion-fill" style="width: 20%; background-color: #008080;"></div>
+                                </div>
+                                <span class="proportion-text">~20%</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="color-swatch-cell">
+                            <div class="color-swatch" style="background-color: #40E0D0;"></div>
+                        </td>
+                        <td>
+                            <strong>绿松石色</strong><br>
+                            <span style="font-size: 14px; color: #888;">明亮蓝绿</span>
+                        </td>
+                        <td>
+                            <strong>Turquoise</strong><br>
+                            <span style="font-size: 14px; color: #888;">Bright Blue-Green</span>
+                        </td>
+                        <td><span class="hex-code">#40E0D0</span></td>
+                        <td>
+                            <div class="proportion-bar-container">
+                                <div class="proportion-track">
+                                    <div class="proportion-fill" style="width: 20%; background-color: #40E0D0;"></div>
+                                </div>
+                                <span class="proportion-text">~20%</span>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Category 3: Deep Black/Dark Brown ~15% -->
+                    <tr>
+                        <td class="color-swatch-cell">
+                            <div class="color-swatch" style="background-color: #000000;"></div>
+                        </td>
+                        <td>
+                            <strong>纯黑</strong><br>
+                            <span style="font-size: 14px; color: #888;">深邃暗色</span>
+                        </td>
+                        <td>
+                            <strong>Black</strong><br>
+                            <span style="font-size: 14px; color: #888;">Deep Black</span>
+                        </td>
+                        <td><span class="hex-code">#000000</span></td>
+                        <td>
+                            <div class="proportion-bar-container">
+                                <div class="proportion-track">
+                                    <div class="proportion-fill" style="width: 15%; background-color: #000000;"></div>
+                                </div>
+                                <span class="proportion-text">~15%</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="color-swatch-cell">
+                            <div class="color-swatch" style="background-color: #1A1A1A;"></div>
+                        </td>
+                        <td>
+                            <strong>暗灰色</strong><br>
+                            <span style="font-size: 14px; color: #888;">接近黑色</span>
+                        </td>
+                        <td>
+                            <strong>Dark Gray</strong><br>
+                            <span style="font-size: 14px; color: #888;">Almost Black</span>
+                        </td>
+                        <td><span class="hex-code">#1A1A1A</span></td>
+                        <td>
+                            <div class="proportion-bar-container">
+                                <div class="proportion-track">
+                                    <div class="proportion-fill" style="width: 15%; background-color: #1A1A1A;"></div>
+                                </div>
+                                <span class="proportion-text">~15%</span>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Category 4: Red/Orange/Brown ~10% -->
+                    <tr>
+                        <td class="color-swatch-cell">
+                            <div class="color-swatch" style="background-color: #A52A2A;"></div>
+                        </td>
+                        <td>
+                            <strong>红褐色</strong><br>
+                            <span style="font-size: 14px; color: #888;">暖棕色</span>
+                        </td>
+                        <td>
+                            <strong>Brown</strong><br>
+                            <span style="font-size: 14px; color: #888;">Reddish Brown</span>
+                        </td>
+                        <td><span class="hex-code">#A52A2A</span></td>
+                        <td>
+                            <div class="proportion-bar-container">
+                                <div class="proportion-track">
+                                    <div class="proportion-fill" style="width: 10%; background-color: #A52A2A;"></div>
+                                </div>
+                                <span class="proportion-text">~10%</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="color-swatch-cell">
+                            <div class="color-swatch" style="background-color: #DAA520;"></div>
+                        </td>
+                        <td>
+                            <strong>金麒麟色</strong><br>
+                            <span style="font-size: 14px; color: #888;">暗金色</span>
+                        </td>
+                        <td>
+                            <strong>Goldenrod</strong><br>
+                            <span style="font-size: 14px; color: #888;">Dark Gold</span>
+                        </td>
+                        <td><span class="hex-code">#DAA520</span></td>
+                        <td>
+                            <div class="proportion-bar-container">
+                                <div class="proportion-track">
+                                    <div class="proportion-fill" style="width: 10%; background-color: #DAA520;"></div>
+                                </div>
+                                <span class="proportion-text">~10%</span>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Category 5: Purple/Violet ~8% -->
+                    <tr>
+                        <td class="color-swatch-cell">
+                            <div class="color-swatch" style="background-color: #800080;"></div>
+                        </td>
+                        <td>
+                            <strong>紫色</strong><br>
+                            <span style="font-size: 14px; color: #888;">经典紫</span>
+                        </td>
+                        <td>
+                            <strong>Purple</strong><br>
+                            <span style="font-size: 14px; color: #888;">Classic Purple</span>
+                        </td>
+                        <td><span class="hex-code">#800080</span></td>
+                        <td>
+                            <div class="proportion-bar-container">
+                                <div class="proportion-track">
+                                    <div class="proportion-fill" style="width: 8%; background-color: #800080;"></div>
+                                </div>
+                                <span class="proportion-text">~8%</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="color-swatch-cell">
+                            <div class="color-swatch" style="background-color: #9400D3;"></div>
+                        </td>
+                        <td>
+                            <strong>深紫罗兰</strong><br>
+                            <span style="font-size: 14px; color: #888;">亮紫色</span>
+                        </td>
+                        <td>
+                            <strong>Dark Violet</strong><br>
+                            <span style="font-size: 14px; color: #888;">Vivid Violet</span>
+                        </td>
+                        <td><span class="hex-code">#9400D3</span></td>
+                        <td>
+                            <div class="proportion-bar-container">
+                                <div class="proportion-track">
+                                    <div class="proportion-fill" style="width: 8%; background-color: #9400D3;"></div>
+                                </div>
+                                <span class="proportion-text">~8%</span>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Category 6: Silver/White ~5% -->
+                    <tr>
+                        <td class="color-swatch-cell">
+                            <div class="color-swatch" style="background-color: #C0C0C0;"></div>
+                        </td>
+                        <td>
+                            <strong>银色</strong><br>
+                            <span style="font-size: 14px; color: #888;">金属灰白</span>
+                        </td>
+                        <td>
+                            <strong>Silver</strong><br>
+                            <span style="font-size: 14px; color: #888;">Metallic Grey</span>
+                        </td>
+                        <td><span class="hex-code">#C0C0C0</span></td>
+                        <td>
+                            <div class="proportion-bar-container">
+                                <div class="proportion-track">
+                                    <div class="proportion-fill" style="width: 5%; background-color: #C0C0C0;"></div>
+                                </div>
+                                <span class="proportion-text">~5%</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="color-swatch-cell">
+                            <div class="color-swatch" style="background-color: #F5F5F5; border: 1px solid #ddd;"></div>
+                        </td>
+                        <td>
+                            <strong>白烟色</strong><br>
+                            <span style="font-size: 14px; color: #888;">灰白色</span>
+                        </td>
+                        <td>
+                            <strong>White Smoke</strong><br>
+                            <span style="font-size: 14px; color: #888;">Off-White</span>
+                        </td>
+                        <td><span class="hex-code">#F5F5F5</span></td>
+                        <td>
+                            <div class="proportion-bar-container">
+                                <div class="proportion-track">
+                                    <div class="proportion-fill" style="width: 5%; background-color: #ccc;"></div>
+                                </div>
+                                <span class="proportion-text">~5%</span>
+                            </div>
+                        </td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+
+        <div class="footer">
+            <span>Analysis Generated by AI</span>
+            <span>Image Source: User Upload</span>
+        </div>
+    </div>
+
+</body>
+</html>
