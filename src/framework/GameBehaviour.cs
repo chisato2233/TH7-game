@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
+using TH7;
 
 namespace GameFramework
 {
@@ -82,12 +83,6 @@ namespace GameFramework
             public Type EventType;
             public Delegate Handler;
         }
-    }
-
-    public enum AutoSubscribeTime
-    {
-        Awake,
-        Start
     }
 
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
