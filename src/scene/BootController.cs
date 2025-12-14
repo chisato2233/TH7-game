@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.Collections;
+using TMPro;
 using DG.Tweening;
 using GameFramework;
 
@@ -16,8 +17,8 @@ namespace TH7
         [Header("UI References")]
         [SerializeField] CanvasGroup fadeCanvas;
         [SerializeField] Image logoImage;
-        [SerializeField] Text titleText;
-        [SerializeField] Text subtitleText;
+        [SerializeField] TMP_Text titleText;
+        [SerializeField] TMP_Text subtitleText;
 
         [Header("Animation Settings")]
         [SerializeField] float logoFadeInDuration = 0.8f;
