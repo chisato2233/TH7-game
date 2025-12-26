@@ -158,9 +158,16 @@ th7_spells_all.xlsx
 7. **精简注释** - 只在声明/定义处写必要注释，简单的流程注释即可，避免过度注释
 8. **优先新特性** - 优先使用 C# 和 Unity 的新语法特性（如模式匹配、表达式体成员、null 合并等）
 9. **Unity 6 + 高级库** - 使用 Unity 6000，优先采用 Unity 6 新特性和成熟的第三方库（如 DOTween、UniTask、Addressables 等）
+10. **模块文档** - 每个独立模块目录下维护 `guide.md` 文件，说明模块用途和使用方法
 
 ---
 
 ## 相关文档
 
 - [docs/TH7_GameDesignDocument.md](docs/TH7_GameDesignDocument.md) - 完整游戏设计文档
+
+## 模块指南
+
+| 模块 | 指南 | 说明 |
+|------|------|------|
+| 地图系统 | [src/map/guide.md](src/map/guide.md) | Tilemap 绘制 + 逻辑数据分离 |
