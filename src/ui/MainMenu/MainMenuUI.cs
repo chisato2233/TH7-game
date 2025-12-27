@@ -1,28 +1,40 @@
 using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
+using Michsky.MUIP;
 
 namespace TH7.UI
 {
-    // MainMenu UGUI 视图层,负责 UI 交互和显示
     public class MainMenuUI : MonoBehaviour
     {
         [SerializeField] MainMenuController controller;
 
-        [Header("UI Elements")]
+        [Header("Title")]
         [SerializeField] TextMeshProUGUI titleText;
         [SerializeField] TextMeshProUGUI subtitleText;
         [SerializeField] TextMeshProUGUI versionText;
 
         [Header("Buttons")]
-        [SerializeField] Button newGameButton;
-        [SerializeField] Button continueButton;
-        [SerializeField] Button settingsButton;
-        [SerializeField] Button quitButton;
+        [SerializeField] ButtonManager newGameButton;
+        [SerializeField] ButtonManager continueButton;
+        [SerializeField] ButtonManager settingsButton;
+        [SerializeField] ButtonManager quitButton;
 
         void Start()
         {
-            // 注册按钮事件
+            BindButtons();
+            UpdateContinueButtonState();
+
+            if (versionText != null)
+                versionText.text = $"v{Application.version}";
+        }
+
+        void OnDestroy()
+        {
+            UnbindButtons();
+        }
+
+        void BindButtons()
+        {
             if (newGameButton != null)
                 newGameButton.onClick.AddListener(OnNewGameClicked);
 
@@ -34,14 +46,10 @@ namespace TH7.UI
 
             if (quitButton != null)
                 quitButton.onClick.AddListener(OnQuitClicked);
-
-            // 检查是否有存档来决定 Continue 按钮是否可用
-            UpdateContinueButtonState();
         }
 
-        void OnDestroy()
+        void UnbindButtons()
         {
-            // 取消按钮事件注册
             if (newGameButton != null)
                 newGameButton.onClick.RemoveListener(OnNewGameClicked);
 
@@ -57,23 +65,13 @@ namespace TH7.UI
 
         void OnNewGameClicked()
         {
-            if (controller == null)
-            {
-                Debug.LogError("[MainMenuUI] Controller reference is null!");
-                return;
-            }
-
+            if (controller == null) return;
             controller.StartNewGame();
         }
 
         void OnContinueClicked()
         {
-            if (controller == null)
-            {
-                Debug.LogError("[MainMenuUI] Controller reference is null!");
-                return;
-            }
-
+            if (controller == null) return;
             controller.ContinueGame("latest");
         }
 
@@ -85,35 +83,21 @@ namespace TH7.UI
 
         void OnQuitClicked()
         {
-            if (controller == null)
-            {
-                Debug.LogError("[MainMenuUI] Controller reference is null!");
-                return;
-            }
-
+            if (controller == null) return;
             controller.QuitGame();
         }
 
         void UpdateContinueButtonState()
         {
-            // TODO: 检查是否有存档文件
-            // 暂时禁用 Continue 按钮
+            // TODO: 检查存档文件
             if (continueButton != null)
-            {
-                continueButton.interactable = false;
-                var colors = continueButton.colors;
-                colors.disabledColor = new Color(0.5f, 0.5f, 0.5f, 0.5f);
-                continueButton.colors = colors;
-            }
+                continueButton.Interactable(false);
         }
 
-        // 公开方法供 Controller 调用,用于更新 UI 状态
         public void SetContinueButtonEnabled(bool enabled)
         {
             if (continueButton != null)
-            {
-                continueButton.interactable = enabled;
-            }
+                continueButton.Interactable(enabled);
         }
     }
 }

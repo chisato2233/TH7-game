@@ -18,16 +18,16 @@ MonoBehaviour:
   animatedIconColor: {r: 1, g: 1, b: 1, a: 1}
   contextBackgroundColor: {r: 0.21568628, g: 0.29411766, b: 0.37254903, a: 1}
   buttonFont: {fileID: 11400000, guid: 84dd14695854bbc43a5faa24fcf93d0d, type: 2}
-  buttonNormalColor: {r: 0.21568628, g: 0.29411766, b: 0.37254903, a: 255}
-  buttonAccentColor: {r: 1, g: 1, b: 1, a: 255}
+  buttonNormalColor: {r: 255, g: 255, b: 255, a: 255}
+  buttonAccentColor: {r: 255, g: 255, b: 255, a: 255}
   buttonDisabledAlpha: 0.4
   dropdownFont: {fileID: 11400000, guid: 4bd810f1cbcb0f446a8f5a31453e243f, type: 2}
   dropdownItemFont: {fileID: 11400000, guid: 4bd810f1cbcb0f446a8f5a31453e243f, type: 2}
-  dropdownBackgroundColor: {r: 0.21568628, g: 0.29411766, b: 0.37254903, a: 255}
-  dropdownContentBackgroundColor: {r: 0.1764706, g: 0.25490198, b: 0.33333334, a: 255}
-  dropdownPrimaryColor: {r: 1, g: 1, b: 1, a: 255}
-  dropdownItemBackgroundColor: {r: 0.13725491, g: 0.21568628, b: 0.29411766, a: 255}
-  dropdownItemPrimaryColor: {r: 1, g: 1, b: 1, a: 255}
+  dropdownBackgroundColor: {r: 255, g: 255, b: 255, a: 255}
+  dropdownContentBackgroundColor: {r: 255, g: 255, b: 255, a: 255}
+  dropdownPrimaryColor: {r: 255, g: 255, b: 255, a: 255}
+  dropdownItemBackgroundColor: {r: 255, g: 255, b: 255, a: 255}
+  dropdownItemPrimaryColor: {r: 255, g: 255, b: 255, a: 255}
   selectorFont: {fileID: 11400000, guid: 4bd810f1cbcb0f446a8f5a31453e243f, type: 2}
   selectorColor: {r: 1, g: 1, b: 1, a: 1}
   selectorHighlightedColor: {r: 0.1764706, g: 0.25490198, b: 0.33333334, a: 1}
@@ -39,7 +39,7 @@ MonoBehaviour:
   modalWindowDescriptionColor: {r: 1, g: 1, b: 1, a: 1}
   modalWindowIconColor: {r: 1, g: 1, b: 1, a: 1}
   modalWindowBackgroundColor: {r: 0.1764706, g: 0.25490198, b: 0.33333334, a: 1}
-  modalWindowContentPanelColor: {r: 1, g: 1, b: 1, a: 0.039215688}
+  modalWindowContentPanelColor: {r: 1, g: 1, b: 1, a: 0.019607844}
   notificationTitleFont: {fileID: 11400000, guid: fa328c1ae3ffb6b4583cf371153b0be6, type: 2}
   notificationTitleFontSize: 22.5
   notificationDescriptionFont: {fileID: 11400000, guid: 2f17e8bb3967fe14093d5fec798fffd9, type: 2}

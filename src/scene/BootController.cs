@@ -40,10 +40,8 @@ namespace TH7
 
         void InitializeSystems()
         {
-            var entry = GameEntry.Instance;
-            entry.RegisterSystem(new EventSystem());
-            entry.RegisterSystem(new ContextSystem());
-            entry.InitAllSystems();
+            // GameEntry.Instance 会自动初始化核心系统
+            _ = GameEntry.Instance;
             Debug.Log("[Boot] 系统初始化完成");
         }
 
