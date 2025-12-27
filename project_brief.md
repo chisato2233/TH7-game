@@ -21,35 +21,37 @@
 Assets/                     # 项目根目录
   src/                      # 源代码
     framework/              # 框架层
-      GameEntry.cs          # 游戏入口单例，系统管理器
-      IGameSystem.cs        # 系统接口 (Priority/Init/Update/Shutdown)
-      EventSystem.cs        # 事件系统 (发布订阅)
-      GameContext.cs        # 上下文基类 (分层生命周期管理)
-      ContextSystem.cs      # 上下文系统 (管理游戏上下文树)
-      GameBehaviour.cs      # MonoBehaviour扩展，自动事件订阅
+      Core/                 # 核心入口
+        GameEntry.cs        # 游戏入口单例，系统管理器
+        IGameSystem.cs      # 系统接口
+        GameBehaviour.cs    # MonoBehaviour扩展，自动订阅
+      Event/                # 事件系统
+        EventSystem.cs      # 发布订阅
+        AutoSubscribeAttribute.cs
+        AutoSubscribeProcessor.cs
+      Context/              # 上下文 + 响应式
+        GameContext.cs      # 上下文基类
+        ContextSystem.cs    # 上下文管理
+        Reactive.cs         # 响应式数据
+        Subscription.cs     # 统一订阅句柄
     context/                # 游戏上下文实现
       SessionContext.cs     # 存档会话上下文
-      WorldContext.cs       # 探索上下文 (持有 MapManager 引用)
+      WorldContext.cs       # 探索上下文
       BattleContext.cs      # 战斗上下文
     scene/                  # 场景控制器
       BootController.cs     # 启动场景，初始化系统
       MainMenuController.cs # 主菜单，创建 SessionContext
-      WorldSceneController.cs # 世界场景，创建 WorldContext 并关联 MapManager
+      WorldSceneController.cs # 世界场景，创建 WorldContext
     map/                    # 地图系统
       Tile.cs               # 逻辑地块结构
-      GameTile.cs           # Unity TileBase，用于 Tilemap 绘制
-      MapData.cs            # 运行时地图数据，从 Tilemap 读取
+      GameTile.cs           # Unity TileBase
+      MapData.cs            # 运行时地图数据
       MapManager.cs         # 地图管理器
-      TerrainConfig.cs      # 地形配置 (移动力、可通行性)
-    GameSystem.cs           # 调试入口，非 Boot 场景直接运行时初始化
-    GameEnums.cs            # 统一枚举定义文件
+      TerrainConfig.cs      # 地形配置
+    GameSystem.cs           # 调试入口
+    GameEnums.cs            # 统一枚举定义
   docs/                     # 设计文档
-    source/                 # 原始设计文档
-    TH7_GameDesignDocument.md
   scenes/                   # 场景文件
-    BootScene               # 启动场景 (Build Settings 第一个)
-    MainMenuScene           # 主菜单场景
-    WorldScene              # 世界地图场景
   settings/                 # URP渲染设置
 ```
 
@@ -162,12 +164,109 @@ th7_spells_all.xlsx
 
 ---
 
+## 开发任务
+
+### 当前里程碑: 城镇界面 MVP
+
+目标：实现英雄无敌风格的城镇系统，包含资源管理、建筑树、招募功能。
+
+### 模块完成状态
+
+| 模块 | 状态 | 说明 |
+|------|------|------|
+| framework/ | Done | GameEntry、EventSystem、ContextSystem、GameBehaviour |
+| context/ | Done | SessionContext、WorldContext、BattleContext(框架) |
+| scene/ | Done | Boot、MainMenu、World 场景控制器 |
+| map/ | Done | Tilemap + 逻辑层分离，地形配置 |
+| resource/ | TODO | 资源系统 |
+| town/ | TODO | 城镇系统 |
+| unit/ | TODO | 兵种系统 |
+| ui/ | TODO | UI 框架 |
+
+### 任务列表
+
+#### P0 - 资源系统 (src/resource/)
+| 任务 | 状态 | 说明 |
+|------|------|------|
+| 定义 ResourceType 枚举 | TODO | Gold/Wood/Ore/Crystal/Gem/Sulfur/Mercury |
+| 创建 ResourceData 结构 | TODO | 资源数据容器 |
+| 创建 ResourceManager | TODO | 资源增减、查询、事件通知 |
+| 扩展 SessionContext | TODO | 持有玩家资源数据 |
+
+#### P0 - 城镇系统 (src/town/)
+| 任务 | 状态 | 说明 |
+|------|------|------|
+| 定义 BuildingType 枚举 | TODO | 城堡/酒馆/市场/兵营/魔法塔等 |
+| 创建 BuildingConfig (SO) | TODO | 建筑配置：名称、图标、建造成本、前置条件、产出 |
+| 创建 TownData | TODO | 城镇运行时数据：已建建筑、建造队列 |
+| 创建 TownContext | TODO | 城镇上下文，作为 SessionContext 子节点 |
+| 实现建筑树逻辑 | TODO | 前置条件检查、解锁判断 |
+| 创建 TownScene | TODO | 城镇场景 |
+| 创建 TownSceneController | TODO | 城镇场景控制器 |
+
+#### P0 - 兵种系统 (src/unit/)
+| 任务 | 状态 | 说明 |
+|------|------|------|
+| 定义 UnitType 枚举 | TODO | 各文明基础兵种标识 |
+| 创建 UnitConfig (SO) | TODO | 兵种配置：属性、招募成本、所需建筑 |
+| 创建 UnitStack 结构 | TODO | 兵种堆叠：类型+数量 |
+| 实现招募逻辑 | TODO | 消耗资源、检查建筑、加入军队 |
+
+#### P1 - UI 框架 (src/ui/)
+| 任务 | 状态 | 说明 |
+|------|------|------|
+| 创建 UIManager | TODO | UI 层级管理、面板栈 |
+| 创建 ResourcePanel | TODO | 顶部资源显示条 |
+| 创建 TownPanel | TODO | 城镇主界面：建筑网格、信息区 |
+| 创建 BuildingInfoPanel | TODO | 建筑详情弹窗 |
+| 创建 RecruitPanel | TODO | 招募界面 |
+
+#### P2 - 数据持久化
+| 任务 | 状态 | 说明 |
+|------|------|------|
+| 设计存档数据结构 | TODO | SessionSaveData、TownSaveData |
+| 实现 SaveManager | TODO | JSON 序列化存档 |
+| MainMenu 读档功能 | TODO | 加载存档恢复游戏状态 |
+
+### 上下文架构 (更新)
+
+```
+RootContext (全局)
+└── SessionContext (存档会话: 玩家数据、天数、资源)
+    ├── WorldContext (探索: 地图、英雄移动)
+    ├── TownContext (城镇: 建筑、招募) ←→ 新增
+    └── BattleContext (战斗: 战场、回合、单位)
+```
+
+### 场景流程 (更新)
+
+```
+WorldScene                          TownScene
+    |                                   |
+点击城镇图标                      TownSceneController
+    |                                   |
+暂停 WorldContext               创建 TownContext
+LoadScene(Town)                  显示城镇界面
+    |                                   |
+    |                            建造/招募/离开
+    |                                   |
+    ←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←
+恢复 WorldContext               销毁 TownContext
+                                返回 WorldScene
+```
+
+---
+
 ## 相关文档
 
 - [docs/TH7_GameDesignDocument.md](docs/TH7_GameDesignDocument.md) - 完整游戏设计文档
+- [docs/HoMM3_GameMechanics.md](docs/HoMM3_GameMechanics.md) - 英雄无敌3机制详解（设计参考）
 
 ## 模块指南
 
 | 模块 | 指南 | 说明 |
 |------|------|------|
+| 框架层 | [src/framework/guide.md](src/framework/guide.md) | 系统管理、事件、上下文、响应式数据 |
+| 上下文 | [src/context/guide.md](src/context/guide.md) | Session、World、Battle 上下文 |
+| 场景 | [src/scene/guide.md](src/scene/guide.md) | 场景控制器、启动流程 |
 | 地图系统 | [src/map/guide.md](src/map/guide.md) | Tilemap 绘制 + 逻辑数据分离 |
