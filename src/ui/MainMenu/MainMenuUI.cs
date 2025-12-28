@@ -1,10 +1,11 @@
 using UnityEngine;
 using TMPro;
 using Michsky.MUIP;
+using GameFramework;
 
 namespace TH7.UI
 {
-    public class MainMenuUI : MonoBehaviour
+    public class MainMenuUI : UIBehaviour
     {
         [SerializeField] MainMenuController controller;
 
@@ -16,21 +17,31 @@ namespace TH7.UI
         [Header("Buttons")]
         [SerializeField] ButtonManager newGameButton;
         [SerializeField] ButtonManager continueButton;
+        [SerializeField] ButtonManager loadGameButton;
         [SerializeField] ButtonManager settingsButton;
         [SerializeField] ButtonManager quitButton;
 
-        void Start()
+        [Header("Panels")]
+        [SerializeField] SaveSlotWindow saveSlotWindow;
+
+        protected override void Start()
         {
+            base.Start();
+
             BindButtons();
-            UpdateContinueButtonState();
 
             if (versionText != null)
                 versionText.text = $"v{Application.version}";
+
+            // 监听存档列表数量变化，自动更新按钮状态
+            if (controller != null)
+                ListenCountImmediate(controller.SaveSlots, OnSaveCountChanged);
         }
 
-        void OnDestroy()
+        protected override void OnDestroy()
         {
             UnbindButtons();
+            base.OnDestroy();
         }
 
         void BindButtons()
@@ -40,6 +51,9 @@ namespace TH7.UI
 
             if (continueButton != null)
                 continueButton.onClick.AddListener(OnContinueClicked);
+
+            if (loadGameButton != null)
+                loadGameButton.onClick.AddListener(OnLoadGameClicked);
 
             if (settingsButton != null)
                 settingsButton.onClick.AddListener(OnSettingsClicked);
@@ -55,6 +69,9 @@ namespace TH7.UI
 
             if (continueButton != null)
                 continueButton.onClick.RemoveListener(OnContinueClicked);
+
+            if (loadGameButton != null)
+                loadGameButton.onClick.RemoveListener(OnLoadGameClicked);
 
             if (settingsButton != null)
                 settingsButton.onClick.RemoveListener(OnSettingsClicked);
@@ -72,7 +89,25 @@ namespace TH7.UI
         void OnContinueClicked()
         {
             if (controller == null) return;
-            controller.ContinueGame("latest");
+
+            // 快速继续：加载最新存档
+            var latestSave = controller.GetLatestSave();
+            if (latestSave != null)
+                controller.ContinueGame(latestSave.SlotId);
+        }
+
+        void OnLoadGameClicked()
+        {
+            if (controller == null || saveSlotWindow == null) return;
+
+            // 打开存档选择弹窗（绑定 ReactiveList）
+            saveSlotWindow.Show(controller.SaveSlots, OnSaveSlotSelected);
+        }
+
+        void OnSaveSlotSelected(SaveSlotInfo slot)
+        {
+            if (controller == null || slot == null) return;
+            controller.ContinueGame(slot.SlotId);
         }
 
         void OnSettingsClicked()
@@ -87,17 +122,17 @@ namespace TH7.UI
             controller.QuitGame();
         }
 
-        void UpdateContinueButtonState()
+        void OnSaveCountChanged(int count)
         {
-            // TODO: 检查存档文件
-            if (continueButton != null)
-                continueButton.Interactable(false);
-        }
+            bool hasSave = count > 0;
 
-        public void SetContinueButtonEnabled(bool enabled)
-        {
+            // Continue 按钮：有存档时启用
             if (continueButton != null)
-                continueButton.Interactable(enabled);
+                continueButton.Interactable(hasSave);
+
+            // Load Game 按钮：有存档时启用
+            if (loadGameButton != null)
+                loadGameButton.Interactable(hasSave);
         }
     }
 }

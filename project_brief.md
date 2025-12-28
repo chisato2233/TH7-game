@@ -2,8 +2,19 @@
 
 > **项目代号**: TH7 (Tellanos: Heroes of Seven Realms)
 > **中文名称**: 泰拉诺斯大陆：七境英雄
-> **引擎**: Unity (URP 2D)
+> **引擎**: Unity 6 (URP 2D)
 > **类型**: 策略RPG / 文明建设
+
+---
+
+## 技术栈
+
+| 类别 | 库 | 用途 |
+|------|-----|------|
+| 动画 | DOTween | 补间动画、UI 动效 |
+| UI | Modern UI Pack | 现代风格 UI 组件 |
+| 存档 | Easy Save 3 | 数据序列化、存档管理 |
+| 相机 | Cinemachine | 相机控制 |
 
 ---
 
@@ -221,11 +232,11 @@ th7_spells_all.xlsx
 | 创建 BuildingInfoPanel | TODO | 建筑详情弹窗 |
 | 创建 RecruitPanel | TODO | 招募界面 |
 
-#### P2 - 数据持久化
+#### P2 - 数据持久化 (Easy Save 3)
 | 任务 | 状态 | 说明 |
 |------|------|------|
 | 设计存档数据结构 | TODO | SessionSaveData、TownSaveData |
-| 实现 SaveManager | TODO | JSON 序列化存档 |
+| 实现 SaveManager | TODO | 使用 ES3 存档管理 |
 | MainMenu 读档功能 | TODO | 加载存档恢复游戏状态 |
 
 ### 上下文架构 (更新)

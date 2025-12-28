@@ -96,9 +96,48 @@ public class MyUI : GameBehaviour
 
 ---
 
+## Easy Save 3 集成
+
+Reactive<T> 已与 ES3 集成，支持自动序列化：
+
+```csharp
+// 定义数据类（公共字段自动存储）
+public class PlayerState
+{
+    public string Name;
+    public Reactive<int> Day = new(1);    // Reactive 自动存储 Value
+    public Reactive<int> Gold = new(0);
+}
+
+public class SessionContext : GameContext
+{
+    public PlayerState State = new();
+    public List<TownData> Towns = new();
+}
+
+// 存档
+ES3.Save("session", sessionContext, "save.es3");
+
+// 读档
+ES3.LoadInto("session", sessionContext, "save.es3");
+
+// 检查
+if (ES3.FileExists("save.es3")) { ... }
+if (ES3.KeyExists("session", "save.es3")) { ... }
+```
+
+**序列化规则**：
+- 公共字段：自动存储
+- 私有字段：不存储（除非加 `[SerializeField]`）
+- `[ES3NonSerializable]`：强制排除
+- `Reactive<T>`：只存储 `.Value`，不存储订阅者
+
+---
+
 ## 使用建议
 
 | 场景 | 方案 |
 |------|------|
 | UI 数据绑定 | `Listen(reactive, callback)` |
 | 跨系统通信 | `[AutoSubscribe<T>]` |
+| 数据持久化 | `ES3.Save` / `ES3.LoadInto` |
