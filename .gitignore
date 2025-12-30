@@ -1,5 +1,4 @@
 # Unity meta files
-*.meta
 .vscode/
 .claude/
 .cursor/

@@ -258,7 +258,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 630b9bc3dd55cfb428305f58b2478c37, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  groundTilemap: {fileID: 0}
+  groundTilemap: {fileID: 1699329027}
   terrainConfig: {fileID: 0}
 --- !u!1 &789652688
 GameObject:
