@@ -43,16 +43,24 @@ Assets/                     # 项目根目录
       Context/              # 上下文 + 响应式
         GameContext.cs      # 上下文基类
         ContextSystem.cs    # 上下文管理
-        Reactive.cs         # 响应式数据
+        Reactive.cs         # Reactive<T> + ReactiveList<T>
         Subscription.cs     # 统一订阅句柄
+      UI/                   # UI 框架
+        UIBehaviour.cs      # UI 基类，继承 GameBehaviour
+        UIWindowBehaviour.cs # 窗口基类，DOTween/Animator 动画
+        ScrollViewUI.cs     # 通用滚动列表
     context/                # 游戏上下文实现
-      SessionContext.cs     # 存档会话上下文
+      SessionContext.cs     # 存档会话上下文 + SessionData
       WorldContext.cs       # 探索上下文
       BattleContext.cs      # 战斗上下文
     scene/                  # 场景控制器
       BootController.cs     # 启动场景，初始化系统
-      MainMenuController.cs # 主菜单，创建 SessionContext
+      MainMenuController.cs # 主菜单，存档管理
       WorldSceneController.cs # 世界场景，创建 WorldContext
+    ui/                     # UI 实现
+      MainMenu/             # 主菜单 UI
+        MainMenuUI.cs       # 主菜单界面
+        SaveSlotPanel.cs    # 存档选择窗口
     map/                    # 地图系统
       Tile.cs               # 逻辑地块结构
       GameTile.cs           # Unity TileBase
@@ -186,58 +194,66 @@ th7_spells_all.xlsx
 | 模块 | 状态 | 说明 |
 |------|------|------|
 | framework/ | Done | GameEntry、EventSystem、ContextSystem、GameBehaviour |
-| context/ | Done | SessionContext、WorldContext、BattleContext(框架) |
+| framework/UI | Done | UIBehaviour、UIWindowBehaviour、ScrollViewUI |
+| context/ | Done | SessionContext + ES3 存档、WorldContext、BattleContext(框架) |
 | scene/ | Done | Boot、MainMenu、World 场景控制器 |
+| ui/MainMenu | Done | MainMenuUI、SaveSlotPanel |
+| ui/Common | Done | ResourceDisplayUI、ResourceBarUI、ResourceCostUI |
+| ui/Town | Done | TownPanelUI、BuildingGridUI、BuildingInfoPanelUI、RecruitPanelUI |
 | map/ | Done | Tilemap + 逻辑层分离，地形配置 |
-| resource/ | TODO | 资源系统 |
-| town/ | TODO | 城镇系统 |
-| unit/ | TODO | 兵种系统 |
-| ui/ | TODO | UI 框架 |
+| resource/ | Done | ResourceBundle、PlayerResources |
+| town/ | Done | TownData、TownContext、BuildingConfig、TownConfigDatabase |
+| unit/ | Done | UnitConfig、UnitConfigDatabase |
 
 ### 任务列表
 
-#### P0 - 资源系统 (src/resource/)
+#### P0 - 资源系统 (src/resource/) - Done
 | 任务 | 状态 | 说明 |
 |------|------|------|
-| 定义 ResourceType 枚举 | TODO | Gold/Wood/Ore/Crystal/Gem/Sulfur/Mercury |
-| 创建 ResourceData 结构 | TODO | 资源数据容器 |
-| 创建 ResourceManager | TODO | 资源增减、查询、事件通知 |
-| 扩展 SessionContext | TODO | 持有玩家资源数据 |
+| 定义 ResourceType 枚举 | Done | Gold/Wood/Ore/Crystal/Gem/Sulfur/Mercury |
+| 创建 ResourceBundle | Done | 资源数据容器，支持运算 |
+| 创建 PlayerResources | Done | 响应式资源，支持 UI 绑定 |
+| 扩展 SessionContext | Done | 持有玩家资源数据 |
 
-#### P0 - 城镇系统 (src/town/)
+#### P0 - 城镇系统 (src/town/) - Done
 | 任务 | 状态 | 说明 |
 |------|------|------|
-| 定义 BuildingType 枚举 | TODO | 城堡/酒馆/市场/兵营/魔法塔等 |
-| 创建 BuildingConfig (SO) | TODO | 建筑配置：名称、图标、建造成本、前置条件、产出 |
-| 创建 TownData | TODO | 城镇运行时数据：已建建筑、建造队列 |
-| 创建 TownContext | TODO | 城镇上下文，作为 SessionContext 子节点 |
-| 实现建筑树逻辑 | TODO | 前置条件检查、解锁判断 |
-| 创建 TownScene | TODO | 城镇场景 |
-| 创建 TownSceneController | TODO | 城镇场景控制器 |
+| 定义 BuildingType 枚举 | Done | TownHall/Tavern/Dwelling1-7 等 |
+| 创建 BuildingConfig (SO) | Done | 建筑配置：成本、前置条件、产出 |
+| 创建 TownData | Done | 城镇数据：建筑、驻军、可招募数量 |
+| 创建 TownContext | Done | 城镇上下文，建造/招募逻辑 |
+| 创建 TownConfigDatabase | Done | 建筑配置数据库 |
 
-#### P0 - 兵种系统 (src/unit/)
+#### P0 - 兵种系统 (src/unit/) - Done
 | 任务 | 状态 | 说明 |
 |------|------|------|
-| 定义 UnitType 枚举 | TODO | 各文明基础兵种标识 |
-| 创建 UnitConfig (SO) | TODO | 兵种配置：属性、招募成本、所需建筑 |
-| 创建 UnitStack 结构 | TODO | 兵种堆叠：类型+数量 |
-| 实现招募逻辑 | TODO | 消耗资源、检查建筑、加入军队 |
+| 定义 UnitTier 枚举 | Done | Tier1-7 兵种等级 |
+| 创建 UnitConfig (SO) | Done | 兵种配置：属性、招募成本 |
+| 创建 UnitStack 结构 | Done | 兵种堆叠：UnitId + Count |
+| 创建 UnitConfigDatabase | Done | 兵种配置数据库 |
+| 实现招募逻辑 | Done | TownContext.Recruit() |
 
-#### P1 - UI 框架 (src/ui/)
+#### P1 - UI 框架 (src/ui/) - Done
 | 任务 | 状态 | 说明 |
 |------|------|------|
-| 创建 UIManager | TODO | UI 层级管理、面板栈 |
-| 创建 ResourcePanel | TODO | 顶部资源显示条 |
-| 创建 TownPanel | TODO | 城镇主界面：建筑网格、信息区 |
-| 创建 BuildingInfoPanel | TODO | 建筑详情弹窗 |
-| 创建 RecruitPanel | TODO | 招募界面 |
+| UIBehaviour 基类 | Done | 继承 GameBehaviour，Listen ReactiveList |
+| UIWindowBehaviour | Done | 窗口动画（DOTween/Animator） |
+| ScrollViewUI | Done | 通用滚动列表，支持 ReactiveList 绑定 |
+| ResourceDisplayUI | Done | 单个资源显示 |
+| ResourceBarUI | Done | 顶部资源显示条 |
+| TownPanelUI | Done | 城镇主界面 |
+| BuildingGridUI | Done | 建筑网格 |
+| BuildingInfoPanelUI | Done | 建筑详情弹窗 |
+| RecruitPanelUI | Done | 招募界面 |
 
-#### P2 - 数据持久化 (Easy Save 3)
+#### P2 - 数据持久化 (Easy Save 3) - Done
 | 任务 | 状态 | 说明 |
 |------|------|------|
-| 设计存档数据结构 | TODO | SessionSaveData、TownSaveData |
-| 实现 SaveManager | TODO | 使用 ES3 存档管理 |
-| MainMenu 读档功能 | TODO | 加载存档恢复游戏状态 |
+| Reactive<T> ES3 集成 | Done | SavedValue 属性，不存储监听器 |
+| ReactiveList<T> ES3 集成 | Done | SavedItems 属性 |
+| SessionData 存档结构 | Done | PlayerName、Day、Resources、Towns |
+| SaveSlotPanel | Done | 存档选择窗口 |
+| MainMenu 读档功能 | Done | 加载存档恢复游戏状态 |
 
 ### 上下文架构 (更新)
 
@@ -245,25 +261,200 @@ th7_spells_all.xlsx
 RootContext (全局)
 └── SessionContext (存档会话: 玩家数据、天数、资源)
     ├── WorldContext (探索: 地图、英雄移动)
-    ├── TownContext (城镇: 建筑、招募) ←→ 新增
+    │   └── TownContext (城镇: 建筑、招募) ←→ UI 覆盖层
     └── BattleContext (战斗: 战场、回合、单位)
 ```
 
 ### 场景流程 (更新)
 
+城镇界面采用 UI 覆盖层方式，不再使用独立场景：
+
 ```
-WorldScene                          TownScene
-    |                                   |
-点击城镇图标                      TownSceneController
-    |                                   |
-暂停 WorldContext               创建 TownContext
-LoadScene(Town)                  显示城镇界面
-    |                                   |
-    |                            建造/招募/离开
-    |                                   |
-    ←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←
-恢复 WorldContext               销毁 TownContext
-                                返回 WorldScene
+WorldScene (单一场景)
+    │
+    ├── WorldMap (Tilemap, 英雄, 城镇图标)
+    ├── WorldUI (Canvas: 资源条, 小地图, 按钮)
+    └── TownPanel (Canvas: 全屏城镇界面, 默认隐藏)
+
+流程:
+1. 点击城镇图标 → WorldContext.Pause()
+2. 创建 TownContext → TownPanel.Bind(context)
+3. 建造/招募/查看
+4. 点击离开 → TownPanel.Hide() → DisposeChild<TownContext>()
+5. WorldContext.Resume() → 继续探索
+```
+
+---
+
+## 下一里程碑: 战斗系统 MVP
+
+目标：实现英雄无敌风格的回合制战斗系统，包含战场、单位、回合管理、伤害计算。
+
+### 战斗系统概述
+
+```
+触发战斗                              战斗流程
+    │                                    │
+WorldContext.TriggerBattle()        BattleContext
+    │                                    │
+暂停探索 ──────────────────────> 初始化战场
+创建 BattleContext                  部署阶段（可选）
+    │                                    │
+    │                               战斗循环:
+    │                               ├── 确定行动顺序（按速度）
+    │                               ├── 当前单位行动
+    │                               │   ├── 移动
+    │                               │   ├── 攻击
+    │                               │   ├── 等待
+    │                               │   └── 防御
+    │                               └── 检查胜负
+    │                                    │
+恢复 WorldContext <───────────── 战斗结束
+销毁 BattleContext                  结算（经验、战利品）
+```
+
+### 模块规划
+
+| 模块 | 状态 | 说明 |
+|------|------|------|
+| battle/ | Pending | 战斗核心逻辑 |
+| battle/data | Pending | 战斗数据结构 |
+| ui/Battle | Pending | 战斗 UI 界面 |
+| context/BattleContext | Pending | 战斗上下文（已有框架） |
+
+### 任务列表
+
+#### P0 - 战场数据 (src/battle/)
+
+| 任务 | 状态 | 说明 |
+|------|------|------|
+| 创建 BattleConfig | Pending | 战场配置（尺寸、地形） |
+| 创建 BattleField | Pending | 战场数据（六边形网格） |
+| 创建 BattleUnit | Pending | 战斗单位（UnitStack + 运行时状态） |
+| 创建 BattleArmy | Pending | 军队数据（7 个槽位） |
+| 定义 BattleAction | Pending | 行动类型枚举（Move/Attack/Wait/Defend） |
+
+#### P0 - 回合管理 (src/battle/)
+
+| 任务 | 状态 | 说明 |
+|------|------|------|
+| 创建 TurnManager | Pending | 回合管理器，按速度排序 |
+| 创建 ActionResolver | Pending | 行动执行器 |
+| 实现移动逻辑 | Pending | 六边形寻路 + 移动力消耗 |
+| 实现攻击逻辑 | Pending | 近战/远程判定 |
+| 实现等待/防御 | Pending | 行动顺序调整 |
+
+#### P0 - 伤害系统 (src/battle/)
+
+| 任务 | 状态 | 说明 |
+|------|------|------|
+| 创建 DamageCalculator | Pending | 伤害计算公式 |
+| 实现攻防修正 | Pending | 攻击>防御: +5%/点, 防御>攻击: -2.5%/点 |
+| 实现反击机制 | Pending | 首次被攻击时反击 |
+| 实现堆叠损失 | Pending | 伤害分摊到堆叠单位 |
+
+#### P1 - 战斗 UI (src/ui/Battle/)
+
+| 任务 | 状态 | 说明 |
+|------|------|------|
+| 创建 BattleSceneUI | Pending | 战斗场景主 UI |
+| 创建 BattleFieldView | Pending | 战场六边形网格显示 |
+| 创建 BattleUnitView | Pending | 单位显示（精灵 + 数量） |
+| 创建 ActionBarUI | Pending | 行动按钮栏 |
+| 创建 TurnOrderUI | Pending | 行动顺序预览 |
+| 创建 BattleResultUI | Pending | 战斗结果窗口 |
+
+#### P1 - BattleContext 扩展 (src/context/)
+
+| 任务 | 状态 | 说明 |
+|------|------|------|
+| 扩展 BattleContext | Pending | 战斗状态管理 |
+| 实现 StartBattle() | Pending | 初始化战场、部署单位 |
+| 实现 ProcessTurn() | Pending | 处理当前单位行动 |
+| 实现 EndBattle() | Pending | 结算、返回探索 |
+| AI 基础行为 | Pending | 简单 AI（攻击最近敌人） |
+
+#### P2 - 高级功能（可选）
+
+| 任务 | 状态 | 说明 |
+|------|------|------|
+| 士气系统 | Pending | 正士气额外行动，负士气恐慌 |
+| 幸运系统 | Pending | 幸运暴击双倍伤害 |
+| 远程攻击 | Pending | 弹药、近身惩罚 |
+| 战斗动画 | Pending | DOTween 移动/攻击动画 |
+| 战斗音效 | Pending | 攻击、受伤、死亡音效 |
+
+### 战斗流程详解
+
+```
+1. 触发战斗
+   WorldContext.TriggerBattle(enemyArmy)
+   ├── 暂停 WorldContext
+   └── 创建 BattleContext
+
+2. 初始化
+   BattleContext.StartBattle(playerArmy, enemyArmy)
+   ├── 创建 BattleField（15x11 六边形）
+   ├── 部署玩家单位（左侧）
+   └── 部署敌方单位（右侧）
+
+3. 战斗循环
+   while (!IsOver)
+   {
+       // 确定行动顺序
+       TurnManager.CalculateTurnOrder()
+
+       // 处理每个单位的行动
+       foreach (unit in turnOrder)
+       {
+           if (unit.IsPlayerControlled)
+               WaitForPlayerInput()  // UI 交互
+           else
+               AIController.DecideAction()  // AI 决策
+
+           ActionResolver.Execute(action)
+           CheckVictoryCondition()
+       }
+   }
+
+4. 战斗结束
+   BattleContext.EndBattle(result)
+   ├── 计算经验值
+   ├── 分配战利品
+   ├── 更新军队状态
+   └── 返回 WorldContext
+```
+
+### 伤害计算公式
+
+```
+基础伤害 = Random(minDamage, maxDamage) × 单位数量
+
+攻防修正:
+- 攻击 > 防御: +5% × (攻击 - 防御), 最高 +300%
+- 防御 > 攻击: -2.5% × (防御 - 攻击), 最高 -70%
+
+最终伤害 = 基础伤害 × (1 + 攻防修正) × 其他修正
+
+堆叠损失:
+- 伤害先分配给已受伤单位
+- 剩余伤害击杀完整单位
+- 残余伤害计入下一个单位
+```
+
+### 六边形网格
+
+```
+战场布局 (15x11):
+
+  [0,0] [0,1] [0,2] ... [0,14]     <- 敌方后排
+    [1,0] [1,1] [1,2] ...          <- 偏移行
+  [2,0] [2,1] [2,2] ...
+    ...
+  [10,0] [10,1] ...                <- 玩家前排
+
+坐标系统: Offset Coordinates (奇数行偏移)
+邻居计算: 6 个方向（偶数行/奇数行不同偏移）
 ```
 
 ---
@@ -277,7 +468,9 @@ LoadScene(Town)                  显示城镇界面
 
 | 模块 | 指南 | 说明 |
 |------|------|------|
-| 框架层 | [src/framework/guide.md](src/framework/guide.md) | 系统管理、事件、上下文、响应式数据 |
+| 框架层 | [src/framework/guide.md](src/framework/guide.md) | 系统管理、事件、上下文、响应式数据、ES3 集成 |
+| UI 框架 | [src/framework/UI/guide.md](src/framework/UI/guide.md) | UIBehaviour、窗口、滚动列表 |
 | 上下文 | [src/context/guide.md](src/context/guide.md) | Session、World、Battle 上下文 |
 | 场景 | [src/scene/guide.md](src/scene/guide.md) | 场景控制器、启动流程 |
 | 地图系统 | [src/map/guide.md](src/map/guide.md) | Tilemap 绘制 + 逻辑数据分离 |
+| Unity 操作 | [docs/UnitySetup.md](docs/UnitySetup.md) | 场景配置、预制体创建、SO 设置 |

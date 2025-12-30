@@ -19,10 +19,13 @@ namespace TH7
         public int CurrentDay => Data.Day.Value;
         public int CurrentWeek => (CurrentDay - 1) / 7 + 1;
         public int CurrentMonth => (CurrentDay - 1) / 28 + 1;
+        public PlayerResources Resources => Data.Resources;
+        public ReactiveList<TownData> Towns => Data.Towns;
 
         public void StartNewSession(string playerName)
         {
             Data = new SessionData { PlayerName = playerName };
+            Data.Resources.SetStartingResources();
             saveSlotId = null;
         }
 
@@ -75,9 +78,7 @@ namespace TH7
     {
         public string PlayerName;
         public Reactive<int> Day = new(1);
-
-        // TODO: 扩展更多存档字段
-        // public PlayerResources Resources = new();
-        // public List<TownData> Towns = new();
+        public PlayerResources Resources = new();
+        public ReactiveList<TownData> Towns = new();
     }
 }
