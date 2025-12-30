@@ -12,5 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d690e6d09f5f03342a60f5c06d13427c, type: 3}
   m_Name: TownConfigDatabase
   m_EditorClassIdentifier: 
-  Buildings: []
+  Buildings:
+  - {fileID: 11400000, guid: e639257fe2db3fb4884a00cd132923aa, type: 2}
   FactionConfigs: []

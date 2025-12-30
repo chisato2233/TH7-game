@@ -1,0 +1,77 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b22041c29e008f4387b43f59a30024b, type: 3}
+  m_Name: TerrainConfig
+  m_EditorClassIdentifier: 
+  GroundTypes:
+  - Name: Land
+    MovementCost: 1
+    Passable: 1
+    BlocksVision: 0
+  - Name: Water
+    MovementCost: 10
+    Passable: 1
+    BlocksVision: 0
+  - Name: DeepWater
+    MovementCost: 999
+    Passable: 0
+    BlocksVision: 0
+  - Name: Void
+    MovementCost: 999
+    Passable: 0
+    BlocksVision: 0
+  SurfaceTypes:
+  - Name: None
+    MovementCostModifier: 1
+    Passable: 1
+    BlocksVision: 0
+    ProvidesConcealment: 0
+  - Name: Road
+    MovementCostModifier: 0.5
+    Passable: 1
+    BlocksVision: 0
+    ProvidesConcealment: 0
+  - Name: Forest
+    MovementCostModifier: 1.5
+    Passable: 1
+    BlocksVision: 0
+    ProvidesConcealment: 0
+  - Name: Mountain
+    MovementCostModifier: 999
+    Passable: 0
+    BlocksVision: 0
+    ProvidesConcealment: 0
+  - Name: Hill
+    MovementCostModifier: 1.25
+    Passable: 1
+    BlocksVision: 0
+    ProvidesConcealment: 0
+  - Name: Swamp
+    MovementCostModifier: 2
+    Passable: 1
+    BlocksVision: 0
+    ProvidesConcealment: 0
+  - Name: Sand
+    MovementCostModifier: 1.25
+    Passable: 1
+    BlocksVision: 0
+    ProvidesConcealment: 0
+  - Name: Snow
+    MovementCostModifier: 1.5
+    Passable: 1
+    BlocksVision: 0
+    ProvidesConcealment: 0
+  - Name: Lava
+    MovementCostModifier: 999
+    Passable: 0
+    BlocksVision: 0
+    ProvidesConcealment: 0

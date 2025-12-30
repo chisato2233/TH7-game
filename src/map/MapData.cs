@@ -22,19 +22,41 @@ namespace TH7
             Height = bounds.size.y;
             tiles = new Tile[Width * Height];
 
+            int gameTileCount = 0;
+            int fallbackCount = 0;
+
             for (int x = 0; x < Width; x++)
             {
                 for (int y = 0; y < Height; y++)
                 {
                     var cellPos = new Vector3Int(x + bounds.xMin, y + bounds.yMin, 0);
-                    var gameTile = tilemap.GetTile<GameTile>(cellPos);
 
+                    // 优先尝试获取 GameTile
+                    var gameTile = tilemap.GetTile<GameTile>(cellPos);
                     if (gameTile != null)
+                    {
                         tiles[y * Width + x] = gameTile.ToLogicTile();
+                        gameTileCount++;
+                    }
                     else
-                        tiles[y * Width + x] = new Tile(GroundType.Void);
+                    {
+                        // 回退：检查是否有任何 Tile（普通 Unity Tile）
+                        var anyTile = tilemap.GetTile(cellPos);
+                        if (anyTile != null)
+                        {
+                            // 普通 Tile 默认为可通行陆地
+                            tiles[y * Width + x] = new Tile(GroundType.Land);
+                            fallbackCount++;
+                        }
+                        else
+                        {
+                            tiles[y * Width + x] = new Tile(GroundType.Void);
+                        }
+                    }
                 }
             }
+
+            Debug.Log($"[MapData] 初始化完成: GameTile={gameTileCount}, 普通Tile={fallbackCount}, Void={Width * Height - gameTileCount - fallbackCount}");
         }
 
         public Tile GetTile(int x, int y)

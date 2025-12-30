@@ -38,10 +38,26 @@ namespace TH7
             }
 
             sessionContext = contextSystem.Root.GetChild<SessionContext>();
+
+            // 开发模式：如果没有 SessionContext，自动创建测试会话
             if (sessionContext == null)
             {
+#if UNITY_EDITOR
+                Debug.LogWarning("[WorldScene] SessionContext not found, creating dev session...");
+                sessionContext = contextSystem.Root.CreateChild<SessionContext>();
+                sessionContext.StartNewSession("Dev Player");
+
+                // 添加一个测试城镇
+                var testTown = new TownData
+                {
+                    TownName = "Test Town",
+                    Faction = BiomeType.Greek
+                };
+                sessionContext.Towns.Add(testTown);
+#else
                 Debug.LogError("[WorldScene] SessionContext not found");
                 return;
+#endif
             }
 
             // 创建 WorldContext 并注入 MapManager
@@ -53,6 +69,10 @@ namespace TH7
 
         void SetupUI()
         {
+            // 绑定资源条到 Session 资源
+            if (resourceBar != null && sessionContext != null)
+                resourceBar.BindToResources(sessionContext.Resources);
+
             // 初始隐藏城镇面板
             if (townPanel != null)
             {

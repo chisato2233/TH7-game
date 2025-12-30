@@ -13,13 +13,15 @@ namespace TH7
         public void Setup(MapManager mapManager)
         {
             Map = mapManager;
+            if (Map == null)
+                Debug.LogWarning("[World] MapManager 未设置");
+            else
+                Debug.Log($"[World] MapManager 已设置，地图大小: {Map.Data?.Width}x{Map.Data?.Height}");
         }
 
         protected override void OnInitialize()
         {
             Debug.Log("[World] 进入探索阶段");
-            if (Map == null)
-                Debug.LogWarning("[World] MapManager 未设置");
         }
 
         protected override void OnUpdate(float deltaTime)

@@ -15,8 +15,8 @@ namespace TH7
         public int GetMovementCost(Tile tile)
         {
             int baseCost = GetGroundCost(tile.Ground);
-            int surfaceCost = GetSurfaceCost(tile.Surface);
-            return baseCost + surfaceCost;
+            float surfaceCost = GetSurfaceCost(tile.Surface);
+            return (int)(baseCost * surfaceCost);
         }
 
         public bool IsPassable(Tile tile)
@@ -31,11 +31,11 @@ namespace TH7
             return 999;
         }
 
-        int GetSurfaceCost(SurfaceType type)
+        float GetSurfaceCost(SurfaceType type)
         {
             int index = (int)type;
             if (index < SurfaceTypes.Length) return SurfaceTypes[index].MovementCostModifier;
-            return 0;
+            return 1f;
         }
 
         bool IsGroundPassable(GroundType type)
@@ -66,7 +66,7 @@ namespace TH7
     public struct SurfaceSettings
     {
         public string Name;
-        public int MovementCostModifier;
+        public float MovementCostModifier;
         public bool Passable;
         public bool BlocksVision;
         public bool ProvidesConcealment;

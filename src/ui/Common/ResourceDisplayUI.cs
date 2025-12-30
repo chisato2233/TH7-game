@@ -35,7 +35,15 @@ namespace TH7.UI
             var session = contextSystem?.Root?.GetChild<SessionContext>();
 
             if (session?.Resources != null)
+            {
                 Bind(session.Resources.Get(resourceType));
+            }
+            else
+            {
+                // SessionContext 尚未创建，显示默认值（不输出警告，这是正常情况）
+                boundResource = null;
+                UpdateDisplay(0);
+            }
         }
 
         /// <summary>

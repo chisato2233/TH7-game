@@ -122,7 +122,7 @@ namespace TH7
         Ore,        // 矿石
         Crystal,    // 水晶
         Gem,        // 宝石
-        Sulfur,     // 硫�ite
+        Sulfur,     // 硫磺
         Mercury     // 水银
     }
 
