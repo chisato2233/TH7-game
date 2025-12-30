@@ -73,6 +73,14 @@ namespace TH7
         }
 
         /// <summary>
+        /// 增加指定类型的资源
+        /// </summary>
+        public void Add(ResourceType type, int amount)
+        {
+            Get(type).Value += amount;
+        }
+
+        /// <summary>
         /// 扣除资源（不检查）
         /// </summary>
         public void Subtract(ResourceBundle cost)

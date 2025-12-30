@@ -193,4 +193,19 @@ namespace TH7
         Melee,      // 近战
         Ranged      // 远程
     }
+
+    // ============================================
+    // 世界探索相关
+    // ============================================
+
+    /// <summary>
+    /// 回合阶段
+    /// </summary>
+    public enum TurnPhase
+    {
+        Idle,           // 空闲
+        PlayerTurn,     // 玩家回合
+        AITurn,         // AI回合
+        TurnEnd         // 回合结束
+    }
 }

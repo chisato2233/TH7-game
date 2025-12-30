@@ -89,6 +89,43 @@ namespace TH7
             building.Tier = BuildingTier.Upgraded;
             return true;
         }
+
+        /// <summary>
+        /// 获取每日金币产出
+        /// </summary>
+        public int GetDailyGoldProduction()
+        {
+            // 基础产出
+            int gold = 500;
+
+            // 城镇大厅加成
+            var townHall = GetBuilding(BuildingType.TownHall);
+            if (townHall != null)
+            {
+                gold += townHall.Tier switch
+                {
+                    BuildingTier.Basic => 500,      // 城镇大厅: +500
+                    BuildingTier.Upgraded => 1000,  // 城市大厅: +1000
+                    _ => 0
+                };
+            }
+
+            return gold;
+        }
+
+        /// <summary>
+        /// 刷新每周招募数量
+        /// </summary>
+        public void RefreshWeeklyRecruits()
+        {
+            // TODO: 根据兵种建筑刷新可招募数量
+            // 遍历所有 Dwelling 建筑，根据配置添加招募数量
+        }
+
+        /// <summary>
+        /// 获取格子坐标位置
+        /// </summary>
+        public Vector3Int Position => new(MapPosition.x, MapPosition.y, 0);
     }
 
     /// <summary>

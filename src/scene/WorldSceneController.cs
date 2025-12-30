@@ -4,11 +4,21 @@ using TH7.UI;
 
 namespace TH7
 {
-    // 世界场景控制器，负责创建 WorldContext 并管理城镇/战斗界面
-    public class WorldSceneController : MonoBehaviour
+    /// <summary>
+    /// 世界场景控制器
+    /// 负责创建 WorldContext、管理回合系统、处理城镇/战斗界面
+    /// </summary>
+    public class WorldSceneController : GameBehaviour
     {
+        [Header("Turn Manager")]
+        [SerializeField] WorldTurnManager turnManager;
+
         [Header("Map")]
         [SerializeField] MapManager mapManager;
+
+        [Header("Input")]
+        [SerializeField] WorldInputController inputController;
+        [SerializeField] Camera worldCamera;
 
         [Header("UI")]
         [SerializeField] TownPanelUI townPanel;
@@ -18,14 +28,23 @@ namespace TH7
         [SerializeField] TownConfigDatabase townConfigDatabase;
         [SerializeField] UnitConfigDatabase unitConfigDatabase;
 
+        // 上下文
         SessionContext sessionContext;
         WorldContext worldContext;
         TownContext townContext;
 
-        void Start()
+        // 回合系统
+        ActionExecutor actionExecutor;
+        PlayerActionProvider playerProvider;
+        IPathfinder pathfinder;
+
+        protected override void Start()
         {
+            base.Start();
             InitializeContext();
+            InitializeTurnSystem();
             SetupUI();
+            StartGame();
         }
 
         void InitializeContext()
@@ -47,13 +66,19 @@ namespace TH7
                 sessionContext = contextSystem.Root.CreateChild<SessionContext>();
                 sessionContext.StartNewSession("Dev Player");
 
-                // 添加一个测试城镇
+                // 添加测试城镇
                 var testTown = new TownData
                 {
+                    TownId = "town_01",
                     TownName = "Test Town",
-                    Faction = BiomeType.Greek
+                    Faction = BiomeType.Greek,
+                    MapPosition = new Vector2Int(10, 10)
                 };
                 sessionContext.Towns.Add(testTown);
+
+                // 添加测试英雄
+                var testHero = new HeroData("hero_01", "Test Hero", new Vector3Int(5, 5, 0), 0);
+                sessionContext.Heroes.Add(testHero);
 #else
                 Debug.LogError("[WorldScene] SessionContext not found");
                 return;
@@ -65,6 +90,36 @@ namespace TH7
             worldContext.Setup(mapManager);
 
             Debug.Log("[WorldScene] WorldContext created");
+        }
+
+        void InitializeTurnSystem()
+        {
+            if (worldContext == null) return;
+
+            // 创建寻路器
+            pathfinder = new SimplePathfinder();
+
+            // 创建行动执行器
+            actionExecutor = new ActionExecutor(worldContext, this);
+
+            // 创建玩家行动提供者
+            var camera = worldCamera != null ? worldCamera : Camera.main;
+            playerProvider = new PlayerActionProvider(mapManager, camera, pathfinder);
+
+            // 初始化回合管理器（现在是 GameBehaviour，通过 SerializeField 引用）
+            if (turnManager != null)
+            {
+                turnManager.Initialize(worldContext, actionExecutor);
+                turnManager.RegisterProvider(0, playerProvider); // 玩家 0
+            }
+
+            // 绑定输入控制器
+            if (inputController != null)
+            {
+                inputController.BindActionProvider(playerProvider);
+            }
+
+            Debug.Log("[WorldScene] Turn system initialized");
         }
 
         void SetupUI()
@@ -81,7 +136,55 @@ namespace TH7
             }
         }
 
-        // 打开城镇界面（由地图点击事件调用）
+        void StartGame()
+        {
+            if (turnManager == null) return;
+
+            // 启用输入
+            inputController?.EnableInput();
+            playerProvider?.SetEnabled(true);
+
+            // 开始第一天
+            turnManager.StartDay();
+
+            Debug.Log("[WorldScene] Game started");
+        }
+
+        // ============================================
+        // EventSystem 事件处理
+        // ============================================
+
+        [AutoSubscribe]
+        void OnEnterTownRequested(EnterTownRequestedEvent e)
+        {
+            inputController?.DisableInput();
+            OpenTown(e.Town);
+        }
+
+        [AutoSubscribe]
+        void OnBattleRequested(BattleRequestedEvent e)
+        {
+            inputController?.DisableInput();
+            // TODO: 打开战斗界面
+            Debug.Log("[WorldScene] Battle triggered (not implemented)");
+        }
+
+        [AutoSubscribe]
+        void OnDayEnded(DayEndedEvent e)
+        {
+            Debug.Log($"[WorldScene] Day {e.Day} ended (Week {e.Week}, Month {e.Month})");
+            // 可以在这里添加日结算 UI
+        }
+
+        [AutoSubscribe]
+        void OnActionCompleted(ActionCompletedEvent e)
+        {
+            Debug.Log($"[WorldScene] Action completed: {e.Action.Type} -> {e.Result.Type}");
+        }
+
+        /// <summary>
+        /// 打开城镇界面
+        /// </summary>
         public void OpenTown(TownData townData)
         {
             if (townData == null || townPanel == null) return;
@@ -100,7 +203,9 @@ namespace TH7
             Debug.Log($"[WorldScene] Opened town: {townData.TownName}");
         }
 
-        // 关闭城镇界面
+        /// <summary>
+        /// 关闭城镇界面
+        /// </summary>
         void CloseTown()
         {
             // 隐藏城镇面板
@@ -120,10 +225,17 @@ namespace TH7
             // 恢复探索
             worldContext?.Resume();
 
+            // 恢复输入和回合
+            inputController?.EnableInput();
+            playerProvider?.SetEnabled(true);
+            turnManager?.Resume();
+
             Debug.Log("[WorldScene] Closed town, resumed exploration");
         }
 
-        // 打开城镇（通过索引，调试用）
+        /// <summary>
+        /// 打开城镇（通过索引，调试用）
+        /// </summary>
         public void OpenTownByIndex(int index)
         {
             if (sessionContext?.Towns == null || index < 0 || index >= sessionContext.Towns.Count)
@@ -134,8 +246,11 @@ namespace TH7
             OpenTown(sessionContext.Towns[index]);
         }
 
-        void OnDestroy()
+        protected override void OnDestroy()
         {
+            // 清理 Provider
+            playerProvider?.Dispose();
+
             // 清理城镇上下文
             if (townContext != null)
                 sessionContext?.DisposeChild<TownContext>();
@@ -143,6 +258,8 @@ namespace TH7
             // 清理世界上下文
             if (worldContext != null)
                 sessionContext?.DisposeChild<WorldContext>();
+
+            base.OnDestroy();
         }
     }
 }

@@ -21,6 +21,7 @@ namespace TH7
         public int CurrentMonth => (CurrentDay - 1) / 28 + 1;
         public PlayerResources Resources => Data.Resources;
         public ReactiveList<TownData> Towns => Data.Towns;
+        public ReactiveList<HeroData> Heroes => Data.Heroes;
 
         public void StartNewSession(string playerName)
         {
@@ -80,5 +81,6 @@ namespace TH7
         public Reactive<int> Day = new(1);
         public PlayerResources Resources = new();
         public ReactiveList<TownData> Towns = new();
+        public ReactiveList<HeroData> Heroes = new();
     }
 }
