@@ -49,6 +49,29 @@ Assets/                     # 项目根目录
         UIBehaviour.cs      # UI 基类，继承 GameBehaviour
         UIWindowBehaviour.cs # 窗口基类，DOTween/Animator 动画
         ScrollViewUI.cs     # 通用滚动列表
+      Ability/              # 技能系统 (GAS) - GameFramework 命名空间
+        Tag/                # 标签系统
+          GameplayTag.cs    # 层级标签
+          GameplayTagContainer.cs # 标签容器
+        Attribute/          # 属性系统
+          AttributeType.cs  # 属性定义 + 定义数据库
+          AttributeModifier.cs # 属性修改器
+          ReactiveAttribute.cs # 响应式属性
+          AttributeSet.cs   # 属性集合
+        Effect/             # 效果系统
+          GameplayEffect.cs # 效果配置 (SO)
+          EffectInstance.cs # 效果实例
+        Ability/            # 技能系统
+          GameplayAbility.cs # 技能配置 (SO)
+          AbilityInstance.cs # 技能实例
+        Core/               # 核心组件
+          AbilitySystemComponent.cs # 技能系统组件
+          AbilityDatabase.cs # 技能数据库
+          AbilityEvents.cs  # 事件定义
+        Editor/             # 编辑器扩展
+          GameplayEffectEditor.cs
+          GameplayAbilityEditor.cs
+          AbilityDatabaseEditor.cs
     context/                # 游戏上下文实现
       SessionContext.cs     # 存档会话上下文 + SessionData
       WorldContext.cs       # 探索上下文
@@ -195,6 +218,7 @@ th7_spells_all.xlsx
 |------|------|------|
 | framework/ | Done | GameEntry、EventSystem、ContextSystem、GameBehaviour |
 | framework/UI | Done | UIBehaviour、UIWindowBehaviour、ScrollViewUI |
+| framework/Ability | Done | GAS: 标签、属性(响应式)、效果、技能、ASC + Editor |
 | context/ | Done | SessionContext + ES3 存档、WorldContext、BattleContext(框架) |
 | scene/ | Done | Boot、MainMenu、World 场景控制器 |
 | ui/MainMenu | Done | MainMenuUI、SaveSlotPanel |
@@ -470,6 +494,7 @@ WorldContext.TriggerBattle()        BattleContext
 |------|------|------|
 | 框架层 | [src/framework/guide.md](src/framework/guide.md) | 系统管理、事件、上下文、响应式数据、ES3 集成 |
 | UI 框架 | [src/framework/UI/guide.md](src/framework/UI/guide.md) | UIBehaviour、窗口、滚动列表 |
+| 技能系统 | [src/framework/Ability/guide.md](src/framework/Ability/guide.md) | GAS: 标签、响应式属性、效果、技能、ASC |
 | 上下文 | [src/context/guide.md](src/context/guide.md) | Session、World、Battle 上下文 |
 | 场景 | [src/scene/guide.md](src/scene/guide.md) | 场景控制器、启动流程 |
 | 地图系统 | [src/map/guide.md](src/map/guide.md) | Tilemap 绘制 + 逻辑数据分离 |
