@@ -25,13 +25,13 @@ namespace TH7
         TurnPhase phase = TurnPhase.Idle;
         int currentPlayerIndex;
         int currentHeroIndex;
-        HeroData currentHero;
+        Hero currentHero;
 
         // 事件系统
         EventSystem eventSystem;
 
         public TurnPhase Phase => phase;
-        public HeroData CurrentHero => currentHero;
+        public Hero CurrentHero => currentHero;
         public bool IsPlayerTurn => phase == TurnPhase.PlayerTurn;
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace TH7
 
             // 重置所有英雄移动力
             var session = worldContext?.GetParent<SessionContext>();
-            if (session?.Heroes != null)
+            if (session != null)
             {
                 foreach (var hero in session.Heroes)
                     hero.ResetMovement();
@@ -89,7 +89,7 @@ namespace TH7
         void StartPlayerTurn(int playerId)
         {
             var session = worldContext?.GetParent<SessionContext>();
-            var playerHeroes = GetHeroesForPlayer(session, playerId);
+            var playerHeroes = session?.GetHeroesForPlayer(playerId) ?? new List<Hero>();
 
             if (playerHeroes.Count == 0)
             {
@@ -114,7 +114,7 @@ namespace TH7
         /// <summary>
         /// 开始英雄回合
         /// </summary>
-        void StartHeroTurn(HeroData hero)
+        void StartHeroTurn(Hero hero)
         {
             currentHero = hero;
 
@@ -242,7 +242,7 @@ namespace TH7
             }
 
             var session = worldContext?.GetParent<SessionContext>();
-            var playerHeroes = GetHeroesForPlayer(session, currentPlayerIndex);
+            var playerHeroes = session?.GetHeroesForPlayer(currentPlayerIndex) ?? new List<Hero>();
 
             currentHeroIndex++;
             if (currentHeroIndex < playerHeroes.Count)
@@ -341,19 +341,6 @@ namespace TH7
             {
                 town.RefreshWeeklyRecruits();
             }
-        }
-
-        List<HeroData> GetHeroesForPlayer(SessionContext session, int playerId)
-        {
-            var result = new List<HeroData>();
-            if (session?.Heroes == null) return result;
-
-            foreach (var hero in session.Heroes)
-            {
-                if (hero.OwnerPlayerId == playerId)
-                    result.Add(hero);
-            }
-            return result;
         }
 
         /// <summary>

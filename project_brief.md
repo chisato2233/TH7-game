@@ -90,6 +90,37 @@ Assets/                     # 项目根目录
       MapData.cs            # 运行时地图数据
       MapManager.cs         # 地图管理器
       TerrainConfig.cs      # 地形配置
+    world/                  # 世界探索系统
+      hero/                 # 英雄模块
+        Hero.cs             # 英雄组件（Data+Controller+View）
+        HeroConfig.cs       # 英雄配置 (SO)
+        HeroConfigDatabase.cs # 英雄配置数据库 (SO)
+        HeroSaveData.cs     # 英雄存档数据
+      action/               # 行动系统
+        HeroAction.cs       # 行动基类和具体行动
+        ActionResult.cs     # 行动结果
+        ActionExecutor.cs   # 行动执行器
+      provider/             # 行动提供者
+        IActionProvider.cs  # 行动提供者接口
+        PlayerActionProvider.cs # 玩家输入提供者
+        IPathfinder.cs      # 寻路接口
+      input/                # 输入系统
+        WorldInputController.cs # 输入控制器
+        CinemachineCameraController.cs # 相机控制
+      WorldTurnManager.cs   # 回合管理器
+      WorldEvents.cs        # 世界事件定义
+    town/                   # 城镇系统
+      TownData.cs           # 城镇数据
+      TownContext.cs        # 城镇上下文
+      BuildingConfig.cs     # 建筑配置 (SO)
+      TownConfigDatabase.cs # 城镇配置数据库 (SO)
+    unit/                   # 兵种系统
+      UnitConfig.cs         # 兵种配置 (SO)
+      UnitConfigDatabase.cs # 兵种配置数据库 (SO)
+      UnitStack.cs          # 兵种堆叠
+    resource/               # 资源系统
+      ResourceBundle.cs     # 资源包
+      PlayerResources.cs    # 玩家资源（响应式）
     GameSystem.cs           # 调试入口
     GameEnums.cs            # 统一枚举定义
   docs/                     # 设计文档
@@ -206,282 +237,75 @@ th7_spells_all.xlsx
 
 ---
 
-## 开发任务
 
-### 当前里程碑: 城镇界面 MVP
 
-目标：实现英雄无敌风格的城镇系统，包含资源管理、建筑树、招募功能。
+## ScriptableObject 配置系统
 
-### 模块完成状态
+项目使用 ScriptableObject 进行数据驱动配置，分为 **单项配置** 和 **数据库** 两类：
 
-| 模块 | 状态 | 说明 |
-|------|------|------|
-| framework/ | Done | GameEntry、EventSystem、ContextSystem、GameBehaviour |
-| framework/UI | Done | UIBehaviour、UIWindowBehaviour、ScrollViewUI |
-| framework/Ability | Done | GAS: 标签、属性(响应式)、效果、技能、ASC + Editor |
-| context/ | Done | SessionContext + ES3 存档、WorldContext、BattleContext(框架) |
-| scene/ | Done | Boot、MainMenu、World 场景控制器 |
-| ui/MainMenu | Done | MainMenuUI、SaveSlotPanel |
-| ui/Common | Done | ResourceDisplayUI、ResourceBarUI、ResourceCostUI |
-| ui/Town | Done | TownPanelUI、BuildingGridUI、BuildingInfoPanelUI、RecruitPanelUI |
-| map/ | Done | Tilemap + 逻辑层分离，地形配置 |
-| resource/ | Done | ResourceBundle、PlayerResources |
-| town/ | Done | TownData、TownContext、BuildingConfig、TownConfigDatabase |
-| unit/ | Done | UnitConfig、UnitConfigDatabase |
+### 配置文件列表
 
-### 任务列表
+| 类型 | 文件 | 菜单路径 | 用途 |
+|------|------|----------|------|
+| **城镇配置** ||||
+| Database | TownConfigDatabase | TH7/Town Config Database | 建筑配置数据库 |
+| Config | BuildingConfig | TH7/Building Config | 单个建筑配置 |
+| **兵种配置** ||||
+| Database | UnitConfigDatabase | TH7/Unit Config Database | 兵种配置数据库 |
+| Config | UnitConfig | TH7/Unit Config | 单个兵种配置 |
+| **地形配置** ||||
+| Config | TerrainConfig | TH7/Terrain Config | 地形移动力/通行配置 |
+| **英雄配置** ||||
+| Database | HeroConfigDatabase | TH7/Hero Config Database | 英雄配置数据库 |
+| Config | HeroConfig | TH7/Hero Config | 单个英雄配置 |
+| **技能配置** ||||
+| Database | AbilityDatabase | TH7/Ability/Ability Database | 技能和效果数据库 |
+| Config | GameplayAbility | TH7/Ability/Gameplay Ability | 单个技能配置 |
+| Config | GameplayEffect | TH7/Ability/Gameplay Effect | 单个效果配置 |
+| Config | AttributeDefinitionDatabase | TH7/Ability/Attribute Definition Database | 属性定义数据库 |
 
-#### P0 - 资源系统 (src/resource/) - Done
-| 任务 | 状态 | 说明 |
-|------|------|------|
-| 定义 ResourceType 枚举 | Done | Gold/Wood/Ore/Crystal/Gem/Sulfur/Mercury |
-| 创建 ResourceBundle | Done | 资源数据容器，支持运算 |
-| 创建 PlayerResources | Done | 响应式资源，支持 UI 绑定 |
-| 扩展 SessionContext | Done | 持有玩家资源数据 |
-
-#### P0 - 城镇系统 (src/town/) - Done
-| 任务 | 状态 | 说明 |
-|------|------|------|
-| 定义 BuildingType 枚举 | Done | TownHall/Tavern/Dwelling1-7 等 |
-| 创建 BuildingConfig (SO) | Done | 建筑配置：成本、前置条件、产出 |
-| 创建 TownData | Done | 城镇数据：建筑、驻军、可招募数量 |
-| 创建 TownContext | Done | 城镇上下文，建造/招募逻辑 |
-| 创建 TownConfigDatabase | Done | 建筑配置数据库 |
-
-#### P0 - 兵种系统 (src/unit/) - Done
-| 任务 | 状态 | 说明 |
-|------|------|------|
-| 定义 UnitTier 枚举 | Done | Tier1-7 兵种等级 |
-| 创建 UnitConfig (SO) | Done | 兵种配置：属性、招募成本 |
-| 创建 UnitStack 结构 | Done | 兵种堆叠：UnitId + Count |
-| 创建 UnitConfigDatabase | Done | 兵种配置数据库 |
-| 实现招募逻辑 | Done | TownContext.Recruit() |
-
-#### P1 - UI 框架 (src/ui/) - Done
-| 任务 | 状态 | 说明 |
-|------|------|------|
-| UIBehaviour 基类 | Done | 继承 GameBehaviour，Listen ReactiveList |
-| UIWindowBehaviour | Done | 窗口动画（DOTween/Animator） |
-| ScrollViewUI | Done | 通用滚动列表，支持 ReactiveList 绑定 |
-| ResourceDisplayUI | Done | 单个资源显示 |
-| ResourceBarUI | Done | 顶部资源显示条 |
-| TownPanelUI | Done | 城镇主界面 |
-| BuildingGridUI | Done | 建筑网格 |
-| BuildingInfoPanelUI | Done | 建筑详情弹窗 |
-| RecruitPanelUI | Done | 招募界面 |
-
-#### P2 - 数据持久化 (Easy Save 3) - Done
-| 任务 | 状态 | 说明 |
-|------|------|------|
-| Reactive<T> ES3 集成 | Done | SavedValue 属性，不存储监听器 |
-| ReactiveList<T> ES3 集成 | Done | SavedItems 属性 |
-| SessionData 存档结构 | Done | PlayerName、Day、Resources、Towns |
-| SaveSlotPanel | Done | 存档选择窗口 |
-| MainMenu 读档功能 | Done | 加载存档恢复游戏状态 |
-
-### 上下文架构 (更新)
+### 配置结构
 
 ```
-RootContext (全局)
-└── SessionContext (存档会话: 玩家数据、天数、资源)
-    ├── WorldContext (探索: 地图、英雄移动)
-    │   └── TownContext (城镇: 建筑、招募) ←→ UI 覆盖层
-    └── BattleContext (战斗: 战场、回合、单位)
+Assets/
+  data/                           # 配置资源目录（建议）
+    config/
+      TownConfigDatabase.asset    # 城镇配置数据库
+      UnitConfigDatabase.asset    # 兵种配置数据库
+      TerrainConfig.asset         # 地形配置
+      AbilityDatabase.asset       # 技能数据库
+    buildings/                    # 建筑配置
+      Building_TownHall.asset
+      Building_Tavern.asset
+      ...
+    units/                        # 兵种配置
+      Unit_grk_hoplite.asset
+      Unit_grk_pegasus.asset
+      ...
+    abilities/                    # 技能配置
+      Ability_Fireball.asset
+      Effect_Burn.asset
+      ...
+    heroes/                       # 英雄配置
+      Hero_grk_achilles.asset
+      Hero_arb_saladin.asset
+      ...
 ```
 
-### 场景流程 (更新)
+### 运行时引用
 
-城镇界面采用 UI 覆盖层方式，不再使用独立场景：
+配置在 WorldSceneController 中通过 SerializeField 引用：
 
-```
-WorldScene (单一场景)
-    │
-    ├── WorldMap (Tilemap, 英雄, 城镇图标)
-    ├── WorldUI (Canvas: 资源条, 小地图, 按钮)
-    └── TownPanel (Canvas: 全屏城镇界面, 默认隐藏)
-
-流程:
-1. 点击城镇图标 → WorldContext.Pause()
-2. 创建 TownContext → TownPanel.Bind(context)
-3. 建造/招募/查看
-4. 点击离开 → TownPanel.Hide() → DisposeChild<TownContext>()
-5. WorldContext.Resume() → 继续探索
+```csharp
+[Header("Config")]
+[SerializeField] TownConfigDatabase townConfigDatabase;
+[SerializeField] UnitConfigDatabase unitConfigDatabase;
+[SerializeField] HeroConfigDatabase heroConfigDatabase;
 ```
 
 ---
 
-## 下一里程碑: 战斗系统 MVP
 
-目标：实现英雄无敌风格的回合制战斗系统，包含战场、单位、回合管理、伤害计算。
-
-### 战斗系统概述
-
-```
-触发战斗                              战斗流程
-    │                                    │
-WorldContext.TriggerBattle()        BattleContext
-    │                                    │
-暂停探索 ──────────────────────> 初始化战场
-创建 BattleContext                  部署阶段（可选）
-    │                                    │
-    │                               战斗循环:
-    │                               ├── 确定行动顺序（按速度）
-    │                               ├── 当前单位行动
-    │                               │   ├── 移动
-    │                               │   ├── 攻击
-    │                               │   ├── 等待
-    │                               │   └── 防御
-    │                               └── 检查胜负
-    │                                    │
-恢复 WorldContext <───────────── 战斗结束
-销毁 BattleContext                  结算（经验、战利品）
-```
-
-### 模块规划
-
-| 模块 | 状态 | 说明 |
-|------|------|------|
-| battle/ | Pending | 战斗核心逻辑 |
-| battle/data | Pending | 战斗数据结构 |
-| ui/Battle | Pending | 战斗 UI 界面 |
-| context/BattleContext | Pending | 战斗上下文（已有框架） |
-
-### 任务列表
-
-#### P0 - 战场数据 (src/battle/)
-
-| 任务 | 状态 | 说明 |
-|------|------|------|
-| 创建 BattleConfig | Pending | 战场配置（尺寸、地形） |
-| 创建 BattleField | Pending | 战场数据（六边形网格） |
-| 创建 BattleUnit | Pending | 战斗单位（UnitStack + 运行时状态） |
-| 创建 BattleArmy | Pending | 军队数据（7 个槽位） |
-| 定义 BattleAction | Pending | 行动类型枚举（Move/Attack/Wait/Defend） |
-
-#### P0 - 回合管理 (src/battle/)
-
-| 任务 | 状态 | 说明 |
-|------|------|------|
-| 创建 TurnManager | Pending | 回合管理器，按速度排序 |
-| 创建 ActionResolver | Pending | 行动执行器 |
-| 实现移动逻辑 | Pending | 六边形寻路 + 移动力消耗 |
-| 实现攻击逻辑 | Pending | 近战/远程判定 |
-| 实现等待/防御 | Pending | 行动顺序调整 |
-
-#### P0 - 伤害系统 (src/battle/)
-
-| 任务 | 状态 | 说明 |
-|------|------|------|
-| 创建 DamageCalculator | Pending | 伤害计算公式 |
-| 实现攻防修正 | Pending | 攻击>防御: +5%/点, 防御>攻击: -2.5%/点 |
-| 实现反击机制 | Pending | 首次被攻击时反击 |
-| 实现堆叠损失 | Pending | 伤害分摊到堆叠单位 |
-
-#### P1 - 战斗 UI (src/ui/Battle/)
-
-| 任务 | 状态 | 说明 |
-|------|------|------|
-| 创建 BattleSceneUI | Pending | 战斗场景主 UI |
-| 创建 BattleFieldView | Pending | 战场六边形网格显示 |
-| 创建 BattleUnitView | Pending | 单位显示（精灵 + 数量） |
-| 创建 ActionBarUI | Pending | 行动按钮栏 |
-| 创建 TurnOrderUI | Pending | 行动顺序预览 |
-| 创建 BattleResultUI | Pending | 战斗结果窗口 |
-
-#### P1 - BattleContext 扩展 (src/context/)
-
-| 任务 | 状态 | 说明 |
-|------|------|------|
-| 扩展 BattleContext | Pending | 战斗状态管理 |
-| 实现 StartBattle() | Pending | 初始化战场、部署单位 |
-| 实现 ProcessTurn() | Pending | 处理当前单位行动 |
-| 实现 EndBattle() | Pending | 结算、返回探索 |
-| AI 基础行为 | Pending | 简单 AI（攻击最近敌人） |
-
-#### P2 - 高级功能（可选）
-
-| 任务 | 状态 | 说明 |
-|------|------|------|
-| 士气系统 | Pending | 正士气额外行动，负士气恐慌 |
-| 幸运系统 | Pending | 幸运暴击双倍伤害 |
-| 远程攻击 | Pending | 弹药、近身惩罚 |
-| 战斗动画 | Pending | DOTween 移动/攻击动画 |
-| 战斗音效 | Pending | 攻击、受伤、死亡音效 |
-
-### 战斗流程详解
-
-```
-1. 触发战斗
-   WorldContext.TriggerBattle(enemyArmy)
-   ├── 暂停 WorldContext
-   └── 创建 BattleContext
-
-2. 初始化
-   BattleContext.StartBattle(playerArmy, enemyArmy)
-   ├── 创建 BattleField（15x11 六边形）
-   ├── 部署玩家单位（左侧）
-   └── 部署敌方单位（右侧）
-
-3. 战斗循环
-   while (!IsOver)
-   {
-       // 确定行动顺序
-       TurnManager.CalculateTurnOrder()
-
-       // 处理每个单位的行动
-       foreach (unit in turnOrder)
-       {
-           if (unit.IsPlayerControlled)
-               WaitForPlayerInput()  // UI 交互
-           else
-               AIController.DecideAction()  // AI 决策
-
-           ActionResolver.Execute(action)
-           CheckVictoryCondition()
-       }
-   }
-
-4. 战斗结束
-   BattleContext.EndBattle(result)
-   ├── 计算经验值
-   ├── 分配战利品
-   ├── 更新军队状态
-   └── 返回 WorldContext
-```
-
-### 伤害计算公式
-
-```
-基础伤害 = Random(minDamage, maxDamage) × 单位数量
-
-攻防修正:
-- 攻击 > 防御: +5% × (攻击 - 防御), 最高 +300%
-- 防御 > 攻击: -2.5% × (防御 - 攻击), 最高 -70%
-
-最终伤害 = 基础伤害 × (1 + 攻防修正) × 其他修正
-
-堆叠损失:
-- 伤害先分配给已受伤单位
-- 剩余伤害击杀完整单位
-- 残余伤害计入下一个单位
-```
-
-### 六边形网格
-
-```
-战场布局 (15x11):
-
-  [0,0] [0,1] [0,2] ... [0,14]     <- 敌方后排
-    [1,0] [1,1] [1,2] ...          <- 偏移行
-  [2,0] [2,1] [2,2] ...
-    ...
-  [10,0] [10,1] ...                <- 玩家前排
-
-坐标系统: Offset Coordinates (奇数行偏移)
-邻居计算: 6 个方向（偶数行/奇数行不同偏移）
-```
-
----
 
 ## 相关文档
 

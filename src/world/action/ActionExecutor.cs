@@ -17,7 +17,7 @@ namespace TH7
         // 事件
         public event Action<HeroAction> OnActionStarted;
         public event Action<HeroAction, ActionResult> OnActionCompleted;
-        public event Action<HeroData, Vector3Int> OnHeroMoved;
+        public event Action<Hero, Vector3Int> OnHeroMoved;
 
         // 配置
         public float MoveSpeed { get; set; } = 5f;
@@ -122,10 +122,8 @@ namespace TH7
                 {
                     var targetWorld = context.Map.CellToWorld(cell);
 
-                    // 这里应该移动 HeroView，暂时只更新数据
-                    // TODO: 连接 HeroView 动画
-
-                    hero.CellPosition = cell;
+                    // 更新英雄位置（会自动触发 View 更新）
+                    hero.MoveTo(cell);
                     OnHeroMoved?.Invoke(hero, cell);
 
                     yield return new WaitForSeconds(1f / MoveSpeed);
@@ -134,7 +132,7 @@ namespace TH7
             else
             {
                 // 跳过动画，直接到达
-                hero.CellPosition = action.Destination;
+                hero.MoveTo(action.Destination);
                 OnHeroMoved?.Invoke(hero, action.Destination);
             }
 

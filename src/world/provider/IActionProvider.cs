@@ -24,7 +24,7 @@ namespace TH7
         /// <param name="hero">当前英雄</param>
         /// <param name="context">世界上下文</param>
         /// <param name="onActionReady">行动就绪回调</param>
-        void RequestAction(HeroData hero, WorldContext context, Action<HeroAction> onActionReady);
+        void RequestAction(Hero hero, WorldContext context, Action<HeroAction> onActionReady);
 
         /// <summary>
         /// 取消当前请求

@@ -27,7 +27,7 @@ namespace TH7
         public PlayerInputState State => state;
 
         PlayerInputState state = PlayerInputState.Disabled;
-        HeroData currentHero;
+        Hero currentHero;
         WorldContext context;
         Action<HeroAction> onActionReady;
 
@@ -95,7 +95,7 @@ namespace TH7
             }
         }
 
-        public void RequestAction(HeroData hero, WorldContext ctx, Action<HeroAction> callback)
+        public void RequestAction(Hero hero, WorldContext ctx, Action<HeroAction> callback)
         {
             currentHero = hero;
             context = ctx;
@@ -211,7 +211,7 @@ namespace TH7
                 return new MoveAction(currentHero, simplePath);
             }
 
-            var path = pathfinder.FindPath(currentHero.CellPosition, targetCell, context);
+            var path = pathfinder.FindPath(currentHero.CellPosition.Value, targetCell, context);
             if (path == null || path.Count == 0)
             {
                 Debug.Log("[PlayerInput] 无法找到路径");

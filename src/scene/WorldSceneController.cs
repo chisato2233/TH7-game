@@ -28,6 +28,9 @@ namespace TH7
         [SerializeField] TownConfigDatabase townConfigDatabase;
         [SerializeField] UnitConfigDatabase unitConfigDatabase;
 
+        [Header("Prefabs")]
+        [SerializeField] Hero heroPrefab;
+
         // 上下文
         SessionContext sessionContext;
         WorldContext worldContext;
@@ -76,9 +79,8 @@ namespace TH7
                 };
                 sessionContext.Towns.Add(testTown);
 
-                // 添加测试英雄
-                var testHero = new HeroData("hero_01", "Test Hero", new Vector3Int(5, 5, 0), 0);
-                sessionContext.Heroes.Add(testHero);
+                // 添加测试英雄（动态创建 Hero GameObject）
+                CreateTestHero("hero_01", "Test Hero", new Vector3Int(5, 5, 0), 0);
 #else
                 Debug.LogError("[WorldScene] SessionContext not found");
                 return;
@@ -231,6 +233,35 @@ namespace TH7
             turnManager?.Resume();
 
             Debug.Log("[WorldScene] Closed town, resumed exploration");
+        }
+
+        /// <summary>
+        /// 创建测试英雄（开发用）
+        /// </summary>
+        Hero CreateTestHero(string id, string name, Vector3Int position, int ownerId)
+        {
+            Hero hero;
+            if (heroPrefab != null)
+            {
+                hero = Instantiate(heroPrefab);
+            }
+            else
+            {
+                // 没有预制体时创建空 GameObject
+                var go = new GameObject($"Hero_{name}");
+                hero = go.AddComponent<Hero>();
+            }
+
+            hero.Initialize(id, name, position, ownerId);
+            sessionContext.RegisterHero(hero);
+
+            // 设置坐标转换器
+            if (mapManager != null)
+            {
+                hero.SetPositionConverter(cell => mapManager.CellToWorld(cell));
+            }
+
+            return hero;
         }
 
         /// <summary>

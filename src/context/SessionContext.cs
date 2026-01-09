@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using GameFramework;
 
@@ -14,6 +15,9 @@ namespace TH7
         // 运行时状态（不存档）
         string saveSlotId;
 
+        // 运行时英雄引用（场景中的 Hero 组件）
+        readonly List<Hero> runtimeHeroes = new();
+
         // 便捷访问
         public string PlayerName => Data.PlayerName;
         public int CurrentDay => Data.Day.Value;
@@ -21,7 +25,11 @@ namespace TH7
         public int CurrentMonth => (CurrentDay - 1) / 28 + 1;
         public PlayerResources Resources => Data.Resources;
         public ReactiveList<TownData> Towns => Data.Towns;
-        public ReactiveList<HeroData> Heroes => Data.Heroes;
+
+        /// <summary>
+        /// 运行时英雄列表（场景中的 Hero 组件）
+        /// </summary>
+        public IReadOnlyList<Hero> Heroes => runtimeHeroes;
 
         public void StartNewSession(string playerName)
         {
@@ -48,6 +56,9 @@ namespace TH7
             saveSlotId = slotId;
             string path = $"{SAVE_DIR}{slotId}.es3";
 
+            // 保存前收集英雄数据
+            CollectHeroSaveData();
+
             ES3.Save("session", Data, path);
             Debug.Log($"[Session] 保存存档: {slotId}");
         }
@@ -72,6 +83,72 @@ namespace TH7
             HasChild<WorldContext>() ? GetChild<WorldContext>() : CreateChild<WorldContext>();
 
         public void EndExploration() => DisposeChild<WorldContext>();
+
+        #region Hero Management
+
+        /// <summary>
+        /// 注册运行时英雄（由 Hero 组件在 Awake/Start 时调用）
+        /// </summary>
+        public void RegisterHero(Hero hero)
+        {
+            if (hero != null && !runtimeHeroes.Contains(hero))
+            {
+                runtimeHeroes.Add(hero);
+                Debug.Log($"[Session] 注册英雄: {hero.HeroName}");
+            }
+        }
+
+        /// <summary>
+        /// 注销运行时英雄（由 Hero 组件在 OnDestroy 时调用）
+        /// </summary>
+        public void UnregisterHero(Hero hero)
+        {
+            if (hero != null && runtimeHeroes.Remove(hero))
+            {
+                Debug.Log($"[Session] 注销英雄: {hero.HeroName}");
+            }
+        }
+
+        /// <summary>
+        /// 获取指定玩家的英雄
+        /// </summary>
+        public List<Hero> GetHeroesForPlayer(int playerId)
+        {
+            var result = new List<Hero>();
+            foreach (var hero in runtimeHeroes)
+            {
+                if (hero.OwnerPlayerId == playerId)
+                    result.Add(hero);
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// 根据 ID 查找英雄
+        /// </summary>
+        public Hero GetHeroById(string heroId)
+        {
+            foreach (var hero in runtimeHeroes)
+            {
+                if (hero.HeroId == heroId)
+                    return hero;
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// 保存前收集所有英雄数据
+        /// </summary>
+        public void CollectHeroSaveData()
+        {
+            Data.HeroSaveDataList.Clear();
+            foreach (var hero in runtimeHeroes)
+            {
+                Data.HeroSaveDataList.Add(hero.ToSaveData());
+            }
+        }
+
+        #endregion
     }
 
     // 存档数据结构（所有公共字段会被 ES3 自动序列化）
@@ -81,6 +158,8 @@ namespace TH7
         public Reactive<int> Day = new(1);
         public PlayerResources Resources = new();
         public ReactiveList<TownData> Towns = new();
-        public ReactiveList<HeroData> Heroes = new();
+
+        // 英雄存档数据（用于序列化）
+        public List<HeroSaveData> HeroSaveDataList = new();
     }
 }

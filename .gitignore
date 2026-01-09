@@ -3,3 +3,7 @@
 .claude/
 .cursor/
 .mcp.json
+
+# anim image it is too fucking big
+**/*_anim_image/
+**/*_anim_image.meta

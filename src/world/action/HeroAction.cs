@@ -24,10 +24,10 @@ namespace TH7
     /// </summary>
     public abstract class HeroAction
     {
-        public HeroData Hero { get; }
+        public Hero Hero { get; }
         public abstract HeroActionType Type { get; }
 
-        protected HeroAction(HeroData hero)
+        protected HeroAction(Hero hero)
         {
             Hero = hero;
         }
@@ -49,13 +49,13 @@ namespace TH7
     public class MoveAction : HeroAction
     {
         public List<Vector3Int> Path { get; }
-        public Vector3Int Destination => Path?.Count > 0 ? Path[^1] : Hero.CellPosition;
+        public Vector3Int Destination => Path?.Count > 0 ? Path[^1] : Hero.CellPosition.Value;
 
         public override HeroActionType Type => HeroActionType.Move;
 
         int? cachedCost;
 
-        public MoveAction(HeroData hero, List<Vector3Int> path) : base(hero)
+        public MoveAction(Hero hero, List<Vector3Int> path) : base(hero)
         {
             Path = path ?? new List<Vector3Int>();
         }
@@ -89,7 +89,7 @@ namespace TH7
 
         public override HeroActionType Type => HeroActionType.EnterTown;
 
-        public EnterTownAction(HeroData hero, TownData town) : base(hero)
+        public EnterTownAction(Hero hero, TownData town) : base(hero)
         {
             Town = town;
         }
@@ -112,7 +112,7 @@ namespace TH7
 
         public override HeroActionType Type => HeroActionType.PickUp;
 
-        public PickUpAction(HeroData hero, Vector3Int cell, MapObjectType objectType) : base(hero)
+        public PickUpAction(Hero hero, Vector3Int cell, MapObjectType objectType) : base(hero)
         {
             TargetCell = cell;
             ObjectType = objectType;
@@ -133,11 +133,11 @@ namespace TH7
     public class AttackAction : HeroAction
     {
         public Vector3Int TargetCell { get; }
-        public object Target { get; } // 可以是 HeroData 或 MonsterData
+        public object Target { get; } // 可以是 Hero 或 MonsterData
 
         public override HeroActionType Type => HeroActionType.Attack;
 
-        public AttackAction(HeroData hero, Vector3Int cell, object target) : base(hero)
+        public AttackAction(Hero hero, Vector3Int cell, object target) : base(hero)
         {
             TargetCell = cell;
             Target = target;
@@ -158,7 +158,7 @@ namespace TH7
     {
         public override HeroActionType Type => HeroActionType.Wait;
 
-        public WaitAction(HeroData hero) : base(hero) { }
+        public WaitAction(Hero hero) : base(hero) { }
 
         public override bool CanExecute(WorldContext context) => true;
         public override int GetMovementCost(WorldContext context) => 0;
@@ -171,7 +171,7 @@ namespace TH7
     {
         public override HeroActionType Type => HeroActionType.EndTurn;
 
-        public EndTurnAction(HeroData hero) : base(hero) { }
+        public EndTurnAction(Hero hero) : base(hero) { }
 
         public override bool CanExecute(WorldContext context) => true;
         public override int GetMovementCost(WorldContext context) => 0;

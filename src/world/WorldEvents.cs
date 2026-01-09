@@ -20,7 +20,7 @@ namespace TH7
     /// </summary>
     public struct HeroTurnStartedEvent
     {
-        public HeroData Hero;
+        public Hero Hero;
     }
 
     /// <summary>
@@ -28,7 +28,7 @@ namespace TH7
     /// </summary>
     public struct HeroTurnEndedEvent
     {
-        public HeroData Hero;
+        public Hero Hero;
     }
 
     /// <summary>
@@ -76,7 +76,7 @@ namespace TH7
     /// </summary>
     public struct HeroMovedEvent
     {
-        public HeroData Hero;
+        public Hero Hero;
         public Vector3Int FromCell;
         public Vector3Int ToCell;
     }
@@ -86,7 +86,7 @@ namespace TH7
     /// </summary>
     public struct EnterTownRequestedEvent
     {
-        public HeroData Hero;
+        public Hero Hero;
         public TownData Town;
     }
 
@@ -95,7 +95,7 @@ namespace TH7
     /// </summary>
     public struct BattleRequestedEvent
     {
-        public HeroData Hero;
+        public Hero Hero;
         public object Enemy;
     }
 
