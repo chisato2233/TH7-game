@@ -24,6 +24,10 @@ namespace TH7
         [SerializeField] TownPanelUI townPanel;
         [SerializeField] ResourceBarUI resourceBar;
 
+        [Header("World View")]
+        [SerializeField] PathPreview pathPreview;
+        [SerializeField] HeroSelectionIndicator selectionIndicator;
+
         [Header("Config")]
         [SerializeField] TownConfigDatabase townConfigDatabase;
         [SerializeField] UnitConfigDatabase unitConfigDatabase;
@@ -108,6 +112,12 @@ namespace TH7
             var camera = worldCamera != null ? worldCamera : Camera.main;
             playerProvider = new PlayerActionProvider(mapManager, camera, pathfinder);
 
+            // 设置路径预览和选择指示器
+            if (pathPreview != null)
+                playerProvider.SetPathPreview(pathPreview);
+            if (selectionIndicator != null)
+                playerProvider.SetSelectionIndicator(selectionIndicator);
+
             // 初始化回合管理器（现在是 GameBehaviour，通过 SerializeField 引用）
             if (turnManager != null)
             {
@@ -146,10 +156,29 @@ namespace TH7
             inputController?.EnableInput();
             playerProvider?.SetEnabled(true);
 
+            // 聚焦到第一个英雄
+            FocusOnFirstHero();
+
             // 开始第一天
             turnManager.StartDay();
 
             Debug.Log("[WorldScene] Game started");
+        }
+
+        void FocusOnFirstHero()
+        {
+            var heroes = sessionContext?.GetHeroesForPlayer(0);
+            if (heroes == null || heroes.Count == 0) return;
+
+            var hero = heroes[0];
+            var targetPos = hero.transform.position;
+
+            // 移动相机到英雄位置
+            if (worldCamera != null)
+            {
+                var camPos = worldCamera.transform.position;
+                worldCamera.transform.position = new Vector3(targetPos.x, targetPos.y, camPos.z);
+            }
         }
 
         // ============================================

@@ -49,6 +49,14 @@ Assets/                     # 项目根目录
         UIBehaviour.cs      # UI 基类，继承 GameBehaviour
         UIWindowBehaviour.cs # 窗口基类，DOTween/Animator 动画
         ScrollViewUI.cs     # 通用滚动列表
+      StateMachine/         # 状态机系统
+        IState.cs           # 状态接口 + StateBase
+        StateMachine.cs     # 核心状态机（泛型）
+        StateTransition.cs  # 转换规则
+        StateBindingAttribute.cs # 状态绑定特性（反射注册）
+        StateMachineBehaviour.cs # MonoBehaviour 封装
+        GameStateMachineBehaviour.cs # GameBehaviour 封装（支持事件订阅）
+        HierarchicalStateMachine.cs # 层级状态机
       Ability/              # 技能系统 (GAS) - GameFramework 命名空间
         Tag/                # 标签系统
           GameplayTag.cs    # 层级标签
@@ -92,7 +100,8 @@ Assets/                     # 项目根目录
       TerrainConfig.cs      # 地形配置
     world/                  # 世界探索系统
       hero/                 # 英雄模块
-        Hero.cs             # 英雄组件（Data+Controller+View）
+        Hero.cs             # 英雄组件（Data+Controller+View+StateMachine）
+        HeroStateMachine.cs # 英雄状态枚举和状态实现
         HeroConfig.cs       # 英雄配置 (SO)
         HeroConfigDatabase.cs # 英雄配置数据库 (SO)
         HeroSaveData.cs     # 英雄存档数据
@@ -104,10 +113,15 @@ Assets/                     # 项目根目录
         IActionProvider.cs  # 行动提供者接口
         PlayerActionProvider.cs # 玩家输入提供者
         IPathfinder.cs      # 寻路接口
+      turn/                 # 回合系统
+        TurnStateMachine.cs # 回合状态枚举和状态实现
       input/                # 输入系统
         WorldInputController.cs # 输入控制器
         CinemachineCameraController.cs # 相机控制
-      WorldTurnManager.cs   # 回合管理器
+      view/                 # 视觉效果
+        PathPreview.cs      # 路径预览显示
+        HeroSelectionIndicator.cs # 英雄选择指示器
+      WorldTurnManager.cs   # 回合管理器（使用 TurnStateMachine）
       WorldEvents.cs        # 世界事件定义
     town/                   # 城镇系统
       TownData.cs           # 城镇数据
@@ -317,6 +331,7 @@ Assets/
 | 模块 | 指南 | 说明 |
 |------|------|------|
 | 框架层 | [src/framework/guide.md](src/framework/guide.md) | 系统管理、事件、上下文、响应式数据、ES3 集成 |
+| 状态机 | [src/framework/StateMachine/guide.md](src/framework/StateMachine/guide.md) | 泛型状态机、自动注册、层级状态机 |
 | UI 框架 | [src/framework/UI/guide.md](src/framework/UI/guide.md) | UIBehaviour、窗口、滚动列表 |
 | 技能系统 | [src/framework/Ability/guide.md](src/framework/Ability/guide.md) | GAS: 标签、响应式属性、效果、技能、ASC |
 | 上下文 | [src/context/guide.md](src/context/guide.md) | Session、World、Battle 上下文 |

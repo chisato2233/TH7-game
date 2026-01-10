@@ -25,6 +25,7 @@ namespace TH7
         public bool RequiresInput => true;
         public bool IsWaiting => state == PlayerInputState.WaitingForTarget;
         public PlayerInputState State => state;
+        public Hero CurrentHero => currentHero;
 
         PlayerInputState state = PlayerInputState.Disabled;
         Hero currentHero;
@@ -41,11 +42,39 @@ namespace TH7
         InputAction rightClickAction;
         InputAction endTurnAction;
 
+        // 路径预览
+        PathPreview pathPreview;
+        HeroSelectionIndicator selectionIndicator;
+        Vector3Int lastHoverCell = new(int.MinValue, int.MinValue, int.MinValue);
+        List<Vector3Int> previewPath;
+
+        // 事件
+        public event Action<Hero> OnHeroSelected;
+        public event Action OnHeroDeselected;
+        public event Action<List<Vector3Int>, bool> OnPathPreviewUpdated;
+
         public PlayerActionProvider(MapManager mapManager, Camera camera, IPathfinder pathfinder)
         {
             this.mapManager = mapManager;
             this.mainCamera = camera ?? Camera.main;
             this.pathfinder = pathfinder;
+        }
+
+        /// <summary>
+        /// 设置路径预览组件
+        /// </summary>
+        public void SetPathPreview(PathPreview preview)
+        {
+            pathPreview = preview;
+            pathPreview?.Initialize(mapManager);
+        }
+
+        /// <summary>
+        /// 设置选择指示器
+        /// </summary>
+        public void SetSelectionIndicator(HeroSelectionIndicator indicator)
+        {
+            selectionIndicator = indicator;
         }
 
         /// <summary>
@@ -102,6 +131,10 @@ namespace TH7
             onActionReady = callback;
             state = PlayerInputState.WaitingForTarget;
 
+            // 显示选择指示器
+            selectionIndicator?.Select(hero);
+            OnHeroSelected?.Invoke(hero);
+
             Debug.Log($"[PlayerInput] 等待 {hero.HeroName} 的行动指令...");
         }
 
@@ -111,6 +144,7 @@ namespace TH7
             {
                 state = PlayerInputState.Idle;
                 onActionReady = null;
+                HidePreview();
                 Debug.Log("[PlayerInput] 行动请求已取消");
             }
         }
@@ -122,7 +156,88 @@ namespace TH7
             {
                 onActionReady = null;
                 currentHero = null;
+                HidePreview();
+                selectionIndicator?.Hide();
+                OnHeroDeselected?.Invoke();
             }
+        }
+
+        /// <summary>
+        /// 每帧更新（用于鼠标悬停预览）
+        /// </summary>
+        public void UpdateHover()
+        {
+            if (state != PlayerInputState.WaitingForTarget || currentHero == null) return;
+
+            var mousePos = Mouse.current.position.ReadValue();
+            var worldPos = mainCamera.ScreenToWorldPoint(new Vector3(mousePos.x, mousePos.y, 0));
+            var cellPos = mapManager.WorldToCell(worldPos);
+
+            // 只有格子变化时才更新
+            if (cellPos == lastHoverCell) return;
+            lastHoverCell = cellPos;
+
+            UpdatePathPreview(cellPos);
+        }
+
+        void UpdatePathPreview(Vector3Int targetCell)
+        {
+            if (currentHero == null || context == null)
+            {
+                HidePreview();
+                return;
+            }
+
+            // 检查是否可移动
+            var clickResult = AnalyzeClick(targetCell);
+            if (clickResult.Type != ClickResultType.EmptyTile)
+            {
+                HidePreview();
+                return;
+            }
+
+            // 计算路径
+            if (pathfinder != null)
+            {
+                previewPath = pathfinder.FindPath(currentHero.CellPosition.Value, targetCell, context);
+            }
+            else
+            {
+                previewPath = new List<Vector3Int> { targetCell };
+            }
+
+            if (previewPath == null || previewPath.Count == 0)
+            {
+                HidePreview();
+                return;
+            }
+
+            // 计算移动力消耗
+            int cost = CalculatePathCost(previewPath);
+            bool canReach = currentHero.MovementPoints.Value >= cost;
+
+            // 显示路径预览
+            pathPreview?.ShowPath(previewPath, canReach);
+            OnPathPreviewUpdated?.Invoke(previewPath, canReach);
+        }
+
+        int CalculatePathCost(List<Vector3Int> path)
+        {
+            if (path == null || context?.Map == null) return 0;
+
+            int total = 0;
+            foreach (var cell in path)
+            {
+                total += context.Map.GetMovementCost(context.Map.CellToWorld(cell));
+            }
+            return total;
+        }
+
+        void HidePreview()
+        {
+            pathPreview?.Hide();
+            previewPath = null;
+            lastHoverCell = new Vector3Int(int.MinValue, int.MinValue, int.MinValue);
         }
 
         void OnClick(InputAction.CallbackContext ctx)
@@ -224,6 +339,10 @@ namespace TH7
         void SubmitAction(HeroAction action)
         {
             state = PlayerInputState.Executing;
+            HidePreview();
+            selectionIndicator?.Hide();
+            OnHeroDeselected?.Invoke();
+
             var callback = onActionReady;
             onActionReady = null;
             callback?.Invoke(action);
@@ -232,6 +351,8 @@ namespace TH7
         public void Dispose()
         {
             UnbindInputActions();
+            HidePreview();
+            selectionIndicator?.Hide();
         }
     }
 

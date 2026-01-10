@@ -96,6 +96,15 @@ namespace TH7
             Debug.Log("[WorldInput] 输入已禁用");
         }
 
+        void Update()
+        {
+            // 更新鼠标悬停预览
+            if (isEnabled && actionProvider != null)
+            {
+                actionProvider.UpdateHover();
+            }
+        }
+
         void OnDestroy()
         {
             // 如果是手动创建的 InputAction，需要清理

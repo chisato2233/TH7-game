@@ -8,31 +8,36 @@ namespace TH7
     /// 世界回合管理器
     /// 管理回合流程、英雄行动顺序
     /// </summary>
-    public class WorldTurnManager : GameBehaviour
+    public class WorldTurnManager : GameStateMachineBehaviour<TurnState, WorldTurnManager>
     {
         [Header("References")]
         [SerializeField] WorldSceneController sceneController;
-
-        [Header("Debug")]
-        [SerializeField] bool debugMode;
 
         // 依赖
         WorldContext worldContext;
         ActionExecutor actionExecutor;
         readonly Dictionary<int, IActionProvider> providers = new();
 
-        // 状态
+        // 状态数据
         TurnPhase phase = TurnPhase.Idle;
         int currentPlayerIndex;
         int currentHeroIndex;
         Hero currentHero;
+        HeroAction pendingAction;
 
         // 事件系统
         EventSystem eventSystem;
 
+        // 属性
         public TurnPhase Phase => phase;
         public Hero CurrentHero => currentHero;
         public bool IsPlayerTurn => phase == TurnPhase.PlayerTurn;
+        public bool IsWaitingForAction => IsInState(TurnState.WaitingForAction);
+
+        // StateMachineBehaviour 实现
+        protected override WorldTurnManager GetOwner() => this;
+        protected override TurnState GetInitialState() => TurnState.Idle;
+        protected override bool AutoInitialize => false; // 手动初始化
 
         /// <summary>
         /// 初始化回合管理器
@@ -49,6 +54,9 @@ namespace TH7
                 actionExecutor.OnActionStarted += OnActionStarted;
                 actionExecutor.OnActionCompleted += OnActionCompleted;
             }
+
+            // 初始化状态机
+            InitializeStateMachine();
 
             if (debugMode)
                 Debug.Log("[TurnManager] Initialized");
@@ -67,6 +75,14 @@ namespace TH7
         /// </summary>
         public void StartDay()
         {
+            ChangeState(TurnState.DayStart);
+        }
+
+        /// <summary>
+        /// 处理日开始逻辑（由状态调用）
+        /// </summary>
+        public void ProcessDayStart()
+        {
             if (debugMode)
                 Debug.Log("[TurnManager] 新的一天开始");
 
@@ -75,7 +91,10 @@ namespace TH7
             if (session != null)
             {
                 foreach (var hero in session.Heroes)
+                {
                     hero.ResetMovement();
+                    hero.OnTurnStart();
+                }
             }
 
             // 从玩家回合开始
@@ -127,8 +146,25 @@ namespace TH7
                 return;
             }
 
-            // 请求行动
-            provider.RequestAction(hero, worldContext, OnActionReceived);
+            // 切换到等待行动状态
+            ChangeState(TurnState.WaitingForAction);
+        }
+
+        /// <summary>
+        /// 请求下一个行动（由状态调用）
+        /// </summary>
+        public void RequestNextAction()
+        {
+            if (currentHero == null) return;
+
+            if (!providers.TryGetValue(currentHero.OwnerPlayerId, out var provider))
+            {
+                Debug.LogError($"[TurnManager] 找不到玩家 {currentHero.OwnerPlayerId} 的 ActionProvider");
+                EndHeroTurn();
+                return;
+            }
+
+            provider.RequestAction(currentHero, worldContext, OnActionReceived);
         }
 
         /// <summary>
@@ -142,10 +178,12 @@ namespace TH7
                 return;
             }
 
+            pendingAction = action;
+
             // 结束回合特殊处理
             if (action.Type == HeroActionType.EndTurn)
             {
-                EndDay();
+                ChangeState(TurnState.DayEnd);
                 return;
             }
 
@@ -154,6 +192,15 @@ namespace TH7
             {
                 EndHeroTurn();
                 return;
+            }
+
+            // 切换到执行状态
+            ChangeState(TurnState.ExecutingAction);
+
+            // 通知英雄开始移动
+            if (action.Type == HeroActionType.Move)
+            {
+                currentHero?.StartMoving();
             }
 
             // 执行行动
@@ -179,6 +226,9 @@ namespace TH7
         /// </summary>
         void OnActionExecuted(ActionResult result)
         {
+            // 停止英雄移动
+            currentHero?.StopMoving();
+
             // 根据结果处理
             switch (result.Type)
             {
@@ -186,26 +236,28 @@ namespace TH7
                     var town = result.Data as TownData;
                     if (town != null && currentHero != null)
                     {
+                        currentHero.StartInteraction();
+                        ChangeState(TurnState.Interacting);
                         eventSystem?.Publish(new EnterTownRequestedEvent
                         {
                             Hero = currentHero,
                             Town = town
                         });
                     }
-                    // 不自动继续，等待城镇关闭后调用 Resume()
                     return;
 
                 case ActionResultType.TriggerBattle:
+                    currentHero?.StartInteraction();
+                    ChangeState(TurnState.Interacting);
                     eventSystem?.Publish(new BattleRequestedEvent
                     {
                         Hero = currentHero,
                         Enemy = result.Data
                     });
-                    // 不自动继续，等待战斗结束后调用 Resume()
                     return;
 
                 case ActionResultType.TurnEnded:
-                    EndDay();
+                    ChangeState(TurnState.DayEnd);
                     return;
             }
 
@@ -225,10 +277,7 @@ namespace TH7
         /// </summary>
         void ContinueHeroTurn()
         {
-            if (!providers.TryGetValue(currentHero.OwnerPlayerId, out var provider))
-                return;
-
-            provider.RequestAction(currentHero, worldContext, OnActionReceived);
+            ChangeState(TurnState.WaitingForAction);
         }
 
         /// <summary>
@@ -238,6 +287,7 @@ namespace TH7
         {
             if (currentHero != null)
             {
+                currentHero.OnTurnEnd();
                 eventSystem?.Publish(new HeroTurnEndedEvent { Hero = currentHero });
             }
 
@@ -265,7 +315,7 @@ namespace TH7
             // 简化：暂时只有人类玩家
             if (currentPlayerIndex > 0)
             {
-                EndDay();
+                ChangeState(TurnState.DayEnd);
             }
             else
             {
@@ -274,9 +324,9 @@ namespace TH7
         }
 
         /// <summary>
-        /// 结束一天
+        /// 处理日结束逻辑（由状态调用）
         /// </summary>
-        void EndDay()
+        public void ProcessDayEnd()
         {
             var previousPhase = phase;
             phase = TurnPhase.TurnEnd;
@@ -319,7 +369,7 @@ namespace TH7
 
             // 自动开始新的一天
             phase = TurnPhase.Idle;
-            StartDay();
+            ChangeState(TurnState.DayStart);
         }
 
         void ProcessTownProduction(SessionContext session)
@@ -348,6 +398,9 @@ namespace TH7
         /// </summary>
         public void Resume()
         {
+            // 结束英雄交互状态
+            currentHero?.EndInteraction();
+
             if (currentHero != null && currentHero.CanAct)
             {
                 ContinueHeroTurn();

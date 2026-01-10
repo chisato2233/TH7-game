@@ -22,7 +22,7 @@ namespace TH7
     /// <summary>
     /// 英雄组件 - 统一管理数据、逻辑和视觉表现
     /// </summary>
-    public class Hero : GameBehaviour
+    public class Hero : GameStateMachineBehaviour<HeroState, Hero>
     {
         #region Identity
 
@@ -37,6 +37,17 @@ namespace TH7
         public int OwnerPlayerId => ownerPlayerId;
         public bool IsPlayerControlled => ownerPlayerId == 0;
         public HeroConfig Config => config;
+
+        #endregion
+
+        #region State Machine
+
+        // GameStateMachineBehaviour 实现
+        protected override Hero GetOwner() => this;
+        protected override HeroState GetInitialState() => HeroState.Idle;
+
+        public bool IsIdle => IsInState(HeroState.Idle);
+        public bool IsMoving => IsInState(HeroState.Moving);
 
         #endregion
 
@@ -339,6 +350,7 @@ namespace TH7
         {
             ResetMovement();
             abilitySystem?.OnTurnStart();
+            ChangeState(HeroState.Idle);
         }
 
         /// <summary>
@@ -347,6 +359,59 @@ namespace TH7
         public void OnTurnEnd()
         {
             abilitySystem?.OnTurnEnd();
+            ChangeState(HeroState.Disabled);
+        }
+
+        #endregion
+
+        #region State Machine Control
+
+        /// <summary>
+        /// 开始移动
+        /// </summary>
+        public void StartMoving()
+        {
+            ChangeState(HeroState.Moving);
+        }
+
+        /// <summary>
+        /// 停止移动
+        /// </summary>
+        public void StopMoving()
+        {
+            ChangeState(CanAct ? HeroState.Idle : HeroState.Disabled);
+        }
+
+        /// <summary>
+        /// 开始交互（城镇、战斗等）
+        /// </summary>
+        public void StartInteraction()
+        {
+            ChangeState(HeroState.Interacting);
+        }
+
+        /// <summary>
+        /// 结束交互
+        /// </summary>
+        public void EndInteraction()
+        {
+            ChangeState(CanAct ? HeroState.Idle : HeroState.Disabled);
+        }
+
+        /// <summary>
+        /// 禁用英雄
+        /// </summary>
+        public void Disable()
+        {
+            ChangeState(HeroState.Disabled);
+        }
+
+        /// <summary>
+        /// 启用英雄
+        /// </summary>
+        public void Enable()
+        {
+            ChangeState(HeroState.Idle);
         }
 
         #endregion
@@ -404,6 +469,27 @@ namespace TH7
             {
                 animator.Play(animationName);
             }
+        }
+
+        /// <summary>
+        /// 设置移动状态（控制 Idle/Move 动画切换）
+        /// </summary>
+        public void SetMoving(bool isMoving)
+        {
+            if (animator != null && HasAnimatorParameter("IsMoving"))
+            {
+                animator.SetBool("IsMoving", isMoving);
+            }
+        }
+
+        bool HasAnimatorParameter(string paramName)
+        {
+            if (animator == null || animator.runtimeAnimatorController == null) return false;
+            foreach (var param in animator.parameters)
+            {
+                if (param.name == paramName) return true;
+            }
+            return false;
         }
 
         /// <summary>

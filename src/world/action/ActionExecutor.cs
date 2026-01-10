@@ -118,16 +118,29 @@ namespace TH7
             // 移动动画
             if (!SkipAnimations)
             {
+                // 开始移动动画
+                hero.SetMoving(true);
+
+                Vector3Int previousCell = hero.CellPosition.Value;
+
                 foreach (var cell in path)
                 {
-                    var targetWorld = context.Map.CellToWorld(cell);
+                    // 设置朝向
+                    Vector3Int direction = cell - previousCell;
+                    hero.SetFacing(direction);
 
-                    // 更新英雄位置（会自动触发 View 更新）
+                    // 平滑移动到目标位置
+                    yield return MoveToCell(hero, cell);
+
+                    // 更新英雄逻辑位置
                     hero.MoveTo(cell);
                     OnHeroMoved?.Invoke(hero, cell);
 
-                    yield return new WaitForSeconds(1f / MoveSpeed);
+                    previousCell = cell;
                 }
+
+                // 停止移动动画
+                hero.SetMoving(false);
             }
             else
             {
@@ -139,6 +152,29 @@ namespace TH7
             Debug.Log($"[ActionExecutor] {hero.HeroName} 移动到 {action.Destination}，剩余移动力: {hero.MovementPoints.Value}");
             onComplete?.Invoke(ActionResult.Succeeded(ActionResultType.HeroMoved));
         }
+
+        /// <summary>
+        /// 平滑移动英雄到目标格子
+        /// </summary>
+        IEnumerator MoveToCell(Hero hero, Vector3Int targetCell)
+        {
+            Vector3 startPos = hero.transform.position;
+            Vector3 targetPos = context.Map.CellToWorld(targetCell);
+            float duration = 1f / MoveSpeed;
+            float elapsed = 0f;
+
+            while (elapsed < duration)
+            {
+                elapsed += Time.deltaTime;
+                float t = Mathf.Clamp01(elapsed / duration);
+                hero.transform.position = Vector3.Lerp(startPos, targetPos, SmoothStep(t));
+                yield return null;
+            }
+
+            hero.transform.position = targetPos;
+        }
+
+        static float SmoothStep(float t) => t * t * (3f - 2f * t);
 
         ActionResult ExecuteEnterTown(EnterTownAction action)
         {
