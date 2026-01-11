@@ -18,7 +18,21 @@ namespace TH7
         ActionExecutor actionExecutor;
         readonly Dictionary<int, IActionProvider> providers = new();
 
-        // 状态数据
+        // ============================================
+        // Reactive 数据（供 UI 绑定）
+        // ============================================
+
+        /// <summary>
+        /// 当前回合阶段（Reactive，UI 可绑定显示"玩家回合"/"AI回合"等）
+        /// </summary>
+        public Reactive<TurnPhase> CurrentPhase { get; } = new(TurnPhase.Idle);
+
+        /// <summary>
+        /// 当前行动的英雄（Reactive，UI 可绑定）
+        /// </summary>
+        public Reactive<Hero> ActiveHero { get; } = new();
+
+        // 状态数据（同步到 Reactive）
         TurnPhase phase = TurnPhase.Idle;
         int currentPlayerIndex;
         int currentHeroIndex;
@@ -112,13 +126,16 @@ namespace TH7
 
             if (playerHeroes.Count == 0)
             {
-                // 该玩家没有英雄，跳到下一个
-                NextPlayer();
+                // 该玩家没有英雄，直接结束回合
+                ChangeState(TurnState.DayEnd);
                 return;
             }
 
             var previousPhase = phase;
             phase = playerId == 0 ? TurnPhase.PlayerTurn : TurnPhase.AITurn;
+
+            // 同步到 Reactive
+            CurrentPhase.Value = phase;
 
             eventSystem?.Publish(new TurnPhaseChangedEvent
             {
@@ -131,12 +148,14 @@ namespace TH7
         }
 
         /// <summary>
-        /// 开始英雄回合
+        /// 开始玩家行动阶段（不再指定具体英雄，让玩家自由选择）
         /// </summary>
         void StartHeroTurn(Hero hero)
         {
-            currentHero = hero;
+            // 不再自动选中英雄，由玩家手动选择
+            currentHero = null;
 
+            // 发布事件通知 UI 可以高亮可行动的英雄
             eventSystem?.Publish(new HeroTurnStartedEvent { Hero = hero });
 
             if (!providers.TryGetValue(hero.OwnerPlayerId, out var provider))
@@ -155,16 +174,16 @@ namespace TH7
         /// </summary>
         public void RequestNextAction()
         {
-            if (currentHero == null) return;
-
-            if (!providers.TryGetValue(currentHero.OwnerPlayerId, out var provider))
+            // 获取玩家 Provider（玩家 ID = 0）
+            if (!providers.TryGetValue(0, out var provider))
             {
-                Debug.LogError($"[TurnManager] 找不到玩家 {currentHero.OwnerPlayerId} 的 ActionProvider");
-                EndHeroTurn();
+                Debug.LogError("[TurnManager] 找不到玩家 0 的 ActionProvider");
+                ChangeState(TurnState.DayEnd);
                 return;
             }
 
-            provider.RequestAction(currentHero, worldContext, OnActionReceived);
+            // 传递 null，让 Provider 自己管理可选英雄列表
+            provider.RequestAction(null, worldContext, OnActionReceived);
         }
 
         /// <summary>
@@ -179,6 +198,10 @@ namespace TH7
             }
 
             pendingAction = action;
+            currentHero = action.Hero; // 从 action 中获取执行行动的英雄
+
+            // 同步到 Reactive
+            ActiveHero.Value = currentHero;
 
             // 结束回合特殊处理
             if (action.Type == HeroActionType.EndTurn)
@@ -187,21 +210,17 @@ namespace TH7
                 return;
             }
 
-            // 等待特殊处理
+            // 等待特殊处理（跳过当前英雄）
             if (action.Type == HeroActionType.Wait)
             {
-                EndHeroTurn();
+                // 标记当前英雄本回合不再行动
+                currentHero?.Disable();
+                ContinuePlayerTurn();
                 return;
             }
 
             // 切换到执行状态
             ChangeState(TurnState.ExecutingAction);
-
-            // 通知英雄开始移动
-            if (action.Type == HeroActionType.Move)
-            {
-                currentHero?.StartMoving();
-            }
 
             // 执行行动
             actionExecutor.Execute(action, OnActionExecuted);
@@ -261,66 +280,52 @@ namespace TH7
                     return;
             }
 
-            // 检查当前英雄是否还能行动
-            if (currentHero != null && currentHero.CanAct)
+            // 行动完成后，继续玩家回合（让玩家选择下一个英雄或继续当前英雄）
+            ContinuePlayerTurn();
+        }
+
+        /// <summary>
+        /// 继续玩家回合（检查是否还有可行动的英雄）
+        /// </summary>
+        void ContinuePlayerTurn()
+        {
+            var session = worldContext?.GetParent<SessionContext>();
+            if (session == null)
             {
-                ContinueHeroTurn();
+                ChangeState(TurnState.DayEnd);
+                return;
+            }
+
+            // 检查是否还有可行动的英雄
+            bool hasActableHero = false;
+            foreach (var hero in session.Heroes)
+            {
+                if (hero.IsPlayerControlled && hero.CanAct)
+                {
+                    hasActableHero = true;
+                    break;
+                }
+            }
+
+            if (hasActableHero)
+            {
+                // 继续等待玩家行动
+                ChangeState(TurnState.WaitingForAction);
             }
             else
             {
-                EndHeroTurn();
+                // 所有英雄都行动完毕，结束回合
+                ChangeState(TurnState.DayEnd);
             }
         }
 
         /// <summary>
-        /// 继续当前英雄回合
-        /// </summary>
-        void ContinueHeroTurn()
-        {
-            ChangeState(TurnState.WaitingForAction);
-        }
-
-        /// <summary>
-        /// 结束当前英雄回合
+        /// 结束当前英雄回合（用于 StartHeroTurn 中找不到 Provider 的情况）
         /// </summary>
         void EndHeroTurn()
         {
-            if (currentHero != null)
-            {
-                currentHero.OnTurnEnd();
-                eventSystem?.Publish(new HeroTurnEndedEvent { Hero = currentHero });
-            }
-
-            var session = worldContext?.GetParent<SessionContext>();
-            var playerHeroes = session?.GetHeroesForPlayer(currentPlayerIndex) ?? new List<Hero>();
-
-            currentHeroIndex++;
-            if (currentHeroIndex < playerHeroes.Count)
-            {
-                StartHeroTurn(playerHeroes[currentHeroIndex]);
-            }
-            else
-            {
-                NextPlayer();
-            }
-        }
-
-        /// <summary>
-        /// 下一个玩家
-        /// </summary>
-        void NextPlayer()
-        {
-            currentPlayerIndex++;
-
-            // 简化：暂时只有人类玩家
-            if (currentPlayerIndex > 0)
-            {
-                ChangeState(TurnState.DayEnd);
-            }
-            else
-            {
-                StartPlayerTurn(currentPlayerIndex);
-            }
+            // 简化：直接结束回合
+            ChangeState(TurnState.DayEnd);
         }
 
         /// <summary>
@@ -330,6 +335,10 @@ namespace TH7
         {
             var previousPhase = phase;
             phase = TurnPhase.TurnEnd;
+
+            // 同步到 Reactive
+            CurrentPhase.Value = phase;
+            ActiveHero.Value = null;
 
             eventSystem?.Publish(new TurnPhaseChangedEvent
             {
@@ -369,6 +378,7 @@ namespace TH7
 
             // 自动开始新的一天
             phase = TurnPhase.Idle;
+            CurrentPhase.Value = phase;
             ChangeState(TurnState.DayStart);
         }
 
@@ -401,14 +411,8 @@ namespace TH7
             // 结束英雄交互状态
             currentHero?.EndInteraction();
 
-            if (currentHero != null && currentHero.CanAct)
-            {
-                ContinueHeroTurn();
-            }
-            else
-            {
-                EndHeroTurn();
-            }
+            // 继续玩家回合（检查是否还有可行动的英雄）
+            ContinuePlayerTurn();
         }
 
         protected override void OnDestroy()

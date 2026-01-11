@@ -27,6 +27,7 @@ namespace TH7
         [Header("World View")]
         [SerializeField] PathPreview pathPreview;
         [SerializeField] HeroSelectionIndicator selectionIndicator;
+        [SerializeField] SelectableHeroIndicator selectableHeroIndicator;
 
         [Header("Config")]
         [SerializeField] TownConfigDatabase townConfigDatabase;
@@ -118,6 +119,8 @@ namespace TH7
             if (selectionIndicator != null)
                 playerProvider.SetSelectionIndicator(selectionIndicator);
 
+            // 事件通过 EventSystem 自动订阅（使用 [AutoSubscribe] 特性）
+
             // 初始化回合管理器（现在是 GameBehaviour，通过 SerializeField 引用）
             if (turnManager != null)
             {
@@ -171,13 +174,24 @@ namespace TH7
             if (heroes == null || heroes.Count == 0) return;
 
             var hero = heroes[0];
-            var targetPos = hero.transform.position;
+
+            // 使用 MapManager 将格子坐标转换为世界坐标（更可靠）
+            Vector3 targetPos;
+            if (mapManager != null)
+            {
+                targetPos = mapManager.CellToWorld(hero.CellPosition.Value);
+            }
+            else
+            {
+                targetPos = hero.transform.position;
+            }
 
             // 移动相机到英雄位置
             if (worldCamera != null)
             {
                 var camPos = worldCamera.transform.position;
                 worldCamera.transform.position = new Vector3(targetPos.x, targetPos.y, camPos.z);
+                Debug.Log($"[WorldScene] 相机聚焦到英雄 {hero.HeroName} 位置: {targetPos}");
             }
         }
 
@@ -211,6 +225,35 @@ namespace TH7
         void OnActionCompleted(ActionCompletedEvent e)
         {
             Debug.Log($"[WorldScene] Action completed: {e.Action.Type} -> {e.Result.Type}");
+        }
+
+        /// <summary>
+        /// 可选择英雄列表变化时更新高亮
+        /// </summary>
+        [AutoSubscribe]
+        void OnSelectableHeroesChanged(SelectableHeroesChangedEvent e)
+        {
+            selectableHeroIndicator?.UpdateSelectableHeroes(e.Heroes);
+        }
+
+        /// <summary>
+        /// 玩家选中英雄时
+        /// </summary>
+        [AutoSubscribe]
+        void OnHeroSelected(HeroSelectedEvent e)
+        {
+            // 选中英雄后可以隐藏所有可选高亮（因为已经选中了）
+            // 或者保留其他英雄的高亮，让玩家可以切换
+            // 这里选择保留，方便玩家点击其他英雄切换
+        }
+
+        /// <summary>
+        /// 玩家取消选中英雄时
+        /// </summary>
+        [AutoSubscribe]
+        void OnHeroDeselected(HeroDeselectedEvent e)
+        {
+            // 可以在这里处理取消选中后的逻辑
         }
 
         /// <summary>
@@ -308,8 +351,11 @@ namespace TH7
 
         protected override void OnDestroy()
         {
-            // 清理 Provider
+            // 清理 PlayerProvider
             playerProvider?.Dispose();
+
+            // 清理可选英雄指示器
+            selectableHeroIndicator?.HideAll();
 
             // 清理城镇上下文
             if (townContext != null)

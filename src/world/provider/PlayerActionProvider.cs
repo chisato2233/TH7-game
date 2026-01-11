@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using GameFramework;
 
 namespace TH7
 {
@@ -12,30 +13,59 @@ namespace TH7
     {
         Disabled,           // 输入禁用
         Idle,               // 空闲，等待选择英雄
-        WaitingForTarget,   // 已选中英雄，等待点击目标
+        HeroSelected,       // 已选中英雄，等待点击目标（可右键取消）
         Executing           // 正在执行行动
     }
 
     /// <summary>
     /// 玩家行动提供者
     /// 将玩家输入转换为 HeroAction
+    ///
+    /// 交互流程：
+    /// 1. Idle - 等待玩家点击英雄选中
+    /// 2. HeroSelected - 选中后显示路径预览，等待点击目标或右键取消
+    /// 3. Executing - 执行行动中
+    ///
+    /// 发布的事件（通过 EventSystem）：
+    /// - SelectableHeroesChangedEvent: 可选英雄列表变化
+    /// - HeroSelectedEvent: 英雄被选中
+    /// - HeroDeselectedEvent: 英雄取消选中
+    /// - PathPreviewUpdatedEvent: 路径预览更新
     /// </summary>
     public class PlayerActionProvider : IActionProvider
     {
         public bool RequiresInput => true;
-        public bool IsWaiting => state == PlayerInputState.WaitingForTarget;
+        public bool IsWaiting => state == PlayerInputState.HeroSelected || state == PlayerInputState.Idle;
         public PlayerInputState State => state;
-        public Hero CurrentHero => currentHero;
 
+        // ============================================
+        // Reactive 数据（供 UI 绑定）
+        // ============================================
+
+        /// <summary>
+        /// 当前选中的英雄（Reactive，UI 可绑定显示英雄信息）
+        /// </summary>
+        public Reactive<Hero> SelectedHero { get; } = new();
+
+        /// <summary>
+        /// 当前输入状态（Reactive，UI 可绑定显示状态）
+        /// </summary>
+        public Reactive<PlayerInputState> InputState { get; } = new(PlayerInputState.Disabled);
+
+        // 内部状态（同步到 Reactive）
         PlayerInputState state = PlayerInputState.Disabled;
         Hero currentHero;
         WorldContext context;
         Action<HeroAction> onActionReady;
 
+        // 可选择的英雄列表（当前回合可行动的英雄）
+        List<Hero> selectableHeroes = new();
+
         // 依赖
         readonly MapManager mapManager;
         readonly Camera mainCamera;
         readonly IPathfinder pathfinder;
+        EventSystem eventSystem;
 
         // 输入引用
         InputAction clickAction;
@@ -48,16 +78,12 @@ namespace TH7
         Vector3Int lastHoverCell = new(int.MinValue, int.MinValue, int.MinValue);
         List<Vector3Int> previewPath;
 
-        // 事件
-        public event Action<Hero> OnHeroSelected;
-        public event Action OnHeroDeselected;
-        public event Action<List<Vector3Int>, bool> OnPathPreviewUpdated;
-
         public PlayerActionProvider(MapManager mapManager, Camera camera, IPathfinder pathfinder)
         {
             this.mapManager = mapManager;
             this.mainCamera = camera ?? Camera.main;
             this.pathfinder = pathfinder;
+            this.eventSystem = GameEntry.Instance?.GetSystem<EventSystem>();
         }
 
         /// <summary>
@@ -124,27 +150,113 @@ namespace TH7
             }
         }
 
+        /// <summary>
+        /// 请求行动 - 进入 Idle 状态，等待玩家选择英雄
+        /// </summary>
         public void RequestAction(Hero hero, WorldContext ctx, Action<HeroAction> callback)
         {
-            currentHero = hero;
             context = ctx;
             onActionReady = callback;
-            state = PlayerInputState.WaitingForTarget;
+
+            // 获取当前可行动的英雄列表
+            UpdateSelectableHeroes();
+
+            // 进入空闲状态，等待玩家点击选择英雄
+            state = PlayerInputState.Idle;
+            currentHero = null;
+
+            Debug.Log($"[PlayerInput] 等待玩家选择英雄... (可选: {selectableHeroes.Count} 个)");
+        }
+
+        /// <summary>
+        /// 更新可选择的英雄列表
+        /// </summary>
+        void UpdateSelectableHeroes()
+        {
+            selectableHeroes.Clear();
+
+            var session = context?.GetParent<SessionContext>();
+            if (session != null)
+            {
+                // 获取玩家控制且还能行动的英雄
+                foreach (var hero in session.Heroes)
+                {
+                    if (hero.IsPlayerControlled && hero.CanAct)
+                    {
+                        selectableHeroes.Add(hero);
+                    }
+                }
+            }
+
+            // 通过 EventSystem 发布事件
+            eventSystem?.Publish(new SelectableHeroesChangedEvent { Heroes = selectableHeroes });
+        }
+
+        /// <summary>
+        /// 选中英雄（玩家点击英雄后调用）
+        /// </summary>
+        void SelectHero(Hero hero)
+        {
+            if (hero == null || !selectableHeroes.Contains(hero)) return;
+
+            currentHero = hero;
+            state = PlayerInputState.HeroSelected;
+
+            // 同步到 Reactive
+            SelectedHero.Value = hero;
+            InputState.Value = state;
 
             // 显示选择指示器
             selectionIndicator?.Select(hero);
-            OnHeroSelected?.Invoke(hero);
 
-            Debug.Log($"[PlayerInput] 等待 {hero.HeroName} 的行动指令...");
+            // 设置路径预览的英雄引用
+            pathPreview?.SetHero(hero);
+
+            // 通过 EventSystem 发布事件
+            eventSystem?.Publish(new HeroSelectedEvent { Hero = hero });
+
+            Debug.Log($"[PlayerInput] 选中英雄: {hero.HeroName}");
+        }
+
+        /// <summary>
+        /// 取消选中英雄（右键取消）
+        /// </summary>
+        void DeselectHero()
+        {
+            if (state != PlayerInputState.HeroSelected) return;
+
+            currentHero = null;
+            state = PlayerInputState.Idle;
+
+            // 同步到 Reactive
+            SelectedHero.Value = null;
+            InputState.Value = state;
+
+            HidePreview();
+            selectionIndicator?.Hide();
+
+            // 通过 EventSystem 发布事件
+            eventSystem?.Publish(new HeroDeselectedEvent());
+
+            Debug.Log("[PlayerInput] 取消选中英雄，返回 Idle 状态");
         }
 
         public void CancelRequest()
         {
-            if (state == PlayerInputState.WaitingForTarget)
+            if (state == PlayerInputState.HeroSelected || state == PlayerInputState.Idle)
             {
-                state = PlayerInputState.Idle;
+                state = PlayerInputState.Disabled;
                 onActionReady = null;
+                currentHero = null;
+                selectableHeroes.Clear();
+
+                // 同步到 Reactive
+                SelectedHero.Value = null;
+                InputState.Value = state;
+
                 HidePreview();
+                selectionIndicator?.Hide();
+                eventSystem?.Publish(new HeroDeselectedEvent());
                 Debug.Log("[PlayerInput] 行动请求已取消");
             }
         }
@@ -152,13 +264,18 @@ namespace TH7
         public void SetEnabled(bool enabled)
         {
             state = enabled ? PlayerInputState.Idle : PlayerInputState.Disabled;
+
+            // 同步到 Reactive
+            InputState.Value = state;
+
             if (!enabled)
             {
                 onActionReady = null;
                 currentHero = null;
+                SelectedHero.Value = null;
                 HidePreview();
                 selectionIndicator?.Hide();
-                OnHeroDeselected?.Invoke();
+                eventSystem?.Publish(new HeroDeselectedEvent());
             }
         }
 
@@ -167,17 +284,20 @@ namespace TH7
         /// </summary>
         public void UpdateHover()
         {
-            if (state != PlayerInputState.WaitingForTarget || currentHero == null) return;
+            // 只有选中英雄后才显示路径预览
+            if (state != PlayerInputState.HeroSelected || currentHero == null) return;
 
             var mousePos = Mouse.current.position.ReadValue();
-            var worldPos = mainCamera.ScreenToWorldPoint(new Vector3(mousePos.x, mousePos.y, 0));
+            // 对于正交相机，Z 应该是相机到 tilemap 的距离
+            float cameraZ = mainCamera.transform.position.z;
+            var worldPos = mainCamera.ScreenToWorldPoint(new Vector3(mousePos.x, mousePos.y, -cameraZ));
             var cellPos = mapManager.WorldToCell(worldPos);
 
-            // 只有格子变化时才更新
-            if (cellPos == lastHoverCell) return;
+            // 只有格子变化时才更新（只比较 x, y）
+            if (cellPos.x == lastHoverCell.x && cellPos.y == lastHoverCell.y) return;
             lastHoverCell = cellPos;
 
-            UpdatePathPreview(cellPos);
+            UpdatePathPreview(new Vector3Int(cellPos.x, cellPos.y, 0));
         }
 
         void UpdatePathPreview(Vector3Int targetCell)
@@ -218,7 +338,9 @@ namespace TH7
 
             // 显示路径预览
             pathPreview?.ShowPath(previewPath, canReach);
-            OnPathPreviewUpdated?.Invoke(previewPath, canReach);
+
+            // 通过 EventSystem 发布事件
+            eventSystem?.Publish(new PathPreviewUpdatedEvent { Path = previewPath, CanReach = canReach });
         }
 
         int CalculatePathCost(List<Vector3Int> path)
@@ -242,30 +364,86 @@ namespace TH7
 
         void OnClick(InputAction.CallbackContext ctx)
         {
-            if (state != PlayerInputState.WaitingForTarget) return;
+            if (state == PlayerInputState.Disabled || state == PlayerInputState.Executing) return;
 
             var mousePos = Mouse.current.position.ReadValue();
-            var worldPos = mainCamera.ScreenToWorldPoint(new Vector3(mousePos.x, mousePos.y, 0));
+            // 对于正交相机，Z 应该是相机到 tilemap 的距离
+            float cameraZ = mainCamera.transform.position.z;
+            var worldPos = mainCamera.ScreenToWorldPoint(new Vector3(mousePos.x, mousePos.y, -cameraZ));
             var cellPos = mapManager.WorldToCell(worldPos);
+            var cellPos2D = new Vector3Int(cellPos.x, cellPos.y, 0);
 
-            ProcessClick(cellPos);
+            // Idle 状态：尝试选择英雄
+            if (state == PlayerInputState.Idle)
+            {
+                var clickedHero = GetHeroAtCell(cellPos2D);
+                if (clickedHero != null && selectableHeroes.Contains(clickedHero))
+                {
+                    SelectHero(clickedHero);
+                }
+                return;
+            }
+
+            // HeroSelected 状态：处理移动/交互目标
+            if (state == PlayerInputState.HeroSelected)
+            {
+                // 检查是否点击了其他可选英雄（切换选择）
+                var clickedHero = GetHeroAtCell(cellPos2D);
+                if (clickedHero != null && clickedHero != currentHero && selectableHeroes.Contains(clickedHero))
+                {
+                    // 切换到另一个英雄
+                    HidePreview();
+                    SelectHero(clickedHero);
+                    return;
+                }
+
+                ProcessClick(cellPos2D);
+            }
         }
 
         void OnRightClick(InputAction.CallbackContext ctx)
         {
-            if (state != PlayerInputState.WaitingForTarget) return;
+            // HeroSelected 状态：右键取消选择，返回 Idle
+            if (state == PlayerInputState.HeroSelected)
+            {
+                DeselectHero();
+                return;
+            }
 
-            // 右键取消当前选择或查看信息
-            Debug.Log("[PlayerInput] 右键点击 - 取消/查看");
+            // Idle 状态：右键可以用来查看信息（可选）
+            if (state == PlayerInputState.Idle)
+            {
+                Debug.Log("[PlayerInput] 右键点击 - 查看信息");
+            }
+        }
+
+        /// <summary>
+        /// 获取指定格子上的英雄
+        /// </summary>
+        Hero GetHeroAtCell(Vector3Int cell)
+        {
+            var session = context?.GetParent<SessionContext>();
+            if (session == null) return null;
+
+            foreach (var hero in session.Heroes)
+            {
+                if (hero.CellPosition.Value == cell)
+                {
+                    return hero;
+                }
+            }
+            return null;
         }
 
         void OnEndTurn(InputAction.CallbackContext ctx)
         {
-            if (state == PlayerInputState.Disabled) return;
+            if (state == PlayerInputState.Disabled || state == PlayerInputState.Executing) return;
 
-            if (currentHero != null)
+            // 结束回合需要选择一个英雄来提交（或者用第一个可选英雄）
+            var heroForAction = currentHero ?? (selectableHeroes.Count > 0 ? selectableHeroes[0] : null);
+            if (heroForAction != null)
             {
-                SubmitAction(new EndTurnAction(currentHero));
+                SubmitAction(new EndTurnAction(heroForAction));
             }
         }
 
@@ -308,10 +486,29 @@ namespace TH7
                 }
             }
 
+            // 检查地图数据是否存在
+            if (context.Map?.Data == null)
+            {
+                // 没有地图数据时，允许自由移动（测试用）
+                Debug.LogWarning("[PlayerInput] 地图数据未初始化，允许自由移动");
+                return ClickResult.ClickedEmpty();
+            }
+
             // 检查地形是否可通行
             var tile = context.Map.Data.GetTileAtCell(cellPos);
-            if (tile.Ground == GroundType.Void || tile.Surface == SurfaceType.Mountain)
+
+            // Void 表示超出地图范围或未初始化
+            if (tile.Ground == GroundType.Void)
+            {
+                Debug.Log($"[PlayerInput] 点击位置 {cellPos} 超出地图范围或为空");
                 return ClickResult.Invalid();
+            }
+
+            if (tile.Surface == SurfaceType.Mountain)
+            {
+                Debug.Log($"[PlayerInput] 点击位置 {cellPos} 是山脉，无法通行");
+                return ClickResult.Invalid();
+            }
 
             // 默认为空地，可以移动
             return ClickResult.ClickedEmpty();
@@ -339,9 +536,16 @@ namespace TH7
         void SubmitAction(HeroAction action)
         {
             state = PlayerInputState.Executing;
+
+            // 同步到 Reactive
+            InputState.Value = state;
+            SelectedHero.Value = null;
+
             HidePreview();
             selectionIndicator?.Hide();
-            OnHeroDeselected?.Invoke();
+
+            // 通过 EventSystem 发布事件
+            eventSystem?.Publish(new HeroDeselectedEvent());
 
             var callback = onActionReady;
             onActionReady = null;
