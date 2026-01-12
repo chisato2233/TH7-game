@@ -473,7 +473,7 @@ public class InputStateIndicatorUI : UIBehaviour
 
 ## World UI 组件配置（Modern UI Pack）
 
-World 模块提供以下 UI 脚本，位于 `src/ui/World/`。各组件支持 `autoBindOnStart`，自动从 SessionContext 获取数据绑定。
+World 模块提供以下 UI 脚本，位于 `src/ui/World/`。所有组件通过 `WorldSceneController.SetupUI()` 显式绑定。
 
 ### UI 组件列表
 
@@ -500,7 +500,10 @@ DayDisplay (DayDisplayUI)
 └── MonthText (TextMeshProUGUI, 可选)
 ```
 
-配置：勾选 `Auto Bind On Start` 即可自动绑定。
+在 WorldSceneController 中绑定：
+```csharp
+dayDisplayUI.Bind(sessionContext);
+```
 
 #### 3. 回合阶段（TurnPhaseUI）
 
@@ -509,9 +512,8 @@ TurnPhase (TurnPhaseUI)
 └── PhaseText (TextMeshProUGUI)
 ```
 
-需要手动绑定（因为需要 TurnManager 引用）：
+在 WorldSceneController 中绑定：
 ```csharp
-// 在 WorldSceneController.SetupUI() 中
 turnPhaseUI.Bind(turnManager);
 ```
 
@@ -525,9 +527,8 @@ SelectedHeroInfo (SelectedHeroInfoUI)
     └── MovementText (TextMeshProUGUI)
 ```
 
-需要手动绑定：
+在 WorldSceneController 中绑定：
 ```csharp
-// 在 WorldSceneController.SetupUI() 中
 selectedHeroInfoUI.Bind(playerProvider);
 ```
 

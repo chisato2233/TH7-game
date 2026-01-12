@@ -1,6 +1,7 @@
 using UnityEngine;
 using GameFramework;
 using TH7.UI;
+using DG.Tweening;
 
 namespace TH7
 {
@@ -20,9 +21,21 @@ namespace TH7
         [SerializeField] WorldInputController inputController;
         [SerializeField] Camera worldCamera;
 
+        [Header("Camera Focus")]
+        [SerializeField] Transform cameraFollowTarget;
+        [SerializeField] float cameraFocusDuration = 0.3f;
+        [SerializeField] Ease cameraFocusEase = Ease.OutQuad;
+        [SerializeField] bool followHeroDuringMove = true;
+
+        // 摄像头跟随状态
+        Hero followingHero;
+
         [Header("UI")]
         [SerializeField] TownPanelUI townPanel;
         [SerializeField] ResourceBarUI resourceBar;
+        [SerializeField] DayDisplayUI dayDisplayUI;
+        [SerializeField] TurnPhaseUI turnPhaseUI;
+        [SerializeField] SelectedHeroInfoUI selectedHeroInfoUI;
 
         [Header("World View")]
         [SerializeField] PathPreview pathPreview;
@@ -53,6 +66,17 @@ namespace TH7
             InitializeTurnSystem();
             SetupUI();
             StartGame();
+        }
+
+        void Update()
+        {
+            // 持续跟随正在移动的英雄
+            if (followingHero != null && cameraFollowTarget != null)
+            {
+                Vector3 heroPos = followingHero.transform.position;
+                float z = cameraFollowTarget.position.z;
+                cameraFollowTarget.position = new Vector3(heroPos.x, heroPos.y, z);
+            }
         }
 
         void InitializeContext()
@@ -143,6 +167,18 @@ namespace TH7
             if (resourceBar != null && sessionContext != null)
                 resourceBar.BindToResources(sessionContext.Resources);
 
+            // 绑定天数显示 UI
+            if (dayDisplayUI != null && sessionContext != null)
+                dayDisplayUI.Bind(sessionContext);
+
+            // 绑定回合阶段 UI
+            if (turnPhaseUI != null && turnManager != null)
+                turnPhaseUI.Bind(turnManager);
+
+            // 绑定选中英雄信息 UI
+            if (selectedHeroInfoUI != null && playerProvider != null)
+                selectedHeroInfoUI.Bind(playerProvider);
+
             // 初始隐藏城镇面板
             if (townPanel != null)
             {
@@ -173,25 +209,52 @@ namespace TH7
             var heroes = sessionContext?.GetHeroesForPlayer(0);
             if (heroes == null || heroes.Count == 0) return;
 
-            var hero = heroes[0];
+            // 立即聚焦（不使用动画）
+            FocusOnHero(heroes[0], immediate: true);
+        }
 
-            // 使用 MapManager 将格子坐标转换为世界坐标（更可靠）
-            Vector3 targetPos;
-            if (mapManager != null)
+        /// <summary>
+        /// 聚焦摄像头到指定英雄
+        /// </summary>
+        /// <param name="hero">目标英雄</param>
+        /// <param name="immediate">是否立即移动（无动画）</param>
+        void FocusOnHero(Hero hero, bool immediate = true)
+        {
+            if (hero == null) return;
+
+            // 获取目标位置
+            Vector3 targetPos = mapManager != null
+                ? mapManager.CellToWorld(hero.CellPosition.Value)
+                : hero.transform.position;
+
+            // 使用 Cinemachine Follow Target（如果有），否则直接移动相机
+            Transform moveTarget = cameraFollowTarget != null
+                ? cameraFollowTarget
+                : worldCamera?.transform;
+
+            if (moveTarget == null)
             {
-                targetPos = mapManager.CellToWorld(hero.CellPosition.Value);
+                Debug.LogWarning("[WorldScene] FocusOnHero: moveTarget is null");
+                return;
+            }
+
+            // 保持 Z 轴不变
+            float z = moveTarget.position.z;
+            Vector3 destination = new Vector3(targetPos.x, targetPos.y, z);
+
+            Debug.Log($"[WorldScene] FocusOnHero: {hero.HeroName} -> {destination} (immediate={immediate})");
+
+            // 停止之前的 DOTween 动画
+            moveTarget.DOKill();
+
+            if (immediate)
+            {
+                moveTarget.position = destination;
             }
             else
             {
-                targetPos = hero.transform.position;
-            }
-
-            // 移动相机到英雄位置
-            if (worldCamera != null)
-            {
-                var camPos = worldCamera.transform.position;
-                worldCamera.transform.position = new Vector3(targetPos.x, targetPos.y, camPos.z);
-                Debug.Log($"[WorldScene] 相机聚焦到英雄 {hero.HeroName} 位置: {targetPos}");
+                moveTarget.DOMove(destination, cameraFocusDuration)
+                    .SetEase(cameraFocusEase);
             }
         }
 
@@ -222,9 +285,25 @@ namespace TH7
         }
 
         [AutoSubscribe]
+        void OnActionStarted(ActionStartedEvent e)
+        {
+            // 移动行动开始时，开始跟随英雄
+            if (followHeroDuringMove && e.Action is MoveAction moveAction)
+            {
+                followingHero = moveAction.Hero;
+                Debug.Log($"[WorldScene] 开始跟随英雄: {followingHero.HeroName}");
+            }
+        }
+
+        [AutoSubscribe]
         void OnActionCompleted(ActionCompletedEvent e)
         {
-            Debug.Log($"[WorldScene] Action completed: {e.Action.Type} -> {e.Result.Type}");
+            // 行动完成时停止跟随
+            if (followingHero != null)
+            {
+                Debug.Log($"[WorldScene] 停止跟随英雄: {followingHero.HeroName}");
+                followingHero = null;
+            }
         }
 
         /// <summary>
@@ -242,9 +321,9 @@ namespace TH7
         [AutoSubscribe]
         void OnHeroSelected(HeroSelectedEvent e)
         {
-            // 选中英雄后可以隐藏所有可选高亮（因为已经选中了）
-            // 或者保留其他英雄的高亮，让玩家可以切换
-            // 这里选择保留，方便玩家点击其他英雄切换
+            // 摄像头聚焦到选中的英雄
+            if (e.Hero != null)
+                FocusOnHero(e.Hero);
         }
 
         /// <summary>

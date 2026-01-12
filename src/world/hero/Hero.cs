@@ -160,6 +160,16 @@ namespace TH7
             var contextSystem = GameEntry.Instance?.GetSystem<ContextSystem>();
             var session = contextSystem?.Root?.GetChild<SessionContext>();
             session?.RegisterHero(this);
+
+            // 自动设置坐标转换器（如果还没有）
+            if (cellToWorldConverter == null)
+            {
+                var mapManager = FindFirstObjectByType<MapManager>();
+                if (mapManager != null)
+                {
+                    SetPositionConverter(cell => mapManager.CellToWorld(cell));
+                }
+            }
         }
 
         protected override void OnDestroy()
@@ -438,11 +448,30 @@ namespace TH7
 
         #region View Updates
 
+        // 坐标转换器
+        Func<Vector3Int, Vector3> cellToWorldConverter;
+
         void OnCellPositionChanged(Vector3Int newCell)
         {
-            // 更新 Transform 位置（需要 MapManager 转换坐标）
-            // 这里暂时直接使用格子坐标，实际应该通过 MapManager 转换
-            transform.position = new Vector3(newCell.x, newCell.y, 0);
+            // 使用坐标转换器（如果有），否则使用简单坐标
+            if (cellToWorldConverter != null)
+            {
+                transform.position = cellToWorldConverter(newCell);
+            }
+            else
+            {
+                // 尝试自动获取 MapManager
+                var mapManager = FindFirstObjectByType<MapManager>();
+                if (mapManager != null)
+                {
+                    transform.position = mapManager.CellToWorld(newCell);
+                }
+                else
+                {
+                    // 最后的后备方案
+                    transform.position = new Vector3(newCell.x, newCell.y, 0);
+                }
+            }
         }
 
         /// <summary>
@@ -450,13 +479,12 @@ namespace TH7
         /// </summary>
         public void SetPositionConverter(Func<Vector3Int, Vector3> cellToWorld)
         {
+            cellToWorldConverter = cellToWorld;
+
+            // 立即更新当前位置
             if (cellToWorld != null)
             {
-                // 重新订阅，使用真正的坐标转换
-                ListenImmediate(CellPosition, cell =>
-                {
-                    transform.position = cellToWorld(cell);
-                });
+                transform.position = cellToWorld(CellPosition.Value);
             }
         }
 
@@ -476,9 +504,24 @@ namespace TH7
         /// </summary>
         public void SetMoving(bool isMoving)
         {
+            // 自动获取 Animator（如果未手动赋值）
+            if (animator == null)
+            {
+                animator = GetComponent<Animator>();
+                if (animator == null)
+                {
+                    animator = GetComponentInChildren<Animator>();
+                }
+            }
+
             if (animator != null && HasAnimatorParameter("IsMoving"))
             {
                 animator.SetBool("IsMoving", isMoving);
+                Debug.Log($"[Hero] {heroName} SetMoving({isMoving})");
+            }
+            else if (animator == null)
+            {
+                Debug.LogWarning($"[Hero] {heroName} 没有找到 Animator 组件");
             }
         }
 
@@ -493,13 +536,24 @@ namespace TH7
         }
 
         /// <summary>
-        /// 设置朝向
+        /// 设置朝向（基于格子坐标方向）
         /// </summary>
         public void SetFacing(Vector3Int direction)
         {
             if (spriteRenderer != null && direction.x != 0)
             {
                 spriteRenderer.flipX = direction.x < 0;
+            }
+        }
+
+        /// <summary>
+        /// 设置朝向（基于世界坐标 X 方向）
+        /// </summary>
+        public void SetFacingByWorldDirection(float worldDirectionX)
+        {
+            if (spriteRenderer != null && Mathf.Abs(worldDirectionX) > 0.01f)
+            {
+                spriteRenderer.flipX = worldDirectionX < 0;
             }
         }
 

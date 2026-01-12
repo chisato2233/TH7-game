@@ -117,4 +117,42 @@ namespace TH7
     /// 请求结束回合事件
     /// </summary>
     public struct EndTurnRequestedEvent { }
+
+    // ============================================
+    // 玩家输入/选择事件
+    // ============================================
+
+    /// <summary>
+    /// 可选择英雄列表变化事件
+    /// 当玩家回合开始或英雄行动后，可选英雄列表会更新
+    /// </summary>
+    public struct SelectableHeroesChangedEvent
+    {
+        public System.Collections.Generic.List<Hero> Heroes;
+    }
+
+    /// <summary>
+    /// 英雄被选中事件
+    /// 玩家点击选中一个英雄
+    /// </summary>
+    public struct HeroSelectedEvent
+    {
+        public Hero Hero;
+    }
+
+    /// <summary>
+    /// 英雄取消选中事件
+    /// 玩家右键取消选中或行动完成后
+    /// </summary>
+    public struct HeroDeselectedEvent { }
+
+    /// <summary>
+    /// 路径预览更新事件
+    /// 鼠标悬停时显示的路径预览
+    /// </summary>
+    public struct PathPreviewUpdatedEvent
+    {
+        public System.Collections.Generic.List<Vector3Int> Path;
+        public bool CanReach;
+    }
 }

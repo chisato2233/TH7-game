@@ -118,29 +118,21 @@ namespace TH7
             // 移动动画
             if (!SkipAnimations)
             {
-                // 开始移动动画
-                hero.SetMoving(true);
-
-                Vector3Int previousCell = hero.CellPosition.Value;
+                // 切换到移动状态（会触发状态机和动画）
+                hero.StartMoving();
 
                 foreach (var cell in path)
                 {
-                    // 设置朝向
-                    Vector3Int direction = cell - previousCell;
-                    hero.SetFacing(direction);
-
-                    // 平滑移动到目标位置
+                    // 平滑移动到目标位置（内部会根据世界坐标实时设置朝向）
                     yield return MoveToCell(hero, cell);
 
                     // 更新英雄逻辑位置
                     hero.MoveTo(cell);
                     OnHeroMoved?.Invoke(hero, cell);
-
-                    previousCell = cell;
                 }
 
-                // 停止移动动画
-                hero.SetMoving(false);
+                // 切换回待机/禁用状态（会触发状态机和动画）
+                hero.StopMoving();
             }
             else
             {
@@ -162,6 +154,13 @@ namespace TH7
             Vector3 targetPos = context.Map.CellToWorld(targetCell);
             float duration = 1f / MoveSpeed;
             float elapsed = 0f;
+
+            // 根据世界坐标方向设置朝向
+            Vector3 worldDirection = targetPos - startPos;
+            if (Mathf.Abs(worldDirection.x) > 0.01f)
+            {
+                hero.SetFacingByWorldDirection(worldDirection.x);
+            }
 
             while (elapsed < duration)
             {

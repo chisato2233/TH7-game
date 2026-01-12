@@ -6,7 +6,7 @@ namespace TH7.UI
 {
     /// <summary>
     /// 天数显示 UI
-    /// 绑定到 SessionContext.Data.Day
+    /// 需要通过 Bind() 绑定到 SessionContext
     /// </summary>
     public class DayDisplayUI : UIBehaviour
     {
@@ -20,38 +20,13 @@ namespace TH7.UI
         [SerializeField] string weekFormat = "Week {0}";
         [SerializeField] string monthFormat = "Month {0}";
 
-        [Header("Settings")]
-        [SerializeField] bool autoBindOnStart = true;
-
-        SessionContext session;
-
-        protected override void Start()
-        {
-            base.Start();
-
-            if (autoBindOnStart)
-                TryBindToSession();
-        }
-
-        void TryBindToSession()
-        {
-            var contextSystem = GameEntry.Instance?.GetSystem<ContextSystem>();
-            session = contextSystem?.Root?.GetChild<SessionContext>();
-
-            if (session != null)
-                Bind(session);
-            else
-                UpdateDisplay(1);
-        }
-
         /// <summary>
         /// 绑定到 SessionContext
         /// </summary>
         public void Bind(SessionContext sessionContext)
         {
-            session = sessionContext;
-            if (session?.Data?.Day != null)
-                ListenImmediate(session.Data.Day, UpdateDisplay);
+            if (sessionContext?.Data?.Day != null)
+                ListenImmediate(sessionContext.Data.Day, UpdateDisplay);
         }
 
         void UpdateDisplay(int day)
