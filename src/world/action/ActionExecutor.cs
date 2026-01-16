@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using GameFramework;
 
 namespace TH7
 {
@@ -13,6 +14,7 @@ namespace TH7
     {
         readonly WorldContext context;
         readonly MonoBehaviour coroutineRunner;
+        readonly EventSystem eventSystem;
 
         // 事件
         public event Action<HeroAction> OnActionStarted;
@@ -30,6 +32,7 @@ namespace TH7
         {
             this.context = context;
             this.coroutineRunner = coroutineRunner;
+            this.eventSystem = GameEntry.Instance?.GetSystem<EventSystem>();
         }
 
         /// <summary>
@@ -142,7 +145,58 @@ namespace TH7
             }
 
             Debug.Log($"[ActionExecutor] {hero.HeroName} 移动到 {action.Destination}，剩余移动力: {hero.MovementPoints.Value}");
+
+            // 检查目标格子是否有地图物件
+            var interactionResult = TryInteractWithMapObject(hero, action.Destination);
+            if (interactionResult != null)
+            {
+                onComplete?.Invoke(interactionResult);
+                yield break;
+            }
+
             onComplete?.Invoke(ActionResult.Succeeded(ActionResultType.HeroMoved));
+        }
+
+        /// <summary>
+        /// 尝试与目标格子的地图物件交互
+        /// </summary>
+        ActionResult TryInteractWithMapObject(Hero hero, Vector3Int cell)
+        {
+            var mapObject = context.GetMapObjectAt(cell);
+            if (mapObject == null || !mapObject.CanInteract(hero))
+                return null;
+
+            var session = context.GetParent<SessionContext>();
+            if (session == null) return null;
+
+            var result = mapObject.Interact(hero, session);
+
+            if (result.Success)
+            {
+                // 发布事件
+                eventSystem?.Publish(new MapObjectInteractedEvent
+                {
+                    Hero = hero,
+                    MapObject = mapObject,
+                    Result = result
+                });
+
+                // 如果需要移除物件
+                if (result.ShouldRemove)
+                {
+                    context.UnregisterMapObject(mapObject);
+                    UnityEngine.Object.Destroy(mapObject.gameObject);
+                }
+
+                // 根据是否获得资源返回对应结果
+                var resultType = result.ResourcesGained != null && !result.ResourcesGained.IsEmpty
+                    ? ActionResultType.ResourceGained
+                    : ActionResultType.HeroMoved;
+
+                return ActionResult.Succeeded(resultType);
+            }
+
+            return null;
         }
 
         /// <summary>

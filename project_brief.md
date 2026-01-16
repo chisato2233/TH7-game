@@ -105,6 +105,10 @@ Assets/                     # 项目根目录
         HeroConfig.cs       # 英雄配置 (SO)
         HeroConfigDatabase.cs # 英雄配置数据库 (SO)
         HeroSaveData.cs     # 英雄存档数据
+      mapobject/            # 地图物件系统
+        MapObject.cs        # 地图物件基类
+        ResourcePile.cs     # 资源堆（一次性拾取）
+        Mine.cs             # 矿场（占领后产出）
       action/               # 行动系统
         HeroAction.cs       # 行动基类和具体行动
         ActionResult.cs     # 行动结果
@@ -132,7 +136,7 @@ Assets/                     # 项目根目录
       UnitConfig.cs         # 兵种配置 (SO)
       UnitConfigDatabase.cs # 兵种配置数据库 (SO)
       UnitStack.cs          # 兵种堆叠
-    resource/               # 资源系统
+    resource/               # 资源系统 (4种: Gold, Wood, Ore, Crystal)
       ResourceBundle.cs     # 资源包
       PlayerResources.cs    # 玩家资源（响应式）
     GameSystem.cs           # 调试入口
@@ -337,4 +341,5 @@ Assets/
 | 上下文 | [src/context/guide.md](src/context/guide.md) | Session、World、Battle 上下文 |
 | 场景 | [src/scene/guide.md](src/scene/guide.md) | 场景控制器、启动流程 |
 | 地图系统 | [src/map/guide.md](src/map/guide.md) | Tilemap 绘制 + 逻辑数据分离 |
+| 地图物件 | [src/world/mapobject/guide.md](src/world/mapobject/guide.md) | 资源堆、矿场等可交互物件 |
 | Unity 操作 | [docs/UnitySetup.md](docs/UnitySetup.md) | 场景配置、预制体创建、SO 设置 |

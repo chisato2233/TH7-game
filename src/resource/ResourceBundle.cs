@@ -13,20 +13,16 @@ namespace TH7
     {
         [SerializeField] private int[] amounts = new int[RESOURCE_COUNT];
 
-        const int RESOURCE_COUNT = 7;
+        const int RESOURCE_COUNT = 4;
 
         public ResourceBundle() { }
 
-        public ResourceBundle(int gold = 0, int wood = 0, int ore = 0,
-            int crystal = 0, int gem = 0, int sulfur = 0, int mercury = 0)
+        public ResourceBundle(int gold = 0, int wood = 0, int ore = 0, int crystal = 0)
         {
             amounts[(int)ResourceType.Gold] = gold;
             amounts[(int)ResourceType.Wood] = wood;
             amounts[(int)ResourceType.Ore] = ore;
             amounts[(int)ResourceType.Crystal] = crystal;
-            amounts[(int)ResourceType.Gem] = gem;
-            amounts[(int)ResourceType.Sulfur] = sulfur;
-            amounts[(int)ResourceType.Mercury] = mercury;
         }
 
         public int this[ResourceType type]
@@ -39,9 +35,6 @@ namespace TH7
         public int Wood { get => this[ResourceType.Wood]; set => this[ResourceType.Wood] = value; }
         public int Ore { get => this[ResourceType.Ore]; set => this[ResourceType.Ore] = value; }
         public int Crystal { get => this[ResourceType.Crystal]; set => this[ResourceType.Crystal] = value; }
-        public int Gem { get => this[ResourceType.Gem]; set => this[ResourceType.Gem] = value; }
-        public int Sulfur { get => this[ResourceType.Sulfur]; set => this[ResourceType.Sulfur] = value; }
-        public int Mercury { get => this[ResourceType.Mercury]; set => this[ResourceType.Mercury] = value; }
 
         /// <summary>
         /// 检查是否有足够的资源
@@ -122,9 +115,6 @@ namespace TH7
             if (Wood > 0) parts.Add($"Wood:{Wood}");
             if (Ore > 0) parts.Add($"Ore:{Ore}");
             if (Crystal > 0) parts.Add($"Crystal:{Crystal}");
-            if (Gem > 0) parts.Add($"Gem:{Gem}");
-            if (Sulfur > 0) parts.Add($"Sulfur:{Sulfur}");
-            if (Mercury > 0) parts.Add($"Mercury:{Mercury}");
             return parts.Count > 0 ? string.Join(", ", parts) : "Empty";
         }
 

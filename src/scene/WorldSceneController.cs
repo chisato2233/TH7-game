@@ -49,6 +49,9 @@ namespace TH7
         [Header("Prefabs")]
         [SerializeField] Hero heroPrefab;
 
+        [Header("Map Objects")]
+        [SerializeField] MapObjectSpawner mapObjectSpawner;
+
         // 上下文
         SessionContext sessionContext;
         WorldContext worldContext;
@@ -63,6 +66,7 @@ namespace TH7
         {
             base.Start();
             InitializeContext();
+            InitializeMapObjects();
             InitializeTurnSystem();
             SetupUI();
             StartGame();
@@ -121,6 +125,26 @@ namespace TH7
             worldContext.Setup(mapManager);
 
             Debug.Log("[WorldScene] WorldContext created");
+        }
+
+        void InitializeMapObjects()
+        {
+            if (worldContext == null) return;
+
+            // 随机生成资源堆
+            if (mapObjectSpawner != null)
+            {
+                mapObjectSpawner.Initialize(mapManager);
+            }
+
+            // 收集场景中所有地图物件并注册到 WorldContext
+            var allObjects = FindObjectsByType<MapObject>(FindObjectsSortMode.None);
+            foreach (var obj in allObjects)
+            {
+                worldContext.RegisterMapObject(obj);
+            }
+
+            Debug.Log($"[WorldScene] Registered {allObjects.Length} map objects");
         }
 
         void InitializeTurnSystem()
@@ -426,6 +450,14 @@ namespace TH7
                 return;
             }
             OpenTown(sessionContext.Towns[index]);
+        }
+
+        /// <summary>
+        /// 结束回合（供 UI 按钮绑定）
+        /// </summary>
+        public void EndTurn()
+        {
+            playerProvider?.RequestEndTurn();
         }
 
         protected override void OnDestroy()

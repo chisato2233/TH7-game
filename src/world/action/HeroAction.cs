@@ -103,25 +103,26 @@ namespace TH7
     }
 
     /// <summary>
-    /// 拾取物品行动
+    /// 拾取/交互物品行动
     /// </summary>
     public class PickUpAction : HeroAction
     {
         public Vector3Int TargetCell { get; }
-        public MapObjectType ObjectType { get; }
+        public MapObject TargetObject { get; }
 
         public override HeroActionType Type => HeroActionType.PickUp;
 
-        public PickUpAction(Hero hero, Vector3Int cell, MapObjectType objectType) : base(hero)
+        public PickUpAction(Hero hero, Vector3Int cell, MapObject target = null) : base(hero)
         {
             TargetCell = cell;
-            ObjectType = objectType;
+            TargetObject = target;
         }
 
         public override bool CanExecute(WorldContext context)
         {
-            // 检查目标格子是否有可拾取物品
-            return true; // 简化实现
+            if (TargetObject != null)
+                return TargetObject.CanInteract(Hero);
+            return true;
         }
 
         public override int GetMovementCost(WorldContext context) => 0;

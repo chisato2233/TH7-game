@@ -143,9 +143,6 @@ namespace TH7.UI
             CreateCostItem(ResourceType.Wood, cost.Wood, resources);
             CreateCostItem(ResourceType.Ore, cost.Ore, resources);
             CreateCostItem(ResourceType.Crystal, cost.Crystal, resources);
-            CreateCostItem(ResourceType.Gem, cost.Gem, resources);
-            CreateCostItem(ResourceType.Sulfur, cost.Sulfur, resources);
-            CreateCostItem(ResourceType.Mercury, cost.Mercury, resources);
         }
 
         void ClearCostPreview()

@@ -73,8 +73,9 @@ int cost = mapManager.GetMovementCost(worldPos);
 |------|------|------|
 | Ground | `GroundType` | 基础地表，决定基础可通行性 |
 | Surface | `SurfaceType` | 覆盖物，修正移动消耗 |
-| Object | `MapObjectType` | 地图物件，可交互对象 (当前未完全实现) |
 | Biome | `BiomeType` | 视觉风格，影响贴图选择 |
+
+> 地图物件（矿场、资源堆等）不属于 Tile，而是独立的 GameObject，参见 `src/world/mapobject/`
 
 ## 扩展指南
 

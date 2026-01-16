@@ -437,6 +437,14 @@ namespace TH7
 
         void OnEndTurn(InputAction.CallbackContext ctx)
         {
+            RequestEndTurn();
+        }
+
+        /// <summary>
+        /// 请求结束回合（供外部调用，如 UI 按钮）
+        /// </summary>
+        public void RequestEndTurn()
+        {
             if (state == PlayerInputState.Disabled || state == PlayerInputState.Executing) return;
 
             // 结束回合需要选择一个英雄来提交（或者用第一个可选英雄）
@@ -459,7 +467,7 @@ namespace TH7
                 ClickResultType.EmptyTile => CreateMoveAction(cellPos),
                 ClickResultType.Town => new EnterTownAction(currentHero, clickResult.Town),
                 ClickResultType.Enemy => new AttackAction(currentHero, cellPos, clickResult.Target),
-                ClickResultType.Resource => new PickUpAction(currentHero, cellPos, MapObjectType.Resource),
+                ClickResultType.Resource => new PickUpAction(currentHero, cellPos, clickResult.MapObject),
                 _ => null
             };
 
@@ -581,10 +589,12 @@ namespace TH7
         public ClickResultType Type;
         public TownData Town;
         public object Target;
+        public MapObject MapObject;
 
         public static ClickResult Invalid() => new() { Type = ClickResultType.Invalid };
         public static ClickResult ClickedEmpty() => new() { Type = ClickResultType.EmptyTile };
         public static ClickResult ClickedTown(TownData town) => new() { Type = ClickResultType.Town, Town = town };
         public static ClickResult ClickedEnemy(object enemy) => new() { Type = ClickResultType.Enemy, Target = enemy };
+        public static ClickResult ClickedMapObject(MapObject obj) => new() { Type = ClickResultType.Resource, MapObject = obj };
     }
 }

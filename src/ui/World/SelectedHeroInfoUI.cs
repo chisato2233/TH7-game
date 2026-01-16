@@ -36,22 +36,18 @@ namespace TH7.UI
 
         void OnSelectedHeroChanged(Hero hero)
         {
+            // 如果没有选中英雄，保持显示上一次的信息
+            if (hero == null) return;
+
             // 清除之前的移动力监听
             movementSubscription.Dispose();
             boundHero = hero;
 
-            if (hero != null)
-            {
-                ShowHeroInfo(hero);
+            ShowHeroInfo(hero);
 
-                // 监听移动力变化
-                if (hero.MovementPoints != null)
-                    movementSubscription = ListenImmediate(hero.MovementPoints, OnMovementChanged);
-            }
-            else
-            {
-                HideHeroInfo();
-            }
+            // 监听移动力变化
+            if (hero.MovementPoints != null)
+                movementSubscription = ListenImmediate(hero.MovementPoints, OnMovementChanged);
         }
 
         void ShowHeroInfo(Hero hero)
@@ -67,12 +63,6 @@ namespace TH7.UI
                 heroPortrait.sprite = hero.Config.Portrait;
 
             UpdateMovementDisplay(hero.MovementPoints?.Value ?? 0);
-        }
-
-        void HideHeroInfo()
-        {
-            if (infoContainer != null)
-                infoContainer.SetActive(false);
         }
 
         void OnMovementChanged(int currentMovement)

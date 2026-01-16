@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using GameFramework;
 
@@ -10,6 +11,13 @@ namespace TH7
         public int CurrentHeroIndex { get; set; } = 0;
         public bool IsHeroMoving { get; private set; } = false;
 
+        // 地图物件管理
+        readonly List<MapObject> mapObjects = new();
+        readonly List<Mine> mines = new();
+
+        public IReadOnlyList<MapObject> MapObjects => mapObjects;
+        public IReadOnlyList<Mine> Mines => mines;
+
         public void Setup(MapManager mapManager)
         {
             Map = mapManager;
@@ -18,6 +26,49 @@ namespace TH7
             else
                 Debug.Log($"[World] MapManager 已设置，地图大小: {Map.Data?.Width}x{Map.Data?.Height}");
         }
+
+        #region Map Object Management
+
+        public void RegisterMapObject(MapObject obj)
+        {
+            if (obj == null || mapObjects.Contains(obj)) return;
+
+            mapObjects.Add(obj);
+            if (obj is Mine mine)
+                mines.Add(mine);
+
+            // 设置坐标转换器
+            if (Map != null)
+                obj.SetCoordinateConverter(pos => Map.WorldToCell(pos));
+
+            Debug.Log($"[World] Registered {obj.GetType().Name} at {obj.CellPosition}");
+        }
+
+        public void UnregisterMapObject(MapObject obj)
+        {
+            if (obj == null) return;
+            mapObjects.Remove(obj);
+            if (obj is Mine mine)
+                mines.Remove(mine);
+        }
+
+        public MapObject GetMapObjectAt(Vector3Int cell)
+        {
+            foreach (var obj in mapObjects)
+            {
+                if (obj.CellPosition == cell && !obj.IsCollected)
+                    return obj;
+            }
+            return null;
+        }
+
+        public void ProcessDailyMineOutput(SessionContext session)
+        {
+            foreach (var mine in mines)
+                mine.ProduceDailyOutput(session);
+        }
+
+        #endregion
 
         protected override void OnInitialize()
         {
@@ -41,6 +92,8 @@ namespace TH7
         protected override void OnDispose()
         {
             Debug.Log("[World] 离开探索阶段");
+            mapObjects.Clear();
+            mines.Clear();
             Map = null;
         }
 

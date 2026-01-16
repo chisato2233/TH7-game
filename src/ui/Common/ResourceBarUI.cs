@@ -13,9 +13,6 @@ namespace TH7.UI
         [SerializeField] ResourceDisplayUI woodDisplay;
         [SerializeField] ResourceDisplayUI oreDisplay;
         [SerializeField] ResourceDisplayUI crystalDisplay;
-        [SerializeField] ResourceDisplayUI gemDisplay;
-        [SerializeField] ResourceDisplayUI sulfurDisplay;
-        [SerializeField] ResourceDisplayUI mercuryDisplay;
 
         [Header("Settings")]
         [SerializeField] bool autoBindOnStart = true;
@@ -48,9 +45,6 @@ namespace TH7.UI
             BindDisplay(woodDisplay, ResourceType.Wood, resources);
             BindDisplay(oreDisplay, ResourceType.Ore, resources);
             BindDisplay(crystalDisplay, ResourceType.Crystal, resources);
-            BindDisplay(gemDisplay, ResourceType.Gem, resources);
-            BindDisplay(sulfurDisplay, ResourceType.Sulfur, resources);
-            BindDisplay(mercuryDisplay, ResourceType.Mercury, resources);
         }
 
         void BindDisplay(ResourceDisplayUI display, ResourceType type, PlayerResources resources)

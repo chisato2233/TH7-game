@@ -74,19 +74,6 @@ namespace TH7
         Lava        // 熔岩
     }
 
-    // 地图物件类型
-    public enum MapObjectType
-    {
-        None,
-        Town,       // 城镇
-        Mine,       // 矿场
-        Artifact,   // 神器
-        Monster,    // 怪物
-        Resource,   // 资源堆
-        Portal,     // 传送门
-        Shrine      // 神殿
-    }
-
     // 生态区域/文明风格
     public enum BiomeType
     {
@@ -111,9 +98,6 @@ namespace TH7
         Wood,       // 木材
         Ore,        // 矿石
         Crystal,    // 水晶
-        Gem,        // 宝石
-        Sulfur,     // 硫磺
-        Mercury     // 水银
     }
 
     // ============================================

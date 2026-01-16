@@ -352,6 +352,9 @@ namespace TH7
                 // 城镇产出
                 ProcessTownProduction(session);
 
+                // 矿场产出
+                ProcessMineProduction(session);
+
                 // 推进日期
                 session.AdvanceDay();
 
@@ -390,6 +393,11 @@ namespace TH7
                 if (goldPerDay > 0)
                     session.Resources.Add(ResourceType.Gold, goldPerDay);
             }
+        }
+
+        void ProcessMineProduction(SessionContext session)
+        {
+            worldContext?.ProcessDailyMineOutput(session);
         }
 
         void ProcessWeekStart(SessionContext session)

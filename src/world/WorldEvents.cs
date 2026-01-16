@@ -155,4 +155,38 @@ namespace TH7
         public System.Collections.Generic.List<Vector3Int> Path;
         public bool CanReach;
     }
+
+    // ============================================
+    // 地图物件事件
+    // ============================================
+
+    /// <summary>
+    /// 地图物件交互事件
+    /// </summary>
+    public struct MapObjectInteractedEvent
+    {
+        public Hero Hero;
+        public MapObject MapObject;
+        public InteractionResult Result;
+    }
+
+    /// <summary>
+    /// 矿场占领事件
+    /// </summary>
+    public struct MineOccupiedEvent
+    {
+        public Hero Hero;
+        public Mine Mine;
+        public int PreviousOwner;
+    }
+
+    /// <summary>
+    /// 资源拾取事件
+    /// </summary>
+    public struct ResourcePickedUpEvent
+    {
+        public Hero Hero;
+        public ResourceType ResourceType;
+        public int Amount;
+    }
 }
