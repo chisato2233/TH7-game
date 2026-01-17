@@ -9,8 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5ca5d878a12c9674a8b44c09baeb5828, type: 3}
-  m_Name: UnitConfigDatabase
+  m_Script: {fileID: 11500000, guid: 1ea25977ca94a1642b83f6b6c17f9727, type: 3}
+  m_Name: FactionConfigDatabase
   m_EditorClassIdentifier: 
-  Units:
-  - {fileID: 11400000, guid: c30bec6eebe2ddd4a8f99c4d2d42350c, type: 2}
+  Factions:
+  - {fileID: 11400000, guid: f8d482389da13f04cb727c153794a31a, type: 2}

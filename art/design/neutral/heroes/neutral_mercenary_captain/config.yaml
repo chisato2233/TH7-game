@@ -1,0 +1,25 @@
+# Hero Configuration
+# 英雄配置
+
+heroId: neutral_mercenary_captain
+displayName: Mercenary Captain
+description: An experienced mercenary leader, skilled at commanding various troops in battle
+faction: Neutral
+class: Warrior
+
+# 视觉资源 (本文件夹内)
+portrait: portrait.png
+mapicon: mapicon.png
+
+# 基础属性
+attack: 3
+defense: 2
+spellPower: 1
+knowledge: 1
+
+# 初始军队 (强引用)
+startingArmy:
+  - unit: "@UnitConfig_neutral_rogue"
+    count: 15
+  - unit: "@UnitConfig_neutral_nomad"
+    count: 8

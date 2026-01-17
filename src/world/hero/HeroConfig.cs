@@ -49,12 +49,12 @@ namespace TH7
     }
 
     /// <summary>
-    /// 初始军队单位配置
+    /// 初始军队单位配置（强引用）
     /// </summary>
     [System.Serializable]
     public struct StartingUnit
     {
-        public string UnitId;
+        public UnitConfig Unit;
         [Range(1, 9999)]
         public int Count;
     }

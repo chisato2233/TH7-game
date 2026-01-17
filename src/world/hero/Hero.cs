@@ -219,7 +219,10 @@ namespace TH7
                 for (int i = 0; i < Mathf.Min(heroConfig.StartingArmy.Length, army.Length); i++)
                 {
                     var unit = heroConfig.StartingArmy[i];
-                    army[i] = new UnitStack { UnitId = unit.UnitId, Count = unit.Count };
+                    if (unit.Unit != null)
+                    {
+                        army[i] = new UnitStack { UnitId = unit.Unit.UnitId, Count = unit.Count };
+                    }
                 }
             }
 

@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb9b1ddfb0b36846bb72b1850918656, type: 3}
+  m_Name: UnitConfig_neutral_nomad
+  m_EditorClassIdentifier: 
+  UnitId: neutral_nomad
+  DisplayName: Nomad
+  Description: A light cavalry warrior with high mobility
+  Icon: {fileID: 0}
+  Faction: 0
+  Tier: 3
+  IsUpgraded: 0
+  BaseUnitId: 
+  Attack: 7
+  Defense: 5
+  MinDamage: 3
+  MaxDamage: 6
+  Health: 25
+  Speed: 7
+  MovementType: 0
+  AttackType: 0
+  Shots: 0
+  RecruitCost:
+    amounts: 96000000000000000000000000000000
+  RequiredBuilding: 0
+  WeeklyGrowth: 4
+  AbilityIds: []

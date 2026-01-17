@@ -1,0 +1,27 @@
+# Building Configuration Template
+# 建筑配置模板
+
+buildingId: tavern
+displayName: Tavern
+description: A place to recruit heroes and gather information
+faction: Neutral
+category: Special
+
+# 视觉资源 (相对路径)
+icon: icons/tavern.png
+worldSprite: sprites/tavern.png
+
+# 建造成本
+cost:
+  gold: 500
+  wood: 5
+  ore: 5
+  crystal: 0
+
+# 前置建筑 (可选)
+prerequisites: []
+
+# 建筑效果
+effects:
+  - type: recruit_hero
+    description: Allows hero recruitment

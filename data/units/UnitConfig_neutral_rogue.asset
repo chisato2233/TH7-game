@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb9b1ddfb0b36846bb72b1850918656, type: 3}
+  m_Name: UnitConfig_neutral_rogue
+  m_EditorClassIdentifier: 
+  UnitId: neutral_rogue
+  DisplayName: Rogue
+  Description: An agile melee unit, skilled at ambush and dodging attacks
+  Icon: {fileID: 0}
+  Faction: 0
+  Tier: 2
+  IsUpgraded: 0
+  BaseUnitId: 
+  Attack: 5
+  Defense: 3
+  MinDamage: 2
+  MaxDamage: 4
+  Health: 10
+  Speed: 6
+  MovementType: 0
+  AttackType: 0
+  Shots: 0
+  RecruitCost:
+    amounts: 3c000000000000000000000000000000
+  RequiredBuilding: 0
+  WeeklyGrowth: 8
+  AbilityIds:
+  - no_retaliation

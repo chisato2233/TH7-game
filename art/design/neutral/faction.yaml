@@ -1,0 +1,31 @@
+# Neutral Faction Configuration
+# 中立阵营配置
+
+factionType: Neutral
+displayName: Neutral
+description: Unaligned forces, including various neutral creatures and mercenaries
+
+# 视觉资源 (相对路径)
+icon: icons/faction_neutral.png
+banner: banners/faction_neutral.png
+primaryColor: "#808080"
+
+# 初始资源
+startingResources:
+  gold: 1500
+  wood: 8
+  ore: 8
+  crystal: 0
+
+# 可用英雄 (强引用)
+availableHeroes:
+  - "@HeroConfig_neutral_mercenary_captain"
+  - "@HeroConfig_neutral_wandering_mage"
+  - "@HeroConfig_neutral_test_hero_amiya"
+
+# 阵营兵种 (强引用)
+factionUnits:
+  - "@UnitConfig_neutral_peasant"
+  - "@UnitConfig_neutral_rogue"
+  - "@UnitConfig_neutral_nomad"
+  - "@UnitConfig_neutral_sharpshooter"

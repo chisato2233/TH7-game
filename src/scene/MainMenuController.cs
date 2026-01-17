@@ -19,7 +19,34 @@ namespace TH7
             RefreshSaveSlots();
         }
 
-        public void StartNewGame()
+        /// <summary>
+        /// 使用选择的设置开始新游戏
+        /// </summary>
+        public void StartNewGame(NewGameSettings settings)
+        {
+            if (settings == null || !settings.IsValid)
+            {
+                Debug.LogError("[MainMenu] 无效的游戏设置");
+                return;
+            }
+
+            var contextSystem = GameEntry.Instance.GetSystem<ContextSystem>();
+
+            // 清理旧的 Session（如果存在）
+            if (contextSystem.Root.HasChild<SessionContext>())
+                contextSystem.Root.DisposeChild<SessionContext>();
+
+            var session = contextSystem.Root.CreateChild<SessionContext>();
+            session.StartNewSession(settings);
+
+            Debug.Log($"[MainMenu] 创建新会话: 文明={settings.SelectedFaction.DisplayName}, 英雄={settings.SelectedHero.DisplayName}");
+            SceneManager.LoadScene(worldScene);
+        }
+
+        /// <summary>
+        /// 快速开始（调试用，跳过选择）
+        /// </summary>
+        public void QuickStart()
         {
             var contextSystem = GameEntry.Instance.GetSystem<ContextSystem>();
 
@@ -30,7 +57,7 @@ namespace TH7
             var session = contextSystem.Root.CreateChild<SessionContext>();
             session.StartNewSession("Player");
 
-            Debug.Log("[MainMenu] 创建新会话，加载世界场景");
+            Debug.Log("[MainMenu] 快速开始，加载世界场景");
             SceneManager.LoadScene(worldScene);
         }
 

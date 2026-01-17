@@ -23,6 +23,7 @@ namespace TH7.UI
 
         [Header("Panels")]
         [SerializeField] SaveSlotWindow saveSlotWindow;
+        [SerializeField] NewGameWindow newGameWindow;
 
         protected override void Start()
         {
@@ -83,7 +84,23 @@ namespace TH7.UI
         void OnNewGameClicked()
         {
             if (controller == null) return;
-            controller.StartNewGame();
+
+            // 打开新游戏窗口（选择文明和英雄）
+            if (newGameWindow != null)
+            {
+                newGameWindow.Show(OnNewGameSettingsConfirmed);
+            }
+            else
+            {
+                // 没有配置窗口，直接快速开始
+                controller.QuickStart();
+            }
+        }
+
+        void OnNewGameSettingsConfirmed(NewGameSettings settings)
+        {
+            if (controller == null || settings == null) return;
+            controller.StartNewGame(settings);
         }
 
         void OnContinueClicked()

@@ -1,0 +1,25 @@
+# Hero Configuration
+# 英雄配置
+
+heroId: neutral_wandering_mage
+displayName: Wandering Mage
+description: A mysterious mage who travels the land, mastering all schools of magic
+faction: Neutral
+class: Mage
+
+# 视觉资源 (本文件夹内)
+portrait: portrait.png
+mapicon: mapicon.png
+
+# 基础属性
+attack: 1
+defense: 1
+spellPower: 3
+knowledge: 2
+
+# 初始军队 (强引用)
+startingArmy:
+  - unit: "@UnitConfig_neutral_peasant"
+    count: 20
+  - unit: "@UnitConfig_neutral_rogue"
+    count: 5

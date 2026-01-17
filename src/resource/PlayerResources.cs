@@ -101,6 +101,11 @@ namespace TH7
         }
 
         /// <summary>
+        /// 从 ResourceBundle 设置（别名）
+        /// </summary>
+        public void SetFromBundle(ResourceBundle bundle) => Import(bundle);
+
+        /// <summary>
         /// 导出为 ResourceBundle
         /// </summary>
         public ResourceBundle Export() => new ResourceBundle(

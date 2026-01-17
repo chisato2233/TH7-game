@@ -1,0 +1,28 @@
+# Unit Configuration
+# 兵种配置
+
+unitId: neutral_peasant
+displayName: Peasant
+description: The most basic combat unit, numerous but weak in battle
+faction: Neutral
+tier: 1
+
+# 视觉资源 (本文件夹内)
+icon: icon.png
+combatSprite: combat.png
+
+# 战斗属性
+attack: 1
+defense: 1
+minDamage: 1
+maxDamage: 1
+health: 3
+speed: 4
+initiative: 5
+
+# 招募信息
+goldCost: 10
+growthPerWeek: 25
+
+# 特殊能力
+abilities: []

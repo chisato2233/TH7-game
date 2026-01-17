@@ -1,0 +1,29 @@
+# Unit Configuration
+# 兵种配置
+
+unitId: neutral_rogue
+displayName: Rogue
+description: An agile melee unit, skilled at ambush and dodging attacks
+faction: Neutral
+tier: 2
+
+# 视觉资源 (本文件夹内)
+icon: icon.png
+combatSprite: combat.png
+
+# 战斗属性
+attack: 5
+defense: 3
+minDamage: 2
+maxDamage: 4
+health: 10
+speed: 6
+initiative: 8
+
+# 招募信息
+goldCost: 60
+growthPerWeek: 8
+
+# 特殊能力
+abilities:
+  - no_retaliation

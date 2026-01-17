@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 373f44af2f4b9c94c93a062c89702629, type: 3}
+  m_Name: FactionConfig_neutral
+  m_EditorClassIdentifier: 
+  FactionType: 0
+  DisplayName: Neutral
+  Description: Unaligned forces, including various neutral creatures and mercenaries
+  Icon: {fileID: 0}
+  Banner: {fileID: 0}
+  PrimaryColor: {r: 1, g: 1, b: 1, a: 1}
+  StartingResources:
+    amounts: dc050000080000000800000000000000
+  AvailableHeroes:
+  - {fileID: 11400000, guid: 612f2a78266b2bd42942f70266fb5318, type: 2}
+  - {fileID: 11400000, guid: b9c633b38be974841b911226610dcf94, type: 2}
+  - {fileID: 11400000, guid: eba7d1d1104433847aef3ea746a65280, type: 2}
+  FactionUnits:
+  - {fileID: 11400000, guid: ed927ce6de069e940bf39be18a3a2fe2, type: 2}
+  - {fileID: 11400000, guid: 0c6eae0bfc5d6bc4aba003bc1884c32a, type: 2}
+  - {fileID: 11400000, guid: 9906d2656ac76584fa196a2d34ad069e, type: 2}
+  - {fileID: 11400000, guid: 30085d5e77ea09d4ab99db24c71b6d50, type: 2}

@@ -1,0 +1,28 @@
+# Unit Configuration
+# 兵种配置
+
+unitId: neutral_nomad
+displayName: Nomad
+description: A light cavalry warrior with high mobility
+faction: Neutral
+tier: 3
+
+# 视觉资源 (本文件夹内)
+icon: icon.png
+combatSprite: combat.png
+
+# 战斗属性
+attack: 7
+defense: 5
+minDamage: 3
+maxDamage: 6
+health: 25
+speed: 7
+initiative: 9
+
+# 招募信息
+goldCost: 150
+growthPerWeek: 4
+
+# 特殊能力
+abilities: []

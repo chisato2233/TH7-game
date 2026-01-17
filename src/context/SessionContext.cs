@@ -38,6 +38,34 @@ namespace TH7
             saveSlotId = null;
         }
 
+        /// <summary>
+        /// 使用新游戏设置启动会话
+        /// </summary>
+        public void StartNewSession(NewGameSettings settings)
+        {
+            Data = new SessionData
+            {
+                PlayerName = settings.PlayerName,
+                SelectedFactionType = settings.SelectedFaction.FactionType,
+                StartingHeroId = settings.SelectedHero.HeroId
+            };
+
+            // 应用文明初始资源
+            var startingResources = settings.GetStartingResources();
+            Data.Resources.SetFromBundle(startingResources);
+
+            // 记录起始英雄配置
+            Data.StartingHeroConfig = settings.SelectedHero;
+
+            saveSlotId = null;
+            Debug.Log($"[Session] 新游戏: {settings.PlayerName}, 文明: {settings.SelectedFaction.DisplayName}, 英雄: {settings.SelectedHero.DisplayName}");
+        }
+
+        /// <summary>
+        /// 获取起始英雄配置（用于在 WorldScene 中创建英雄）
+        /// </summary>
+        public HeroConfig GetStartingHeroConfig() => Data.StartingHeroConfig;
+
         public void LoadSession(string slotId)
         {
             saveSlotId = slotId;
@@ -158,6 +186,14 @@ namespace TH7
         public Reactive<int> Day = new(1);
         public PlayerResources Resources = new();
         public ReactiveList<TownData> Towns = new();
+
+        // 新游戏选择
+        public BiomeType SelectedFactionType;
+        public string StartingHeroId;
+
+        // 起始英雄配置（运行时引用，不序列化）
+        [ES3NonSerializable]
+        public HeroConfig StartingHeroConfig;
 
         // 英雄存档数据（用于序列化）
         public List<HeroSaveData> HeroSaveDataList = new();

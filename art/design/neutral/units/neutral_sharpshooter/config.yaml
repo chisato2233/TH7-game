@@ -1,0 +1,30 @@
+# Unit Configuration
+# 兵种配置
+
+unitId: neutral_sharpshooter
+displayName: Sharpshooter
+description: A precise ranged unit that ignores melee penalty
+faction: Neutral
+tier: 4
+
+# 视觉资源 (本文件夹内)
+icon: icon.png
+combatSprite: combat.png
+
+# 战斗属性
+attack: 12
+defense: 8
+minDamage: 8
+maxDamage: 12
+health: 40
+speed: 6
+initiative: 10
+
+# 招募信息
+goldCost: 400
+growthPerWeek: 2
+
+# 特殊能力
+abilities:
+  - ranged
+  - no_melee_penalty

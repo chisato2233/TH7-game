@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55fd1499340ec18489a5f9acbc1700c0, type: 3}
+  m_Name: HeroConfig_neutral_mercenary_captain
+  m_EditorClassIdentifier: 
+  HeroId: neutral_mercenary_captain
+  DisplayName: Mercenary Captain
+  Description: An experienced mercenary leader, skilled at commanding various troops
+    in battle
+  Portrait: {fileID: 0}
+  MapIcon: {fileID: 0}
+  Faction: 0
+  Class: 0
+  Attack: 3
+  Defense: 2
+  SpellPower: 1
+  Knowledge: 1
+  BaseMovementPoints: 20
+  SpecializationAbilityId: 
+  StartingAbilityIds: []
+  StartingArmy:
+  - Unit: {fileID: 11400000, guid: 0c6eae0bfc5d6bc4aba003bc1884c32a, type: 2}
+    Count: 15
+  - Unit: {fileID: 11400000, guid: 9906d2656ac76584fa196a2d34ad069e, type: 2}
+    Count: 8
+  AnimatorController: {fileID: 0}
+  Prefab: {fileID: 0}

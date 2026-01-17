@@ -10,7 +10,7 @@ namespace TH7
     public class HeroConfigDatabase : ScriptableObject
     {
         [Header("Hero Configs")]
-        public HeroConfig[] Heroes;
+        public List<HeroConfig> Heroes = new();
 
         Dictionary<string, HeroConfig> heroLookup;
 
