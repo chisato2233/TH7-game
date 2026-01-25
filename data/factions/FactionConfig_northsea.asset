@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 373f44af2f4b9c94c93a062c89702629, type: 3}
+  m_Name: FactionConfig_northsea
+  m_EditorClassIdentifier: 
+  FactionType: 0
+  DisplayName: North Sea
+  Description: Located in the extreme north of the world. After Odin slew the demon
+    god Ymir, the land split into two opposing factions due to the demon's corruption
+    and the law of survival - the Vikings and England. However, wise individuals
+    found ways to resolve conflicts and secretly cooperate, seeking unity and peace.
+  Icon: {fileID: 0}
+  Banner: {fileID: 0}
+  PrimaryColor: {r: 1, g: 1, b: 1, a: 1}
+  StartingResources:
+    amounts: dc050000080000000800000000000000
+  AvailableHeroes:
+  - {fileID: 11400000, guid: 73c5a652d0efaef42b8d96de28704afc, type: 2}
+  - {fileID: 11400000, guid: 486f8215370ff374f8160664a933b2f7, type: 2}
+  FactionUnits: []
+  FactionBuildings: []

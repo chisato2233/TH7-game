@@ -29,5 +29,9 @@ namespace TH7
         [Header("Associated Units")]
         [Tooltip("该文明的兵种列表")]
         public List<UnitConfig> FactionUnits = new();
+
+        [Header("Associated Buildings")]
+        [Tooltip("该文明的建筑列表")]
+        public List<BuildingConfig> FactionBuildings = new();
     }
 }

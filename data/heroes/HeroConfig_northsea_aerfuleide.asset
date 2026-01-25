@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55fd1499340ec18489a5f9acbc1700c0, type: 3}
+  m_Name: HeroConfig_northsea_aerfuleide
+  m_EditorClassIdentifier: 
+  HeroId: northsea_aerfuleide
+  DisplayName: Alfred
+  Description: King of England, he led his army to defeat the Viking invaders, established
+    a naval system distinct from the Vikings, and was posthumously honored with the
+    title "the Great".
+  Portrait: {fileID: 21300000, guid: bfe4f9a0ba343f54ca33aff549ca9ac9, type: 3}
+  MapIcon: {fileID: 21300000, guid: 293a2e1066d749b44a2112f77a8d8e7c, type: 3}
+  Faction: 0
+  Class: 2
+  Attack: 1
+  Defense: 1
+  SpellPower: 3
+  Knowledge: 3
+  BaseMovementPoints: 20
+  SpecializationAbilityId: 
+  StartingAbilityIds: []
+  StartingArmy: []
+  AnimatorController: {fileID: 0}
+  Prefab: {fileID: 7726089891072223847, guid: 5a7e7b39478203e428cd6b330541b36f, type: 3}

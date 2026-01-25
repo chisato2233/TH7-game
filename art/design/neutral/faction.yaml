@@ -5,9 +5,7 @@ factionType: Neutral
 displayName: Neutral
 description: Unaligned forces, including various neutral creatures and mercenaries
 
-# 视觉资源 (相对路径)
-icon: icons/faction_neutral.png
-banner: banners/faction_neutral.png
+
 primaryColor: "#808080"
 
 # 初始资源
@@ -29,3 +27,7 @@ factionUnits:
   - "@UnitConfig_neutral_rogue"
   - "@UnitConfig_neutral_nomad"
   - "@UnitConfig_neutral_sharpshooter"
+
+# 阵营建筑 (强引用)
+factionBuildings:
+  - "@BuildingConfig_neutral_tavern"

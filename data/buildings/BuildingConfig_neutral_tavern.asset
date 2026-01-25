@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69b1d8d8fc7b8df4b959d99aaa2585cc, type: 3}
+  m_Name: BuildingConfig_neutral_tavern
+  m_EditorClassIdentifier: 
+  Type: 2
+  DisplayName: Tavern
+  Description: A place to recruit heroes and gather information
+  Icon: {fileID: 0}
+  BasicCost:
+    amounts: f4010000050000000500000000000000
+  UpgradeCost:
+    amounts: e80300000a0000000a00000000000000
+  Requirements: []
+  GoldPerDay: 0
+  ProducedUnitId: 
+  WeeklyGrowth: 0

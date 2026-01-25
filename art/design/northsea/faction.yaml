@@ -1,0 +1,24 @@
+# northsea Faction Configuration
+# 北海阵营配置
+
+factionType: northsea
+displayName: North Sea
+displayName_zh: 北海
+description: Located in the extreme north of the world. After Odin slew the demon god Ymir, the land split into two opposing factions due to the demon's corruption and the law of survival - the Vikings and England. However, wise individuals found ways to resolve conflicts and secretly cooperate, seeking unity and peace.
+description_zh: 位于世界极北之地,奥丁斩杀魔神尤弥尔之后因魔神的蛊惑与生存法则分裂了两个对立的阵营,维京与英格兰,但有识之士却找到了解决问题的办法并暗中合作,以求同意与和平.
+
+
+primaryColor: "#808080"
+
+# 初始资源
+startingResources:
+  gold: 1500
+  wood: 8
+  ore: 8
+  crystal: 0
+
+# 可用英雄 (强引用)
+availableHeroes:
+  - "@HeroConfig_northsea_waerjili"
+  - "@HeroConfig_northsea_aerfuleide"
+ 

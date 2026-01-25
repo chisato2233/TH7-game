@@ -1,0 +1,21 @@
+# Hero Configuration
+# 英雄配置
+
+heroId: northsea_aerfuleide
+displayName: Alfred
+displayName_zh: 阿尔弗雷德
+description: King of England, he led his army to defeat the Viking invaders, established a naval system distinct from the Vikings, and was posthumously honored with the title "the Great".
+description_zh: 英格兰国王,他率军击败了维京的侵略者,训练了不同于维京的海军体系,被后人冠以大帝名号.
+faction: northsea
+class: Mage
+
+# 视觉资源 (本文件夹内)
+portrait: portrait_480x480.png
+mapicon: mapicon_480x480.png
+
+# 基础属性
+attack: 1
+defense: 1
+spellPower: 3
+knowledge: 3
+

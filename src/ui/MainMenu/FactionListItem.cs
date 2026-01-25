@@ -69,7 +69,6 @@ namespace TH7.UI
             if (eventData.button != PointerEventData.InputButton.Left)
                 return;
 
-            Debug.Log($"[FactionListItem] Clicked: {data?.DisplayName}, Subscribers: {OnClicked?.GetInvocationList()?.Length ?? 0}");
             OnClicked?.Invoke(data);
         }
 

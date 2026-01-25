@@ -1,0 +1,25 @@
+# Hero Configuration
+# 英雄配置
+
+heroId: greek_leonidas
+displayName: Leonidas
+description: Leonidas is the legendary Spartan king who embodied iron-willed courage and martial discipline at the Battle of Thermopylae. His commanding presence significantly bolsters the offensive capabilities and physical resilience of all troops under his banner.
+faction: Greek
+class: Warrior
+
+# 视觉资源 (本文件夹内)
+portrait: portrait_180x180.png         # 头像
+worldSprite: worldsprite_720x720.png # 世界Sprite
+
+# 基础属性
+attack: 3
+defense: 4
+spellPower: 1
+knowledge: 1
+
+# 初始军队 (强引用)
+startingArmy:
+  - unit: "@UnitConfig_neutral_rogue"
+    count: 15
+  - unit: "@UnitConfig_neutral_nomad"
+    count: 8

@@ -1,4 +1,7 @@
+using System.Collections;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using GameFramework;
 using TH7.UI;
 using DG.Tweening;
@@ -118,6 +121,11 @@ namespace TH7
                 Debug.LogError("[WorldScene] SessionContext not found");
                 return;
 #endif
+            }
+            else
+            {
+                // 正常流程：使用起始英雄配置创建英雄
+                CreateStartingHero();
             }
 
             // 创建 WorldContext 并注入 MapManager
@@ -297,8 +305,98 @@ namespace TH7
         void OnBattleRequested(BattleRequestedEvent e)
         {
             inputController?.DisableInput();
-            // TODO: 打开战斗界面
-            Debug.Log("[WorldScene] Battle triggered (not implemented)");
+            StartCoroutine(EnterBattle(e.Hero, e.Enemy));
+        }
+
+        /// <summary>
+        /// 进入战斗（Additive 场景加载）
+        /// </summary>
+        IEnumerator EnterBattle(Hero attackerHero, object enemy)
+        {
+            Debug.Log($"[WorldScene] Entering battle with {attackerHero?.HeroName}");
+
+            // 1. 禁用玩家输入
+            playerProvider?.SetEnabled(false);
+
+            // 2. 暂停世界上下文
+            worldContext?.Pause();
+
+            // 3. 准备战斗数据
+            var battleInitData = new BattleInitData
+            {
+                AttackerHero = attackerHero,
+                AttackerArmy = attackerHero?.Army?.Where(s => s != null && s.Count > 0).ToArray(),
+                DefenderArmy = GetEnemyArmy(enemy),
+                MapWidth = 15,
+                MapHeight = 11,
+                Terrain = BattleTerrainType.Grass
+            };
+
+            // 4. 创建战斗上下文
+            var battleContext = sessionContext.CreateChild<BattleContext>(ctx => ctx.Setup(battleInitData));
+
+            // 5. Additive 加载战斗场景
+            var asyncOp = SceneManager.LoadSceneAsync("BattleScene", LoadSceneMode.Additive);
+            while (!asyncOp.isDone)
+            {
+                yield return null;
+            }
+
+            Debug.Log("[WorldScene] Battle scene loaded (Additive)");
+
+            // 战斗场景会自动从 BattleContext 获取数据并开始战斗
+            // 战斗结束后 BattleSceneController 会销毁 BattleContext 并卸载场景
+            // BattleContext.OnDispose() 会自动恢复 WorldContext
+        }
+
+        /// <summary>
+        /// 获取敌方军队配置
+        /// </summary>
+        UnitStack[] GetEnemyArmy(object enemy)
+        {
+            // 如果是英雄，使用英雄的军队
+            if (enemy is Hero enemyHero)
+            {
+                return enemyHero.Army?.Where(s => s != null && s.Count > 0).ToArray();
+            }
+
+            // 如果是地图对象（如野怪），获取其军队配置
+            // TODO: 实现野怪军队配置
+
+            // 默认测试军队
+            return new UnitStack[]
+            {
+                new UnitStack { UnitId = "skeleton", Count = 10 },
+                new UnitStack { UnitId = "zombie", Count = 5 }
+            };
+        }
+
+        /// <summary>
+        /// 战斗结束后的处理（由 BattleContext.OnDispose 自动触发 WorldContext.Resume）
+        /// </summary>
+        [AutoSubscribe]
+        void OnBattleEnded(BattleEndedEvent e)
+        {
+            Debug.Log($"[WorldScene] Battle ended with result: {e.Result}");
+
+            // 恢复输入
+            inputController?.EnableInput();
+            playerProvider?.SetEnabled(true);
+
+            // 恢复回合（如果需要）
+            turnManager?.Resume();
+
+            // 可以在这里处理战斗结果
+            if (e.Result == BattleResult.Victory)
+            {
+                // 胜利处理：经验、战利品等
+                Debug.Log($"[WorldScene] Victory! Gained {e.Rewards?.Experience ?? 0} experience");
+            }
+            else if (e.Result == BattleResult.Defeat)
+            {
+                // 失败处理
+                Debug.Log("[WorldScene] Defeat!");
+            }
         }
 
         [AutoSubscribe]
@@ -408,6 +506,57 @@ namespace TH7
             turnManager?.Resume();
 
             Debug.Log("[WorldScene] Closed town, resumed exploration");
+        }
+
+        /// <summary>
+        /// 使用起始英雄配置创建英雄
+        /// </summary>
+        void CreateStartingHero()
+        {
+            Debug.Log("[WorldScene] CreateStartingHero called");
+
+            var heroConfig = sessionContext.GetStartingHeroConfig();
+            if (heroConfig == null)
+            {
+                Debug.LogError("[WorldScene] No starting hero config found! Check if NewGameWindow passed the hero correctly.");
+                return;
+            }
+
+            Debug.Log($"[WorldScene] Creating hero from config: {heroConfig.HeroId}, {heroConfig.DisplayName}");
+
+            // 起始位置（可以从地图配置中获取，这里先用默认值）
+            Vector3Int startPosition = new Vector3Int(5, 5, 0);
+
+            // 优先使用 HeroConfig 中的 Prefab，如果没有则使用默认的 heroPrefab
+            var prefabToUse = heroConfig.Prefab != null ? heroConfig.Prefab : (heroPrefab != null ? heroPrefab.gameObject : null);
+
+            Hero hero;
+            if (prefabToUse != null)
+            {
+                var go = Instantiate(prefabToUse);
+                hero = go.GetComponent<Hero>();
+                if (hero == null)
+                {
+                    hero = go.AddComponent<Hero>();
+                }
+            }
+            else
+            {
+                var go = new GameObject($"Hero_{heroConfig.DisplayName}");
+                hero = go.AddComponent<Hero>();
+            }
+
+            // 使用 HeroConfig 初始化
+            hero.InitializeFromConfig(heroConfig, startPosition, ownerId: 0);
+            sessionContext.RegisterHero(hero);
+
+            // 设置坐标转换器
+            if (mapManager != null)
+            {
+                hero.SetPositionConverter(cell => mapManager.CellToWorld(cell));
+            }
+
+            Debug.Log($"[WorldScene] Created starting hero: {heroConfig.DisplayName}");
         }
 
         /// <summary>

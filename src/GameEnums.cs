@@ -78,13 +78,14 @@ namespace TH7
     public enum BiomeType
     {
         Neutral,    // 中立
-        Arabian,    // 阿拉伯
         Egyptian,   // 埃及
         Indian,     // 印度
         Greek,      // 希腊
         Chinese,    // 汉唐
         Mongolian,  // 蒙古
-        Islander    // 南岛
+        Islander,   // 南岛
+        Roman,      // 罗马
+        Viking      // 维京
     }
 
     // ============================================

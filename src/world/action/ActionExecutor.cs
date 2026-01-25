@@ -119,6 +119,8 @@ namespace TH7
             }
 
             // 移动动画
+            ActionResult lastInteractionResult = null;
+
             if (!SkipAnimations)
             {
                 // 切换到移动状态（会触发状态机和动画）
@@ -132,6 +134,11 @@ namespace TH7
                     // 更新英雄逻辑位置
                     hero.MoveTo(cell);
                     OnHeroMoved?.Invoke(hero, cell);
+
+                    // 路过时检查并拾取地图物件
+                    var result = TryInteractWithMapObject(hero, cell);
+                    if (result != null)
+                        lastInteractionResult = result;
                 }
 
                 // 切换回待机/禁用状态（会触发状态机和动画）
@@ -139,18 +146,23 @@ namespace TH7
             }
             else
             {
-                // 跳过动画，直接到达
+                // 跳过动画，直接到达，但仍然检查路径上的物件
+                foreach (var cell in path)
+                {
+                    var result = TryInteractWithMapObject(hero, cell);
+                    if (result != null)
+                        lastInteractionResult = result;
+                }
                 hero.MoveTo(action.Destination);
                 OnHeroMoved?.Invoke(hero, action.Destination);
             }
 
             Debug.Log($"[ActionExecutor] {hero.HeroName} 移动到 {action.Destination}，剩余移动力: {hero.MovementPoints.Value}");
 
-            // 检查目标格子是否有地图物件
-            var interactionResult = TryInteractWithMapObject(hero, action.Destination);
-            if (interactionResult != null)
+            // 返回最后的交互结果（如果有），否则返回移动成功
+            if (lastInteractionResult != null)
             {
-                onComplete?.Invoke(interactionResult);
+                onComplete?.Invoke(lastInteractionResult);
                 yield break;
             }
 

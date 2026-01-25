@@ -15,8 +15,8 @@ MonoBehaviour:
   HeroId: neutral_test_hero_amiya
   DisplayName: Amiya
   Description: Amiya is a test hero.
-  Portrait: {fileID: 6120914730915384989, guid: bd7df0fe9b85eda4c9a8c0b408314085, type: 3}
-  MapIcon: {fileID: 21300000, guid: 231d3d1f3309bc5409b15ea7a5cf4b4b, type: 3}
+  Portrait: {fileID: 21300000, guid: 6032e8e05e8c34f4393ff905739cbd25, type: 3}
+  MapIcon: {fileID: 21300000, guid: f6b3eee8027a57549b5d40b074c386b3, type: 3}
   Faction: 0
   Class: 2
   Attack: 3
@@ -32,4 +32,4 @@ MonoBehaviour:
   - Unit: {fileID: 11400000, guid: 9906d2656ac76584fa196a2d34ad069e, type: 2}
     Count: 8
   AnimatorController: {fileID: 0}
-  Prefab: {fileID: 0}
+  Prefab: {fileID: 2254075216044930275, guid: 7b2d2e33ec0263c41b6eac959848b8db, type: 3}

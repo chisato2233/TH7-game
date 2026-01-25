@@ -1,0 +1,30 @@
+# Building Configuration - Tavern
+# 建筑配置 - 酒馆
+
+buildingId: neutral_tavern
+type: Tavern
+displayName: Tavern
+description: A place to recruit heroes and gather information
+
+# Visual Assets (relative path)
+icon: icon.png
+
+# Basic Construction Cost
+basicCost:
+  gold: 500
+  wood: 5
+  ore: 5
+
+# Upgrade Cost (if applicable)
+upgradeCost:
+  gold: 1000
+  wood: 10
+  ore: 10
+
+# Requirements (prerequisite buildings)
+requirements: []
+
+# Production
+goldPerDay: 0
+producedUnitId: ""
+weeklyGrowth: 0

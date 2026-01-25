@@ -23,7 +23,6 @@ namespace TH7.UI
 
         void HandleItemClicked(FactionConfig faction)
         {
-            Debug.Log($"[FactionListUI] HandleItemClicked: {faction?.DisplayName}");
             OnFactionSelected?.Invoke(faction);
         }
     }

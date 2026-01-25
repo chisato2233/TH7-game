@@ -1,0 +1,25 @@
+# Hero Configuration
+# 英雄配置
+
+heroId: greek_plato
+displayName: Plato
+description: Plato is one of the most influential classical Greek philosophers and the founder of the Academy in Athens, dedicated to the pursuit of ultimate wisdom. Through deep philosophical insight, he harnesses vast reserves of mental energy to cast powerful, long-lasting enchantments.
+faction: Grk
+class: Mage
+
+# 视觉资源 (本文件夹内)
+portrait: portrait_180x180.png         # 头像
+worldSprite: worldsprite_720x720.png # 世界Sprite
+
+# 基础属性
+attack: 1
+defense: 2
+spellPower: 3
+knowledge: 4
+
+# 初始军队 (强引用)
+startingArmy:
+  - unit: "@UnitConfig_neutral_rogue"
+    count: 15
+  - unit: "@UnitConfig_neutral_nomad"
+    count: 8

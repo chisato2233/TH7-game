@@ -227,12 +227,6 @@ namespace TH7
             }
 
             InitializeAbilitySystem();
-
-            // 设置视觉组件
-            if (heroConfig.AnimatorController != null && animator != null)
-            {
-                animator.runtimeAnimatorController = heroConfig.AnimatorController;
-            }
         }
 
         /// <summary>

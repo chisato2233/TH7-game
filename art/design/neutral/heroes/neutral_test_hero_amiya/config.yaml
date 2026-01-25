@@ -8,8 +8,8 @@ faction: Neutral
 class: Mage
 
 # 视觉资源 (本文件夹内)
-portrait: portrait.png
-worldSprite: world.png
+portrait: portrait_180x180.png         # 头像
+worldSprite: worldsprite_1000x1000.png # 世界Sprite
 
 # 基础属性
 attack: 3

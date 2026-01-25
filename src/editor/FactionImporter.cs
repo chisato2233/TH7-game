@@ -63,7 +63,7 @@ namespace TH7.Editor
 
             EditorGUILayout.BeginVertical();
             EditorGUILayout.LabelField(folder.Name, EditorStyles.boldLabel);
-            EditorGUILayout.LabelField($"英雄: {folder.HeroCount}  兵种: {folder.UnitCount}", EditorStyles.miniLabel);
+            EditorGUILayout.LabelField($"英雄: {folder.HeroCount}  兵种: {folder.UnitCount}  建筑: {folder.BuildingCount}", EditorStyles.miniLabel);
             EditorGUILayout.EndVertical();
 
             if (GUILayout.Button("导入", GUILayout.Width(60), GUILayout.Height(36)))
@@ -94,7 +94,8 @@ namespace TH7.Editor
                     Name = Path.GetFileName(dir),
                     Path = dir,
                     HeroCount = CountSubfolders(Path.Combine(dir, "heroes")),
-                    UnitCount = CountSubfolders(Path.Combine(dir, "units"))
+                    UnitCount = CountSubfolders(Path.Combine(dir, "units")),
+                    BuildingCount = CountSubfolders(Path.Combine(dir, "buildings"))
                 };
                 factionFolders.Add(folder);
             }
@@ -126,7 +127,7 @@ namespace TH7.Editor
 
             try
             {
-                // 按依赖顺序导入: Units -> Heroes -> Faction
+                // 按依赖顺序导入: Units -> Heroes -> Buildings -> Faction
                 // 1. 先导入兵种（无依赖）
                 ImportUnits(folder.Path);
                 AssetDatabase.SaveAssets();
@@ -135,7 +136,11 @@ namespace TH7.Editor
                 ImportHeroes(folder.Path);
                 AssetDatabase.SaveAssets();
 
-                // 3. 最后导入文明配置（依赖 Heroes 和 Units）
+                // 3. 导入建筑（依赖 Units）
+                ImportBuildings(folder.Path);
+                AssetDatabase.SaveAssets();
+
+                // 4. 最后导入文明配置（依赖 Heroes、Units 和 Buildings）
                 ImportFactionConfig(folder.Path);
 
                 // 更新 Database
@@ -221,23 +226,65 @@ namespace TH7.Editor
                 }
             }
 
-            // 尝试加载头像
-            var portraitPath = Path.Combine(heroDir, "portrait.png");
-            if (File.Exists(portraitPath))
+            // 尝试加载头像 (优先使用 YAML 中指定的文件名，否则搜索 portrait_*.png)
+            var portraitFile = !string.IsNullOrEmpty(data.Portrait)
+                ? data.Portrait
+                : FindFileWithPattern(heroDir, "portrait_");
+            if (!string.IsNullOrEmpty(portraitFile))
             {
-                var unityPath = portraitPath.Replace("\\", "/");
-                EnsureSpriteImportSettings(unityPath);
-                config.Portrait = AssetDatabase.LoadAssetAtPath<Sprite>(unityPath);
+                var portraitPath = Path.Combine(heroDir, portraitFile);
+                if (File.Exists(portraitPath))
+                {
+                    var unityPath = portraitPath.Replace("\\", "/");
+                    EnsureSpriteImportSettings(unityPath);
+                    config.Portrait = AssetDatabase.LoadAssetAtPath<Sprite>(unityPath);
+                }
             }
 
-            // 尝试加载地图图标
-            var mapIconPath = Path.Combine(heroDir, "mapicon.png");
-            if (File.Exists(mapIconPath))
+            // 尝试加载世界Sprite (优先使用 YAML 中指定的文件名，否则搜索 worldsprite_*.png)
+            var worldSpriteFile = !string.IsNullOrEmpty(data.WorldSprite)
+                ? data.WorldSprite
+                : FindFileWithPattern(heroDir, "worldsprite_");
+            if (!string.IsNullOrEmpty(worldSpriteFile))
             {
-                var unityPath = mapIconPath.Replace("\\", "/");
-                EnsureSpriteImportSettings(unityPath);
-                config.MapIcon = AssetDatabase.LoadAssetAtPath<Sprite>(unityPath);
+                var worldSpritePath = Path.Combine(heroDir, worldSpriteFile);
+                if (File.Exists(worldSpritePath))
+                {
+                    var unityPath = worldSpritePath.Replace("\\", "/");
+                    EnsureSpriteImportSettings(unityPath);
+                    config.MapIcon = AssetDatabase.LoadAssetAtPath<Sprite>(unityPath);
+                }
             }
+
+            // 加载 Prefab
+            // 优先级: 1. yaml中指定的路径 2. 默认路径 3. base_hero.prefab
+            const string HERO_PREFAB_BASE = "Assets/prefabs/game/world/heros";
+            string prefabPath = null;
+
+            if (!string.IsNullOrEmpty(data.Prefab))
+            {
+                // 使用 yaml 中指定的路径
+                prefabPath = data.Prefab;
+            }
+            else
+            {
+                // 尝试默认路径: {base}/{faction}/{hero_id}/{hero_id}.prefab
+                var factionLower = data.Faction?.ToLower() ?? "neutral";
+                var defaultPath = $"{HERO_PREFAB_BASE}/{factionLower}/{data.HeroId}/{data.HeroId}.prefab";
+                if (File.Exists(defaultPath))
+                {
+                    prefabPath = defaultPath;
+                }
+                else
+                {
+                    // 使用 base_hero.prefab
+                    prefabPath = $"{HERO_PREFAB_BASE}/base_hero.prefab";
+                }
+            }
+
+            config.Prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+            if (config.Prefab == null)
+                Debug.LogWarning($"[FactionImporter] 找不到 Prefab: {prefabPath}");
 
             EditorUtility.SetDirty(config);
             Debug.Log($"[FactionImporter] 导入英雄: {data.HeroId}");
@@ -304,8 +351,145 @@ namespace TH7.Editor
             if (data.Abilities != null)
                 config.AbilityIds = data.Abilities.ToArray();
 
-            // 尝试加载图标
-            var iconPath = Path.Combine(unitDir, "icon.png");
+            // 尝试加载图标 (优先使用 YAML 中指定的文件名)
+            var iconFile = !string.IsNullOrEmpty(data.Icon)
+                ? data.Icon
+                : FindFileWithPattern(unitDir, "icon_") ?? "icon.png";
+            var iconPath = Path.Combine(unitDir, iconFile);
+            if (File.Exists(iconPath))
+            {
+                var unityPath = iconPath.Replace("\\", "/");
+                EnsureSpriteImportSettings(unityPath);
+                config.Icon = AssetDatabase.LoadAssetAtPath<Sprite>(unityPath);
+            }
+
+            // TODO: 加载战斗 Sprite (config.Sprite 字段待添加到 UnitConfig)
+            // var spriteFile = !string.IsNullOrEmpty(data.Sprite)
+            //     ? data.Sprite
+            //     : FindFileWithPattern(unitDir, "sprite_");
+
+            // 加载 Prefab
+            // 优先级: 1. yaml中指定的路径 2. 默认路径 3. base_unit.prefab
+            const string UNIT_PREFAB_BASE = "Assets/prefabs/game/world/units";
+            string unitPrefabPath = null;
+
+            if (!string.IsNullOrEmpty(data.Prefab))
+            {
+                unitPrefabPath = data.Prefab;
+            }
+            else
+            {
+                var factionLower = data.Faction?.ToLower() ?? "neutral";
+                var defaultPath = $"{UNIT_PREFAB_BASE}/{factionLower}/{data.UnitId}/{data.UnitId}.prefab";
+                if (File.Exists(defaultPath))
+                {
+                    unitPrefabPath = defaultPath;
+                }
+                else
+                {
+                    unitPrefabPath = $"{UNIT_PREFAB_BASE}/base_unit.prefab";
+                }
+            }
+
+            config.Prefab = AssetDatabase.LoadAssetAtPath<GameObject>(unitPrefabPath);
+            if (config.Prefab == null)
+                Debug.LogWarning($"[FactionImporter] 找不到 Prefab: {unitPrefabPath}");
+
+            EditorUtility.SetDirty(config);
+            Debug.Log($"[FactionImporter] 导入兵种: {data.UnitId}");
+        }
+
+        void ImportBuildings(string factionPath)
+        {
+            var buildingsPath = Path.Combine(factionPath, "buildings");
+            if (!Directory.Exists(buildingsPath)) return;
+
+            EnsureDirectory($"{OUTPUT_PATH}/buildings");
+
+            foreach (var buildingDir in Directory.GetDirectories(buildingsPath))
+            {
+                var configPath = Path.Combine(buildingDir, "config.yaml");
+                if (!File.Exists(configPath)) continue;
+
+                ImportBuildingConfig(buildingDir, configPath);
+            }
+        }
+
+        void ImportBuildingConfig(string buildingDir, string configPath)
+        {
+            var yaml = File.ReadAllText(configPath);
+            var deserializer = new DeserializerBuilder()
+                .WithNamingConvention(CamelCaseNamingConvention.Instance)
+                .IgnoreUnmatchedProperties()
+                .Build();
+
+            var data = deserializer.Deserialize<BuildingYamlData>(yaml);
+            if (string.IsNullOrEmpty(data.BuildingId))
+            {
+                Debug.LogWarning($"[FactionImporter] 建筑配置缺少 buildingId: {configPath}");
+                return;
+            }
+
+            // 创建或加载现有资产
+            var assetPath = $"{OUTPUT_PATH}/buildings/BuildingConfig_{data.BuildingId}.asset";
+            var config = AssetDatabase.LoadAssetAtPath<BuildingConfig>(assetPath);
+            if (config == null)
+            {
+                config = CreateInstance<BuildingConfig>();
+                AssetDatabase.CreateAsset(config, assetPath);
+            }
+
+            // 填充数据
+            config.Type = ParseEnum<BuildingType>(data.Type);
+            config.DisplayName = data.DisplayName ?? data.BuildingId;
+            config.Description = data.Description ?? "";
+
+            // 基础建造成本
+            if (data.BasicCost != null)
+            {
+                config.BasicCost = new ResourceBundle(
+                    data.BasicCost.Gold,
+                    data.BasicCost.Wood,
+                    data.BasicCost.Ore,
+                    data.BasicCost.Crystal
+                );
+            }
+
+            // 升级成本
+            if (data.UpgradeCost != null)
+            {
+                config.UpgradeCost = new ResourceBundle(
+                    data.UpgradeCost.Gold,
+                    data.UpgradeCost.Wood,
+                    data.UpgradeCost.Ore,
+                    data.UpgradeCost.Crystal
+                );
+            }
+
+            // 前置建筑
+            config.Requirements.Clear();
+            if (data.Requirements != null)
+            {
+                foreach (var req in data.Requirements)
+                {
+                    config.Requirements.Add(new BuildingRequirement
+                    {
+                        RequiredBuilding = ParseEnum<BuildingType>(req.Building),
+                        RequiredTier = ParseEnum<BuildingTier>(req.Tier, BuildingTier.Basic)
+                    });
+                }
+            }
+
+            // 生产配置
+            config.GoldPerDay = data.GoldPerDay;
+            config.ProducedUnitId = data.ProducedUnitId ?? "";
+            config.WeeklyGrowth = data.WeeklyGrowth;
+
+            // 尝试加载图标 (优先使用 YAML 中指定的文件名)
+            var iconFile = !string.IsNullOrEmpty(data.Icon)
+                ? data.Icon
+                : FindFileWithPattern(buildingDir, "icon_") ?? "icon.png";
+            var iconPath = Path.Combine(buildingDir, iconFile);
             if (File.Exists(iconPath))
             {
                 var unityPath = iconPath.Replace("\\", "/");
@@ -314,7 +498,7 @@ namespace TH7.Editor
             }
 
             EditorUtility.SetDirty(config);
-            Debug.Log($"[FactionImporter] 导入兵种: {data.UnitId}");
+            Debug.Log($"[FactionImporter] 导入建筑: {data.BuildingId}");
         }
 
         void ImportFactionConfig(string factionPath)
@@ -382,6 +566,18 @@ namespace TH7.Editor
                 }
             }
 
+            // 建筑（强引用）
+            config.FactionBuildings.Clear();
+            if (data.FactionBuildings != null)
+            {
+                foreach (var buildingRef in data.FactionBuildings)
+                {
+                    var buildingConfig = ResolveReference<BuildingConfig>(buildingRef, "buildings", "BuildingConfig");
+                    if (buildingConfig != null)
+                        config.FactionBuildings.Add(buildingConfig);
+                }
+            }
+
             EditorUtility.SetDirty(config);
             Debug.Log($"[FactionImporter] 导入文明: {factionName}");
         }
@@ -393,6 +589,9 @@ namespace TH7.Editor
 
             // 更新 UnitConfigDatabase
             UpdateUnitDatabase();
+
+            // 更新 BuildingConfigDatabase
+            UpdateBuildingDatabase();
 
             // 更新 FactionConfigDatabase
             UpdateFactionDatabase();
@@ -450,6 +649,32 @@ namespace TH7.Editor
             Debug.Log($"[FactionImporter] 更新 UnitConfigDatabase: {units.Count} 个兵种");
         }
 
+        void UpdateBuildingDatabase()
+        {
+            EnsureDirectory($"{OUTPUT_PATH}/database");
+            var dbPath = $"{OUTPUT_PATH}/database/BuildingConfigDatabase.asset";
+            var db = AssetDatabase.LoadAssetAtPath<BuildingConfigDatabase>(dbPath);
+            if (db == null)
+            {
+                db = CreateInstance<BuildingConfigDatabase>();
+                AssetDatabase.CreateAsset(db, dbPath);
+            }
+
+            var buildings = new List<BuildingConfig>();
+            var guids = AssetDatabase.FindAssets("t:BuildingConfig", new[] { $"{OUTPUT_PATH}/buildings" });
+            foreach (var guid in guids)
+            {
+                var path = AssetDatabase.GUIDToAssetPath(guid);
+                var config = AssetDatabase.LoadAssetAtPath<BuildingConfig>(path);
+                if (config != null)
+                    buildings.Add(config);
+            }
+
+            db.Buildings = buildings;
+            EditorUtility.SetDirty(db);
+            Debug.Log($"[FactionImporter] 更新 BuildingConfigDatabase: {buildings.Count} 个建筑");
+        }
+
         void UpdateFactionDatabase()
         {
             EnsureDirectory($"{OUTPUT_PATH}/database");
@@ -498,6 +723,20 @@ namespace TH7.Editor
             }
         }
 
+        /// <summary>
+        /// 在目录中查找匹配前缀的 PNG 文件 (如 portrait_*.png, worldsprite_*.png)
+        /// </summary>
+        string FindFileWithPattern(string directory, string prefix)
+        {
+            if (!Directory.Exists(directory)) return null;
+
+            foreach (var file in Directory.GetFiles(directory, $"{prefix}*.png"))
+            {
+                return Path.GetFileName(file);
+            }
+            return null;
+        }
+
         T ParseEnum<T>(string value, T defaultValue = default) where T : struct
         {
             if (string.IsNullOrEmpty(value)) return defaultValue;
@@ -544,6 +783,7 @@ namespace TH7.Editor
             public string Path;
             public int HeroCount;
             public int UnitCount;
+            public int BuildingCount;
         }
 
         class HeroYamlData
@@ -558,6 +798,9 @@ namespace TH7.Editor
             public int SpellPower { get; set; }
             public int Knowledge { get; set; }
             public List<StartingArmyEntry> StartingArmy { get; set; }
+            public string Portrait { get; set; }      // portrait_512x512.png
+            public string WorldSprite { get; set; }   // worldsprite_1024x1024.png
+            public string Prefab { get; set; }        // Assets/prefabs/heroes/xxx.prefab
         }
 
         class StartingArmyEntry
@@ -582,6 +825,9 @@ namespace TH7.Editor
             public int GoldCost { get; set; }
             public int GrowthPerWeek { get; set; }
             public List<string> Abilities { get; set; }
+            public string Icon { get; set; }      // icon_256x256.png
+            public string Sprite { get; set; }    // sprite_512x512.png
+            public string Prefab { get; set; }    // Assets/prefabs/units/xxx.prefab
         }
 
         class FactionYamlData
@@ -590,8 +836,9 @@ namespace TH7.Editor
             public string DisplayName { get; set; }
             public string Description { get; set; }
             public ResourcesData StartingResources { get; set; }
-            public List<string> AvailableHeroes { get; set; }  // @HeroConfig_xxx 或 hero_id
-            public List<string> FactionUnits { get; set; }     // @UnitConfig_xxx 或 unit_id
+            public List<string> AvailableHeroes { get; set; }    // @HeroConfig_xxx 或 hero_id
+            public List<string> FactionUnits { get; set; }       // @UnitConfig_xxx 或 unit_id
+            public List<string> FactionBuildings { get; set; }   // @BuildingConfig_xxx 或 building_id
         }
 
         class ResourcesData
@@ -600,6 +847,27 @@ namespace TH7.Editor
             public int Wood { get; set; }
             public int Ore { get; set; }
             public int Crystal { get; set; }
+        }
+
+        class BuildingYamlData
+        {
+            public string BuildingId { get; set; }
+            public string Type { get; set; }
+            public string DisplayName { get; set; }
+            public string Description { get; set; }
+            public ResourcesData BasicCost { get; set; }
+            public ResourcesData UpgradeCost { get; set; }
+            public List<BuildingRequirementData> Requirements { get; set; }
+            public int GoldPerDay { get; set; }
+            public string ProducedUnitId { get; set; }
+            public int WeeklyGrowth { get; set; }
+            public string Icon { get; set; }    // icon_512x512.png
+        }
+
+        class BuildingRequirementData
+        {
+            public string Building { get; set; }
+            public string Tier { get; set; }
         }
 
         #endregion

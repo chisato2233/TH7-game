@@ -1,0 +1,21 @@
+# Hero Configuration
+# 英雄配置
+
+heroId: northsea_waerjili
+displayName: Valkyrie
+displayName_zh: 瓦尔基里
+description: Valkyrie is the daughter of Odin himself. Crowned with golden feathers, wielding spear and shield, she bestows a divine kiss upon the fallen warriors on the battlefield and guides them to Valhalla.
+description_zh: 瓦尔基里是奥丁自己的女儿。她头戴金羽，手持矛与盾，在战场上赐与战死者美妙的一吻,并引领他们前往英灵殿。
+faction: northsea
+class: Warrior
+
+# 视觉资源 (本文件夹内)
+portrait: portrait_480x480.png
+mapicon: mapicon_480x480.png
+
+# 基础属性
+attack: 5
+defense: 3
+spellPower: 1
+knowledge: 1
+

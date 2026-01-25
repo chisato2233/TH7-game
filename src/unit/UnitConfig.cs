@@ -41,6 +41,9 @@ namespace TH7
         [Header("Abilities")]
         public string[] AbilityIds;
 
+        [Header("Visuals")]
+        public GameObject Prefab;
+
         /// <summary>
         /// 计算伤害
         /// </summary>

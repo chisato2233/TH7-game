@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Factions:
   - {fileID: 11400000, guid: f8d482389da13f04cb727c153794a31a, type: 2}
+  - {fileID: 11400000, guid: 1c0a625dfaf729843958053273bd0c54, type: 2}
