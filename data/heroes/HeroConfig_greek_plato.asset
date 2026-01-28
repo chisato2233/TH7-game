@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55fd1499340ec18489a5f9acbc1700c0, type: 3}
+  m_Name: HeroConfig_greek_plato
+  m_EditorClassIdentifier: 
+  HeroId: greek_plato
+  DisplayName: Plato
+  Description: Plato is one of the most influential classical Greek philosophers
+    and the founder of the Academy in Athens, dedicated to the pursuit of ultimate
+    wisdom. Through deep philosophical insight, he harnesses vast reserves of mental
+    energy to cast powerful, long-lasting enchantments.
+  Portrait: {fileID: 21300000, guid: ab473524787796742809ef80d937bd39, type: 3}
+  MapIcon: {fileID: 21300000, guid: 6c34e128cb997c740b512f420a2f1074, type: 3}
+  Faction: 0
+  Class: 2
+  Attack: 1
+  Defense: 2
+  SpellPower: 3
+  Knowledge: 4
+  BaseMovementPoints: 20
+  SpecializationAbilityId: 
+  StartingAbilityIds: []
+  StartingArmy:
+  - Unit: {fileID: 11400000, guid: 0c6eae0bfc5d6bc4aba003bc1884c32a, type: 2}
+    Count: 15
+  - Unit: {fileID: 11400000, guid: 9906d2656ac76584fa196a2d34ad069e, type: 2}
+    Count: 8
+  AnimatorController: {fileID: 0}
+  Prefab: {fileID: 7320373218027423113, guid: aaf7e9d3651e9ce4dbe4705b05e0a067, type: 3}

@@ -35,3 +35,4 @@ MonoBehaviour:
   WeeklyGrowth: 8
   AbilityIds:
   - no_retaliation
+  Prefab: {fileID: 0}

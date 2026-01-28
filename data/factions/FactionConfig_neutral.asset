@@ -29,3 +29,5 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 0c6eae0bfc5d6bc4aba003bc1884c32a, type: 2}
   - {fileID: 11400000, guid: 9906d2656ac76584fa196a2d34ad069e, type: 2}
   - {fileID: 11400000, guid: 30085d5e77ea09d4ab99db24c71b6d50, type: 2}
+  FactionBuildings:
+  - {fileID: 11400000, guid: 53d974360fb6aa0409c03f3a22fa57bf, type: 2}

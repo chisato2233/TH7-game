@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 373f44af2f4b9c94c93a062c89702629, type: 3}
   m_Name: FactionConfig_northsea
   m_EditorClassIdentifier: 
-  FactionType: 0
+  FactionType: 8
   DisplayName: North Sea
   Description: Located in the extreme north of the world. After Odin slew the demon
     god Ymir, the land split into two opposing factions due to the demon's corruption

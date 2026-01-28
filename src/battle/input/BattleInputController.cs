@@ -16,9 +16,22 @@ namespace TH7
         bool isEnabled;
 
         /// <summary>
+        /// 获取当前使用的相机（优先使用设置的，否则使用 Camera.main）
+        /// </summary>
+        Camera ActiveCamera => battleCamera != null ? battleCamera : Camera.main;
+
+        /// <summary>
         /// 获取绑定的行动提供者
         /// </summary>
         public BattleActionProvider ActionProvider => actionProvider;
+
+        /// <summary>
+        /// 设置相机
+        /// </summary>
+        public void SetCamera(Camera camera)
+        {
+            battleCamera = camera;
+        }
 
         /// <summary>
         /// 绑定行动提供者
@@ -71,11 +84,12 @@ namespace TH7
 
         void HandleClick(bool isRightClick)
         {
-            if (battleCamera == null)
+            var camera = ActiveCamera;
+            if (camera == null)
                 return;
 
             // 屏幕坐标转世界坐标
-            Vector3 worldPos = battleCamera.ScreenToWorldPoint(Input.mousePosition);
+            Vector3 worldPos = camera.ScreenToWorldPoint(Input.mousePosition);
             Vector2Int cellPos = new Vector2Int(Mathf.RoundToInt(worldPos.x), Mathf.RoundToInt(worldPos.y));
 
             // 检查是否点击了单位

@@ -32,4 +32,4 @@ MonoBehaviour:
   - Unit: {fileID: 11400000, guid: 9906d2656ac76584fa196a2d34ad069e, type: 2}
     Count: 8
   AnimatorController: {fileID: 0}
-  Prefab: {fileID: 2254075216044930275, guid: 7b2d2e33ec0263c41b6eac959848b8db, type: 3}
+  Prefab: {fileID: 325926546250620427, guid: 7b2d2e33ec0263c41b6eac959848b8db, type: 3}

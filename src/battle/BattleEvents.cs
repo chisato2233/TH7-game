@@ -21,6 +21,7 @@ namespace TH7
     {
         public BattleResult Result;
         public BattleRewards Rewards;
+        public BattleInitData InitData; // 原始战斗数据，用于处理战斗结果
     }
 
     /// <summary>

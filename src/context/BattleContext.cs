@@ -274,7 +274,12 @@ namespace TH7
 
             // 发布战斗结束事件
             GameEntry.Instance?.GetSystem<EventSystem>()?.Publish(
-                new BattleEndedEvent { Result = result, Rewards = rewards }
+                new BattleEndedEvent
+                {
+                    Result = result,
+                    Rewards = rewards,
+                    InitData = InitData // 传递原始数据，用于处理战斗后果
+                }
             );
         }
 

@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 373f44af2f4b9c94c93a062c89702629, type: 3}
+  m_Name: FactionConfig_greek
+  m_EditorClassIdentifier: 
+  FactionType: 3
+  DisplayName: Greek
+  Description: 'The Greek Civilization stands as the radiant cradle of Western heritage,
+    a realm where soaring marble temples meet the iron discipline of the phalanx
+    and the divine influence of the gods. Within this legendary faction, your empire
+    is championed by three distinct classes of power: strategic Generals, enlightened
+    Philosophers, and the awe-inspiring Mythological Figures of ancient lore.'
+  Icon: {fileID: 0}
+  Banner: {fileID: 0}
+  PrimaryColor: {r: 1, g: 1, b: 1, a: 1}
+  StartingResources:
+    amounts: dc050000080000000800000000000000
+  AvailableHeroes:
+  - {fileID: 11400000, guid: 89148a227e8d973489fcfe5d1282e255, type: 2}
+  - {fileID: 11400000, guid: 278ca4769fc8af444b12a63dabf97440, type: 2}
+  FactionUnits: []
+  FactionBuildings: []

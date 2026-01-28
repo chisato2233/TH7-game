@@ -20,7 +20,7 @@ namespace TH7.Editor
 
         Vector2 scrollPos;
         List<HeroAnimationInfo> heroInfos = new();
-        bool selectAll = true;
+        bool selectAll = false;  // 默认不全选，优先选择未完成的
         float frameRate = DEFAULT_FRAME_RATE;
 
         [MenuItem("TH7/Generate Hero Animations")]
@@ -67,6 +67,11 @@ namespace TH7.Editor
 
             if (GUILayout.Button("生成选中", GUILayout.Width(100)))
                 GenerateSelected();
+
+            GUI.backgroundColor = new Color(1f, 0.6f, 0.6f);
+            if (GUILayout.Button("删除选中", GUILayout.Width(100)))
+                DeleteSelected();
+            GUI.backgroundColor = Color.white;
 
             EditorGUILayout.EndHorizontal();
 
@@ -155,6 +160,12 @@ namespace TH7.Editor
                     var idleFramesDir = $"{artAnimDir}/idle_anim_image";
                     var moveFramesDir = $"{artAnimDir}/move_anim_image";
 
+                    var hasAnimFolder = Directory.Exists(animationDir);
+                    var hasIdle = File.Exists(Path.Combine(animationDir, "idle.anim"));
+                    var hasMove = File.Exists(Path.Combine(animationDir, "move.anim"));
+                    var hasCtrl = File.Exists(Path.Combine(animationDir, "heroview.controller"));
+                    var isComplete = hasAnimFolder && hasIdle && hasMove && hasCtrl;
+
                     var info = new HeroAnimationInfo
                     {
                         Faction = factionName,
@@ -166,11 +177,11 @@ namespace TH7.Editor
                         MoveFramesPath = moveFramesDir,
                         IdleFrameCount = CountPngFiles(idleFramesDir),
                         MoveFrameCount = CountPngFiles(moveFramesDir),
-                        HasAnimationFolder = Directory.Exists(animationDir),
-                        HasIdleAnim = File.Exists(Path.Combine(animationDir, "idle.anim")),
-                        HasMoveAnim = File.Exists(Path.Combine(animationDir, "move.anim")),
-                        HasController = File.Exists(Path.Combine(animationDir, "heroview.controller")),
-                        Selected = true
+                        HasAnimationFolder = hasAnimFolder,
+                        HasIdleAnim = hasIdle,
+                        HasMoveAnim = hasMove,
+                        HasController = hasCtrl,
+                        Selected = !isComplete  // 已完成的默认不勾选
                     };
                     heroInfos.Add(info);
                 }
@@ -216,6 +227,40 @@ namespace TH7.Editor
             RefreshHeroList();
 
             Debug.Log($"[HeroAnimationGenerator] 完成: 生成 {generated} 个, 跳过 {skipped} 个");
+        }
+
+        void DeleteSelected()
+        {
+            var toDelete = heroInfos.FindAll(h => h.Selected && h.HasAnimationFolder);
+            if (toDelete.Count == 0)
+            {
+                EditorUtility.DisplayDialog("提示", "没有可删除的动画资产", "确定");
+                return;
+            }
+
+            if (!EditorUtility.DisplayDialog("确认删除",
+                $"确定要删除 {toDelete.Count} 个英雄的动画资产吗？\n\n这将删除 animation 文件夹下的所有内容。",
+                "删除", "取消"))
+            {
+                return;
+            }
+
+            int deleted = 0;
+            foreach (var info in toDelete)
+            {
+                if (Directory.Exists(info.AnimationPath))
+                {
+                    // 删除 Unity 资产
+                    AssetDatabase.DeleteAsset(info.AnimationPath);
+                    deleted++;
+                    Debug.Log($"[HeroAnimationGenerator] 删除: {info.AnimationPath}");
+                }
+            }
+
+            AssetDatabase.Refresh();
+            RefreshHeroList();
+
+            Debug.Log($"[HeroAnimationGenerator] 删除完成: {deleted} 个");
         }
 
         void GenerateAnimationAssets(HeroAnimationInfo info)

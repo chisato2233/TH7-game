@@ -120,6 +120,7 @@ namespace TH7
 
             // 移动动画
             ActionResult lastInteractionResult = null;
+            bool shouldStopMovement = false;
 
             if (!SkipAnimations)
             {
@@ -138,7 +139,16 @@ namespace TH7
                     // 路过时检查并拾取地图物件
                     var result = TryInteractWithMapObject(hero, cell);
                     if (result != null)
+                    {
                         lastInteractionResult = result;
+
+                        // 如果触发战斗，停止移动
+                        if (result.Type == ActionResultType.TriggerBattle)
+                        {
+                            shouldStopMovement = true;
+                            break;
+                        }
+                    }
                 }
 
                 // 切换回待机/禁用状态（会触发状态机和动画）
@@ -151,10 +161,25 @@ namespace TH7
                 {
                     var result = TryInteractWithMapObject(hero, cell);
                     if (result != null)
+                    {
                         lastInteractionResult = result;
+
+                        // 如果触发战斗，停止在当前位置
+                        if (result.Type == ActionResultType.TriggerBattle)
+                        {
+                            hero.MoveTo(cell);
+                            OnHeroMoved?.Invoke(hero, cell);
+                            shouldStopMovement = true;
+                            break;
+                        }
+                    }
                 }
-                hero.MoveTo(action.Destination);
-                OnHeroMoved?.Invoke(hero, action.Destination);
+
+                if (!shouldStopMovement)
+                {
+                    hero.MoveTo(action.Destination);
+                    OnHeroMoved?.Invoke(hero, action.Destination);
+                }
             }
 
             Debug.Log($"[ActionExecutor] {hero.HeroName} 移动到 {action.Destination}，剩余移动力: {hero.MovementPoints.Value}");
@@ -206,6 +231,13 @@ namespace TH7
                     : ActionResultType.HeroMoved;
 
                 return ActionResult.Succeeded(resultType);
+            }
+
+            // 检查是否需要触发战斗（CreatureStack 返回 "TRIGGER_BATTLE"）
+            if (result.Message == "TRIGGER_BATTLE")
+            {
+                Debug.Log($"[ActionExecutor] {hero.HeroName} 遭遇敌人，触发战斗");
+                return ActionResult.TriggerBattle(mapObject);
             }
 
             return null;

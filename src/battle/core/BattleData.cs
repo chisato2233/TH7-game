@@ -19,6 +19,11 @@ namespace TH7
         public Hero DefenderHero;
 
         /// <summary>
+        /// 防守方地图对象（如野怪堆，战斗胜利后需要标记为已击败）
+        /// </summary>
+        public object DefenderMapObject;
+
+        /// <summary>
         /// 攻击方军队
         /// </summary>
         public UnitStack[] AttackerArmy;

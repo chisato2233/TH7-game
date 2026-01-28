@@ -17,7 +17,7 @@ namespace TH7.Editor
 
         Vector2 scrollPos;
         List<HeroPrefabInfo> heroInfos = new();
-        bool selectAll = true;
+        bool selectAll = false;  // 默认不全选，优先选择未完成的
         GameObject basePrefab;
 
         [MenuItem("TH7/Generate Hero Prefab Variants")]
@@ -78,6 +78,11 @@ namespace TH7.Editor
 
             if (GUILayout.Button("生成选中", GUILayout.Width(100)))
                 GenerateSelected();
+
+            GUI.backgroundColor = new Color(1f, 0.6f, 0.6f);
+            if (GUILayout.Button("删除选中", GUILayout.Width(100)))
+                DeleteSelected();
+            GUI.backgroundColor = Color.white;
 
             EditorGUILayout.EndHorizontal();
 
@@ -159,6 +164,8 @@ namespace TH7.Editor
                     var heroPath = heroDir.Replace("\\", "/");
                     var prefabPath = $"{heroPath}/{heroId}.prefab";
                     var controllerPath = $"{heroPath}/animation/heroview.controller";
+                    var hasPrefab = File.Exists(prefabPath);
+                    var hasController = File.Exists(controllerPath);
 
                     var info = new HeroPrefabInfo
                     {
@@ -167,9 +174,9 @@ namespace TH7.Editor
                         HeroPath = heroPath,
                         PrefabPath = prefabPath,
                         ControllerPath = controllerPath,
-                        HasPrefab = File.Exists(prefabPath),
-                        HasController = File.Exists(controllerPath),
-                        Selected = true
+                        HasPrefab = hasPrefab,
+                        HasController = hasController,
+                        Selected = !hasPrefab  // 已有 Prefab 的默认不勾选
                     };
                     heroInfos.Add(info);
                 }
@@ -218,6 +225,39 @@ namespace TH7.Editor
             RefreshHeroList();
 
             Debug.Log($"[HeroPrefabGenerator] 完成: 创建 {created} 个, 更新 {updated} 个, 跳过 {skipped} 个");
+        }
+
+        void DeleteSelected()
+        {
+            var toDelete = heroInfos.FindAll(h => h.Selected && h.HasPrefab);
+            if (toDelete.Count == 0)
+            {
+                EditorUtility.DisplayDialog("提示", "没有可删除的 Prefab", "确定");
+                return;
+            }
+
+            if (!EditorUtility.DisplayDialog("确认删除",
+                $"确定要删除 {toDelete.Count} 个英雄 Prefab 吗？",
+                "删除", "取消"))
+            {
+                return;
+            }
+
+            int deleted = 0;
+            foreach (var info in toDelete)
+            {
+                if (File.Exists(info.PrefabPath))
+                {
+                    AssetDatabase.DeleteAsset(info.PrefabPath);
+                    deleted++;
+                    Debug.Log($"[HeroPrefabGenerator] 删除: {info.PrefabPath}");
+                }
+            }
+
+            AssetDatabase.Refresh();
+            RefreshHeroList();
+
+            Debug.Log($"[HeroPrefabGenerator] 删除完成: {deleted} 个");
         }
 
         bool CreatePrefabVariant(HeroPrefabInfo info)

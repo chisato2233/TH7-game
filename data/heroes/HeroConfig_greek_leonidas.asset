@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55fd1499340ec18489a5f9acbc1700c0, type: 3}
+  m_Name: HeroConfig_greek_leonidas
+  m_EditorClassIdentifier: 
+  HeroId: greek_leonidas
+  DisplayName: Leonidas
+  Description: Leonidas is the legendary Spartan king who embodied iron-willed courage
+    and martial discipline at the Battle of Thermopylae. His commanding presence
+    significantly bolsters the offensive capabilities and physical resilience of
+    all troops under his banner.
+  Portrait: {fileID: 21300000, guid: a2d15530922df0c4cb15f64c8b9ef583, type: 3}
+  MapIcon: {fileID: 21300000, guid: e0faa939fc796cb41b0566352a69337c, type: 3}
+  Faction: 3
+  Class: 0
+  Attack: 3
+  Defense: 4
+  SpellPower: 1
+  Knowledge: 1
+  BaseMovementPoints: 20
+  SpecializationAbilityId: 
+  StartingAbilityIds: []
+  StartingArmy:
+  - Unit: {fileID: 11400000, guid: 0c6eae0bfc5d6bc4aba003bc1884c32a, type: 2}
+    Count: 15
+  - Unit: {fileID: 11400000, guid: 9906d2656ac76584fa196a2d34ad069e, type: 2}
+    Count: 8
+  AnimatorController: {fileID: 0}
+  Prefab: {fileID: 3095779673513753369, guid: ccd8c84a88a6bad42a1eb47911d3be05, type: 3}

@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: HeroConfigDatabase
   m_EditorClassIdentifier: 
   Heroes:
+  - {fileID: 11400000, guid: 89148a227e8d973489fcfe5d1282e255, type: 2}
+  - {fileID: 11400000, guid: 278ca4769fc8af444b12a63dabf97440, type: 2}
   - {fileID: 11400000, guid: 612f2a78266b2bd42942f70266fb5318, type: 2}
   - {fileID: 11400000, guid: eba7d1d1104433847aef3ea746a65280, type: 2}
   - {fileID: 11400000, guid: b9c633b38be974841b911226610dcf94, type: 2}

@@ -36,3 +36,4 @@ MonoBehaviour:
   AbilityIds:
   - ranged
   - no_melee_penalty
+  Prefab: {fileID: 0}

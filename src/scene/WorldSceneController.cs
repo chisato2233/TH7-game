@@ -326,6 +326,8 @@ namespace TH7
             {
                 AttackerHero = attackerHero,
                 AttackerArmy = attackerHero?.Army?.Where(s => s != null && s.Count > 0).ToArray(),
+                DefenderHero = enemy as Hero,
+                DefenderMapObject = enemy, // 保存敌方对象引用，战斗结束后处理
                 DefenderArmy = GetEnemyArmy(enemy),
                 MapWidth = 15,
                 MapHeight = 11,
@@ -336,6 +338,8 @@ namespace TH7
             var battleContext = sessionContext.CreateChild<BattleContext>(ctx => ctx.Setup(battleInitData));
 
             // 5. Additive 加载战斗场景
+            // 注意：不需要手动禁用相机，Cinemachine 会通过 Priority 自动切换
+            // Battle 场景的 CinemachineCamera 优先级更高，会自动接管
             var asyncOp = SceneManager.LoadSceneAsync("BattleScene", LoadSceneMode.Additive);
             while (!asyncOp.isDone)
             {
@@ -347,6 +351,7 @@ namespace TH7
             // 战斗场景会自动从 BattleContext 获取数据并开始战斗
             // 战斗结束后 BattleSceneController 会销毁 BattleContext 并卸载场景
             // BattleContext.OnDispose() 会自动恢复 WorldContext
+            // Cinemachine 会自动切回 World 虚拟相机
         }
 
         /// <summary>
@@ -360,10 +365,21 @@ namespace TH7
                 return enemyHero.Army?.Where(s => s != null && s.Count > 0).ToArray();
             }
 
-            // 如果是地图对象（如野怪），获取其军队配置
-            // TODO: 实现野怪军队配置
+            // 如果是野怪堆
+            if (enemy is CreatureStack creatureStack)
+            {
+                return creatureStack.GetArmy();
+            }
 
-            // 默认测试军队
+            // 如果是通用 MapObject，尝试获取军队
+            if (enemy is MapObject mapObject)
+            {
+                // 可扩展：其他类型的 MapObject 也可能有军队
+                Debug.LogWarning($"[WorldScene] MapObject {mapObject.name} has no army configuration");
+            }
+
+            // 默认测试军队（开发用）
+            Debug.LogWarning("[WorldScene] Using default test army for battle");
             return new UnitStack[]
             {
                 new UnitStack { UnitId = "skeleton", Count = 10 },
@@ -379,6 +395,8 @@ namespace TH7
         {
             Debug.Log($"[WorldScene] Battle ended with result: {e.Result}");
 
+            // 注意：不需要手动恢复相机，Cinemachine 会自动切回（当 Battle 虚拟相机被销毁时）
+
             // 恢复输入
             inputController?.EnableInput();
             playerProvider?.SetEnabled(true);
@@ -386,16 +404,69 @@ namespace TH7
             // 恢复回合（如果需要）
             turnManager?.Resume();
 
-            // 可以在这里处理战斗结果
+            // 处理战斗结果
             if (e.Result == BattleResult.Victory)
             {
-                // 胜利处理：经验、战利品等
-                Debug.Log($"[WorldScene] Victory! Gained {e.Rewards?.Experience ?? 0} experience");
+                HandleBattleVictory(e);
             }
             else if (e.Result == BattleResult.Defeat)
             {
-                // 失败处理
-                Debug.Log("[WorldScene] Defeat!");
+                HandleBattleDefeat(e);
+            }
+            else if (e.Result == BattleResult.Retreat)
+            {
+                Debug.Log("[WorldScene] Player retreated from battle");
+            }
+        }
+
+        /// <summary>
+        /// 处理战斗胜利
+        /// </summary>
+        void HandleBattleVictory(BattleEndedEvent e)
+        {
+            Debug.Log($"[WorldScene] Victory! Gained {e.Rewards?.Experience ?? 0} experience");
+
+            // 标记野怪为已击败
+            if (e.InitData?.DefenderMapObject is CreatureStack creatureStack)
+            {
+                creatureStack.MarkDefeated();
+
+                // 从 WorldContext 移除野怪
+                worldContext?.UnregisterMapObject(creatureStack);
+
+                // 销毁野怪 GameObject
+                Destroy(creatureStack.gameObject);
+
+                Debug.Log($"[WorldScene] Creature stack {creatureStack.name} defeated and removed");
+            }
+
+            // 给予经验值给攻击方英雄
+            if (e.InitData?.AttackerHero != null && e.Rewards != null)
+            {
+                // TODO: 添加经验值到英雄
+                // e.InitData.AttackerHero.AddExperience(e.Rewards.Experience);
+            }
+
+            // 给予资源
+            if (e.Rewards?.Resources != null && !e.Rewards.Resources.IsEmpty)
+            {
+                sessionContext?.Resources?.Add(e.Rewards.Resources);
+            }
+        }
+
+        /// <summary>
+        /// 处理战斗失败
+        /// </summary>
+        void HandleBattleDefeat(BattleEndedEvent e)
+        {
+            Debug.Log("[WorldScene] Defeat!");
+
+            // 如果攻击方英雄阵亡
+            if (e.InitData?.AttackerHero != null)
+            {
+                // TODO: 处理英雄阵亡
+                // - 移除英雄
+                // - 检查是否游戏结束
             }
         }
 

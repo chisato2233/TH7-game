@@ -34,3 +34,4 @@ MonoBehaviour:
   RequiredBuilding: 0
   WeeklyGrowth: 4
   AbilityIds: []
+  Prefab: {fileID: 0}

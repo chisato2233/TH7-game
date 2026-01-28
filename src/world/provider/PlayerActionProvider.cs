@@ -308,9 +308,11 @@ namespace TH7
                 return;
             }
 
-            // 检查是否可移动
+            // 分析点击目标
             var clickResult = AnalyzeClick(targetCell);
-            if (clickResult.Type != ClickResultType.EmptyTile)
+
+            // 无效目标不显示路径
+            if (clickResult.Type == ClickResultType.Invalid)
             {
                 HidePreview();
                 return;
@@ -336,8 +338,17 @@ namespace TH7
             int cost = CalculatePathCost(previewPath);
             bool canReach = currentHero.MovementPoints.Value >= cost;
 
+            // 根据目标类型选择路径预览样式
+            PathTargetType targetType = clickResult.Type switch
+            {
+                ClickResultType.Enemy => PathTargetType.Attack,
+                ClickResultType.Resource => PathTargetType.PickUp,
+                ClickResultType.Town => PathTargetType.EnterTown,
+                _ => PathTargetType.Move
+            };
+
             // 显示路径预览
-            pathPreview?.ShowPath(previewPath, canReach);
+            pathPreview?.ShowPath(previewPath, canReach, targetType);
 
             // 通过 EventSystem 发布事件
             eventSystem?.Publish(new PathPreviewUpdatedEvent { Path = previewPath, CanReach = canReach });
@@ -462,22 +473,24 @@ namespace TH7
             // 检查点击的是什么
             var clickResult = AnalyzeClick(cellPos);
 
-            HeroAction action = clickResult.Type switch
+            // 无效点击不处理
+            if (clickResult.Type == ClickResultType.Invalid)
             {
-                ClickResultType.EmptyTile => CreateMoveAction(cellPos),
-                ClickResultType.Town => new EnterTownAction(currentHero, clickResult.Town),
-                ClickResultType.Enemy => new AttackAction(currentHero, cellPos, clickResult.Target),
-                ClickResultType.Resource => new PickUpAction(currentHero, cellPos, clickResult.MapObject),
-                _ => null
-            };
+                Debug.Log($"[PlayerInput] 无效点击位置: {cellPos}");
+                return;
+            }
 
-            if (action != null && action.CanExecute(context))
+            // 所有有效目标都通过 MoveAction 处理
+            // 移动到目标位置后，ActionExecutor 会自动处理交互
+            var moveAction = CreateMoveAction(cellPos);
+
+            if (moveAction != null && moveAction.CanExecute(context))
             {
-                SubmitAction(action);
+                SubmitAction(moveAction);
             }
             else
             {
-                Debug.Log($"[PlayerInput] 无法执行行动: {clickResult.Type}");
+                Debug.Log($"[PlayerInput] 无法移动到目标: {clickResult.Type}");
             }
         }
 
@@ -492,6 +505,22 @@ namespace TH7
                     if (town.Position == cellPos)
                         return ClickResult.ClickedTown(town);
                 }
+            }
+
+            // 检查是否点击了地图物件
+            var mapObject = context.GetMapObjectAt(cellPos);
+            if (mapObject != null)
+            {
+                // 野怪堆 -> 敌人
+                if (mapObject is CreatureStack creatureStack)
+                {
+                    Debug.Log($"[PlayerInput] 点击野怪: {creatureStack.UnitConfig?.DisplayName} x{creatureStack.Count}");
+                    return ClickResult.ClickedEnemy(creatureStack);
+                }
+
+                // 资源堆、矿等 -> 可交互物件
+                Debug.Log($"[PlayerInput] 点击地图物件: {mapObject.name}");
+                return ClickResult.ClickedMapObject(mapObject);
             }
 
             // 检查地图数据是否存在
