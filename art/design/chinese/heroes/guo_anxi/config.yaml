@@ -1,0 +1,15 @@
+heroId: chinese_guo_anxi
+displayName: Guo Anxi
+description: An expeditionary commander who extends imperial doctrine beyond the borders through control and assimilation.
+faction: Chinese
+class: Ranger
+
+portrait: portrait_256x256.png
+worldSprite: worldsprite_1024x1024.png
+
+attack: 1
+defense: 2
+spellPower: 3
+knowledge: 4
+
+startingArmy: []

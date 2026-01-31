@@ -1,0 +1,15 @@
+heroId: chinese_ban_heng
+displayName: Ban Heng
+description: A military strategist and legal scholar who embodies imperial order and foresight.
+faction: Chinese
+class: Ranger
+
+portrait: portrait_256x256.png
+worldSprite: worldsprite_1024x1024.png
+
+attack: 1
+defense: 2
+spellPower: 3
+knowledge: 4
+
+startingArmy: []

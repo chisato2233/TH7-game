@@ -1,0 +1,46 @@
+# Egypt Faction Configuration
+# 埃及阵营配置
+
+factionType: Egyptian
+displayName: Egypt
+description: Egyptian forces, including ancient Egyptian soldiers and mythical creatures
+
+
+primaryColor: "#E3B778"
+
+# 初始资源
+startingResources:
+  gold: 1250
+  wood: 10
+  ore: 6
+  crystal: 2
+
+# 可用英雄 (强引用)
+availableHeroes:
+  - "@HeroConfig_egypt_Horus"
+  - "@HeroConfig_egypt_Anubis"
+  - "@HeroConfig_egypt_Sekhmet"
+  - "@HeroConfig_egypt_Thoth"  
+
+# 阵营兵种 (强引用)
+factionUnits:
+  - "@UnitConfig_egypt_Nile_Fellah"
+  - "@UnitConfig_egypt_Spearman"
+  - "@UnitConfig_egypt_Medjay_Archer"
+  - "@UnitConfig_egypt_Sobek's_Maw"
+  - "@UnitConfig_egypt_Scarab_Legion"
+  - "@UnitConfig_egypt_Anubite"
+  - "@UnitConfig_egypt_Great_Sphinx"
+
+
+
+# 阵营建筑 (强引用)
+factionBuildings:
+  - "@BuildingConfig_egypt_Fellahin_Quarter"
+  - "@BuildingConfig_egypt_Spearman_Barrack"
+  - "@BuildingConfig_egypt_Sky_Temple"
+  - "@BuildingConfig_egypt_Sobek's_Abyss"
+  - "@BuildingConfig_egypt_Khepri's_Altar"
+  - "@BuildingConfig_egypt_Anubis'_Atrium"
+  - "@BuildingConfig_egypt_Pyramid"
+  - "@BuildingConfig_egypt_tavern"

@@ -1,0 +1,23 @@
+# Hero Configuration
+# 英雄配置
+
+heroId: egypt_Horus
+displayName: Horus
+description: The god of the sky and kingship.
+faction: Egypt
+class: Archer
+
+# 视觉资源 (本文件夹内)
+portrait: portrait_2000x2000.png         # 头像
+worldSprite: worldsprite_4000x4000.png # 世界Sprite
+
+# 基础属性
+attack: 3
+defense: 2
+spellPower: 1
+knowledge: 1
+
+# 初始军队 (强引用)
+startingArmy:
+  - unit: "@UnitConfig_egypt_Medjay_Archer"
+    count: 20

@@ -1,0 +1,21 @@
+# MGL Faction Configuration
+
+factionType: Mongolian
+displayName: MGL
+description: MGL is a faction that is known for its powerful military and its ability to control the sea.
+
+primaryColor: "#808080"
+
+startingResources:
+  gold: 1500
+  wood: 8
+  ore: 8
+  crystal: 0
+
+availableHeroes:
+  - "@HeroConfig_mgl_aminna"
+  - "@HeroConfig_mgl_edref"
+
+factionUnits: []
+
+factionBuildings: []

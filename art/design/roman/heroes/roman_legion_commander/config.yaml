@@ -1,0 +1,28 @@
+# Hero Configuration
+# 英雄配置 - 罗马军团长
+
+heroId: roman_legion_commander       # 全局唯一ID，必须与文件夹名一致
+displayName: Centurion Marcus        # 游戏内显示的名称
+description: A disciplined veteran of the legions, unyielding as a shield wall.
+faction: Roman                       # 阵营，必须对应 faction.yaml 中的定义
+class: Warrior                       # 职业
+
+# 视觉资源 (Visual Assets)
+# 注意：文件名必须严格包含尺寸，Key 必须是 worldSprite
+portrait: portrait_256x256.png
+worldSprite: worldsprite_1024x1024.png
+
+# 基础属性 (Stats)
+# 罗马军团风格：强调防御 (Defense) 和纪律
+attack: 2
+defense: 5       # 特化高防御
+spellPower: 1
+knowledge: 1
+
+# 初始军队 (Starting Army)
+# 引用尚未创建的罗马兵种 ID，保持格式正确即可
+startingArmy:
+  - unit: "@UnitConfig_roman_legionary"
+    count: 15
+  - unit: "@UnitConfig_roman_archer"
+    count: 5

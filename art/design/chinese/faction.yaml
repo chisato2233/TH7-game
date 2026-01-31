@@ -1,0 +1,22 @@
+# Chinese (Han–Tang) Faction Configuration
+
+factionType: Chinese
+displayName: Han–Tang Dynasty
+description: An imperial civilization defined by discipline, strategy, and scholarly governance.
+
+primaryColor: "#D4AF37"
+
+startingResources:
+  gold: 1500
+  wood: 8
+  ore: 8
+  crystal: 0
+
+availableHeroes:
+  - "@HeroConfig_chinese_ban_heng"
+  - "@HeroConfig_chinese_du_pingzhang"
+  - "@HeroConfig_chinese_guo_anxi"
+
+factionUnits: []
+
+factionBuildings: []

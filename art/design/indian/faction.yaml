@@ -1,0 +1,30 @@
+# Neutral Faction Configuration
+# 中立阵营配置
+
+factionType: Indian
+displayName: Indian
+description: A sacred civilization centered on dharma, divine avatars, and ritual power, supported by elephant legions and spiritual authority
+
+
+primaryColor: "#C65A1E"
+
+# 初始资源
+startingResources:
+  gold: 1500
+  wood: 8
+  ore: 8
+  crystal: 0
+
+# 可用英雄 (强引用)
+availableHeroes:
+  - "@HeroConfig_indian_krishna"
+
+
+## 阵营兵种 (强引用)
+#factionUnits:
+#  - "@UnitConfig_indian_war_elephant"
+
+
+## 阵营建筑 (强引用)
+#factionBuildings:
+#  - "BuildingConfig_indian_townhall"

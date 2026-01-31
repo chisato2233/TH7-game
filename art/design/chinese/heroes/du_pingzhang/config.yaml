@@ -1,0 +1,15 @@
+heroId: chinese_du_pingzhang
+displayName: Du Pingzhang
+description: A cold and methodical enforcer of fiscal law who punishes disorder and non-compliance.
+faction: Chinese
+class: Ranger
+
+portrait: portrait_256x256.png
+worldSprite: worldsprite_1024x1024.png
+
+attack: 1
+defense: 2
+spellPower: 3
+knowledge: 4
+
+startingArmy: []

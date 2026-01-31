@@ -1,0 +1,21 @@
+# Roman Faction Configuration
+# 罗马阵营配置
+
+factionType: Roman             # 自定义阵营类型
+displayName: Roman Empire      # 游戏内显示的名称
+description: The disciplined legions of the eternal city, known for their heavy infantry and engineering prowess.
+
+primaryColor: "#B80F0A"        # 罗马红 (Crimson) - 替换了中立的灰色
+
+# 初始资源
+# 罗马特色：金币(Gold)和矿石(Ore)较多，用于维持庞大军费和锻造重甲
+startingResources:
+  gold: 2000
+  wood: 10
+  ore: 12
+  crystal: 0
+
+# 可用英雄 (强引用)
+# 这里必须严格对应你创建的英雄文件夹名 (heroId)
+availableHeroes:
+  - "@HeroConfig_roman_legion_commander"
